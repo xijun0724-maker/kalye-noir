@@ -1,32 +1,59 @@
-# Kalye Noir
+<p align="center">
+  <img src="public/assets/images/brand/banner-aesthetic-1.png" alt="Kalye Noir — KALYENOIR wordmark poster" width="100%">
+</p>
 
-Manila streetwear. An Astro storefront: editorial landing page, a catalogue of collections, product detail pages, a cart (drawer + full page), and an enquiry-based checkout.
+<h1 align="center">KALYE NOIR</h1>
 
-No prices are shown on the site — every order is confirmed by message, so the cart and checkout collect the request rather than a payment.
+<p align="center">
+  <strong>Classy kalye.</strong> Manila streetwear, cut with a noir edge.<br>
+  <em>NASA KALYE NANGANGARAP — MANILA NEVER SLEEPS</em><br>
+  EST. 2026 · STREET WEAR • MANILA · 14.5995° N — 120.9842° E
+</p>
 
-## Stack
+<p align="center">
+  <img src="public/assets/images/brand/tee-kalyenoir.png" alt="Kalye Noir KALYENOIR tee" width="24%">
+  <img src="public/assets/images/brand/tee-medusa.png" alt="Kalye Noir MEDUSA tee" width="24%">
+  <img src="public/assets/images/brand/tee-maynila.png" alt="Kalye Noir MAYNILA tee" width="24%">
+  <img src="public/assets/images/brand/pouch.png" alt="GOOD THINGS INSIDE trinket pouch" width="24%">
+</p>
 
-- [Astro](https://astro.build) (static output)
-- Plain CSS design tokens (`src/styles/`) — no CSS framework
-- Vanilla JS for the cart (`src/scripts/cart.js`), persisted in `localStorage`
+---
 
-## Structure
+## The label
 
-```
-src/
-  data/products.js        # products + collections (single source of truth)
-  pages/
-    index.astro           # landing
-    products.astro        # catalogue
-    products/[slug].astro # product detail
-    cart.astro            # cart + checkout
-  components/             # header, footer, cart drawer, buttons, ...
-  layouts/Page.astro      # shell; loads the cart module on every page
-  scripts/cart.js         # cart state, rendering, checkout sync
-public/assets/images/brand/  # artwork used on the site
-```
+Kalye Noir takes the street — *kalye* — and renders it with a designer's eye and a noir edge. Small-batch, made in Manila, for late nights and early dreams. Vernacular you can wear: jeepneys and tangled wires, halftone Gorgons, lanterns strung over Divisoria. Local proof over generic streetwear.
 
-## Local development
+## The collection
+
+**Oversized Shirts** — heavy graphic tees, front chest mark with a full back print, S–2XL.
+
+| Design | Story |
+| --- | --- |
+| **MEDUSA** | The Gorgon stare in halftone. *Not your myth.* |
+| **MAYNILA** | The Divisoria street scene — jeepney, wires, lanterns — under *Manila never sleeps.* |
+| **KALYENOIR** | The stacked wordmark over the wreathed Manila wires. *NASA KALYE NANGANGARAP.* |
+
+**GOOD THINGS INSIDE — Trinket Pouch** — zip pouch with the GOOD THINGS INSIDE label. Pick the colour, patch and cord; made to request.
+
+<p align="center">
+  <img src="public/assets/images/brand/shirt-banner.png" alt="Kalye Noir shirts on a rail" width="49%">
+  <img src="public/assets/images/brand/banner-aesthetic-3.png" alt="MANILA NEVER SLEEPS street poster" width="49%">
+</p>
+
+## How the shop works
+
+Straightforward and message-first, the way the label actually sells:
+
+1. **Browse** the collection on the catalogue page and open a piece.
+2. **Pick a size** (S–2XL for shirts; the pouch is made to request) and **add to cart**.
+3. **Review** in the slide-in cart or the full cart page.
+4. **Send the request** at checkout — cart contents, contact and sizing go through in one form.
+
+**Pricing is confirmed per order.** The site publishes no prices, stock levels or delivery claims — a real person replies with the numbers for your order. Customisation requests (pouch colours, patches, cords) go through the same form.
+
+## Running it
+
+Astro, static build. No backend; the cart lives in `localStorage` and orders post through Netlify Forms.
 
 ```sh
 npm install
@@ -35,12 +62,21 @@ npm run build    # output in dist/
 npm run preview  # preview the build
 ```
 
-## Deploy
+Deploys on Netlify via `netlify.toml` (`npm run build` → `dist/`). Connect the repo and it ships on push; checkout submissions appear under **Site → Forms**.
 
-Configured for Netlify via `netlify.toml` (`npm run build` → `dist/`). Connect the repo in Netlify and it deploys on push.
+## In this repo
 
-The checkout form posts to Netlify Forms (form name `order`, redirect to `/order-thank-you`), so form submissions appear under **Site → Forms** in the Netlify dashboard.
+```
+src/
+  data/products.js         # the collection — single source of truth
+  pages/
+    index.astro            # landing
+    products.astro         # catalogue
+    products/[slug].astro  # product detail
+    cart.astro             # cart + checkout
+  layouts/Page.astro       # shell; loads the cart on every page
+  scripts/cart.js          # cart state, drawer, checkout sync
+public/assets/images/brand/  # the artwork
+```
 
-## Assets
-
-Brand artwork lives in `public/assets/images/brand/`. The original working `Assets/` folder is not tracked.
+All artwork belongs to Kalye Noir.
