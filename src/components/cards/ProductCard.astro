@@ -1,0 +1,92 @@
+---
+const { img, title, tagline, details = [], href = '/#order', aspect = '4 / 5' } = Astro.props;
+---
+
+<div class="product-card__card">
+	<a class="product-card__link" href={href}>
+		<picture>
+			<img class="product-card__img" style={`--card-aspect:${aspect}`} src={img} alt={title} loading="lazy" decoding="async" />
+		</picture>
+		<div class="product-card__content">
+			<h3 class="product-card__title">{title}</h3>
+			<p class="product-card__tagline">{tagline}</p>
+			<ul class="product-card__details">
+				{details.map((d) => <li>{d}</li>)}
+			</ul>
+			<span class="product-card__cta">Order Yours <span class="product-card__cta-arrow">→</span></span>
+		</div>
+	</a>
+</div>
+
+<style>
+	.product-card__card {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		background-color: var(--theme-surface-1);
+		color: var(--theme-on-surface-1);
+		border-radius: var(--theme-shape-radius);
+		overflow: hidden;
+	}
+	.product-card__link {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		text-decoration: none;
+		color: inherit;
+	}
+	.product-card__img {
+		width: 100%;			aspect-ratio: var(--card-aspect, 4 / 5);
+		object-fit: cover;
+		display: block;
+		transform: scale(1);
+		filter: saturate(0.85) contrast(0.96) brightness(0.97);
+		transition:
+			transform var(--theme-hover-zoom, 0.6s ease),
+			filter 0.45s ease;
+	}
+	.product-card__card:hover .product-card__img {
+		transform: scale(1.05);
+		filter: saturate(1) contrast(1.08) brightness(1.04);
+	}
+	.product-card__content {
+		padding: 1rem 1.25rem 1.25rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		flex: 1;
+	}
+	.product-card__title {
+		margin: 0;
+	}
+	.product-card__tagline {
+		margin: 0;
+		opacity: 0.8;
+	}
+	.product-card__details {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: var(--font-size-sm);
+		opacity: 0.7;
+	}
+	.product-card__details li::before {
+		content: '// ';
+		opacity: 0.6;
+	}
+	.product-card__cta {
+		margin-top: auto;
+		padding-top: 0.75rem;
+		font-weight: 700;
+	}
+	.product-card__cta .product-card__cta-arrow {
+		display: inline-block;
+		transition: transform var(--theme-transition);
+	}
+	.product-card__card:hover .product-card__cta-arrow {
+		transform: translateX(0.35rem);
+	}
+	.product-card__card:hover .product-card__cta {
+		text-decoration: underline;
+	}
+</style>

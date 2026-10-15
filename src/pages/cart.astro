@@ -1,0 +1,295 @@
+---
+import Layout from '../layouts/Page.astro';
+import { Button } from '@components/odyssey-theme';
+
+const seo = {
+	title: 'Your Cart | Kalye Noir',
+	description:
+		'Review your Kalye Noir pieces and send the order request. Pricing confirmed per order.',
+};
+---
+
+<Layout {seo}>
+	<header class="cart-head">
+		<div class="kn-wrap">
+			<p class="kn-label">Your selection</p>
+			<h1 class="cart-head__title">Your cart</h1>
+			<div class="kn-rule cart-head__rule"></div>
+		</div>
+	</header>
+
+	<section class="cart" aria-label="Cart contents">
+		<div class="kn-wrap cart__grid">
+			<div class="cart__main">
+				<div class="cart__cols" aria-hidden="true">
+					<span>Item</span>
+					<span>Quantity</span>
+				</div>
+				<div class="cart__lines" data-cart-items></div>
+				<div class="cart__foot">
+					<a class="cart__continue" href="/products">← Continue shopping</a>
+				</div>
+			</div>
+
+			<aside class="cart__summary" aria-labelledby="summary-title">
+				<h2 id="summary-title" class="cart__summary-title">Summary</h2>
+				<div class="cart__count">
+					<span class="kn-label">Total items</span>
+					<span class="cart__count-num" data-cart-count-text>0</span>
+				</div>
+				<p class="cart__note">
+					No prices on the site — pricing is confirmed per order. No
+					payment is taken here; we follow up with sizes, price and
+					payment details.
+				</p>
+				<a class="cart__checkout" href="#checkout">Proceed to checkout</a>
+			</aside>
+		</div>
+	</section>
+
+	<!-- ============ CHECKOUT ============ -->
+	<section id="checkout" class="checkout" aria-labelledby="checkout-title">
+		<div class="kn-wrap checkout__grid">
+			<div class="checkout__intro">
+				<p class="kn-label">Final step</p>
+				<h2 id="checkout-title" class="checkout__title">Checkout</h2>
+				<p class="checkout__text">
+					Your cart is attached to this request automatically. Send it and
+					we'll follow up with pricing, sizes and payment details.
+				</p>
+				<ul class="checkout__channels">
+					<li>Facebook &amp; Instagram promos</li>
+					<li>Direct orders through this site</li>
+					<li>Custom designs on request</li>
+				</ul>
+			</div>
+
+			<form
+				class="checkout__form"
+				name="order"
+				method="POST"
+				data-netlify="true"
+				action="/order-thank-you"
+			>
+				<input type="hidden" name="form-name" value="order" />
+				<input type="hidden" name="cart-contents" value="" />
+
+				<label class="checkout__field">
+					<span class="kn-label">Name</span>
+					<input type="text" name="name" placeholder="Your name" required />
+				</label>
+
+				<label class="checkout__field">
+					<span class="kn-label">Email</span>
+					<input type="email" name="email" placeholder="you@example.com" required />
+				</label>
+
+				<label class="checkout__field">
+					<span class="kn-label">Order note</span>
+					<textarea
+						name="note"
+						rows="4"
+						placeholder="Sizes, customization requests, delivery notes…"></textarea>
+				</label>
+
+				<Button customIcon>Send order request
+					<Fragment slot="icon">
+						<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
+							><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"></path></svg
+						>
+					</Fragment>
+				</Button>
+			</form>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.cart-head {
+		padding-block: clamp(2.5rem, 7vw, 5rem) clamp(1rem, 3vw, 1.75rem);
+	}
+	.cart-head__title {
+		font-size: clamp(3rem, 11vw, 8rem);
+		line-height: 0.85;
+		letter-spacing: -0.02em;
+		margin: 0.75rem 0 1.5rem;
+	}
+	.cart-head__rule {
+		max-width: 14rem;
+	}
+
+	.cart__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+		gap: clamp(1.5rem, 5vw, 4rem);
+		align-items: start;
+	}
+	.cart__cols {
+		display: flex;
+		justify-content: space-between;
+		padding-bottom: 0.85rem;
+		border-bottom: 2px solid var(--kn-ink);
+		font-family: var(--theme-font-mono);
+		font-size: var(--font-size-sm);
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		color: var(--kn-ink-muted);
+	}
+	/* injected line markup from cart.js */
+	.cart__lines :global(.cart-line) {
+		padding: 1.1rem 0;
+	}
+	.cart__lines :global(.cart-line img) {
+		width: 72px;
+		height: 90px;
+	}
+	.cart__lines :global(.cart-line__name) {
+		font-size: var(--font-size-md);
+	}
+	.cart__lines :global(.cart-drawer__empty) {
+		padding: 3rem 0;
+		text-align: left;
+	}
+	.cart__lines :global(.cart-drawer__empty a) {
+		color: var(--kn-red);
+	}
+	.cart__foot {
+		padding-top: 1.25rem;
+	}
+	.cart__continue {
+		font-family: var(--theme-font-mono);
+		font-size: var(--font-size-sm);
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		text-decoration: none;
+	}
+	.cart__continue:hover {
+		color: var(--kn-red);
+	}
+
+	.cart__summary {
+		position: sticky;
+		top: 1.5rem;
+		background: var(--kn-paper-2);
+		border: 2px solid var(--kn-ink);
+		padding: clamp(1.25rem, 3vw, 2rem);
+	}
+	.cart__summary-title {
+		font-size: var(--font-size-lg);
+		margin: 0 0 1rem;
+	}
+	.cart__count {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-bottom: 1rem;
+		border-bottom: 2px solid var(--kn-ink);
+	}
+	.cart__count-num {
+		font-family: var(--theme-font-display);
+		font-size: var(--font-size-lg);
+		line-height: 1;
+	}
+	.cart__note {
+		font-family: var(--theme-font-mono);
+		font-size: var(--font-size-sm);
+		line-height: 1.7;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		color: var(--kn-ink-muted);
+		margin: 1rem 0 1.25rem;
+	}
+	.cart__checkout {
+		display: block;
+		width: 100%;
+		text-align: center;
+		padding: 0.95rem 1rem;
+		background: var(--kn-ink);
+		color: var(--kn-paper);
+		border: 2px solid var(--kn-ink);
+		font-weight: 800;
+		font-size: var(--font-size-sm);
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		text-decoration: none;
+		transition: background-color 0.2s ease, border-color 0.2s ease;
+	}
+	.cart__checkout:hover {
+		background: var(--kn-red);
+		border-color: var(--kn-red);
+	}
+
+	/* checkout */
+	.checkout {
+		margin-top: var(--section-margin);
+	}
+	.checkout__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+		gap: clamp(1.5rem, 5vw, 4rem);
+		background: var(--kn-paper-2);
+		border: 2px solid var(--kn-ink);
+		padding: clamp(1.5rem, 4vw, 3rem);
+	}
+	.checkout__title {
+		font-size: clamp(2.4rem, 6vw, 4.5rem);
+		margin: 0.5rem 0 1rem;
+	}
+	.checkout__text {
+		max-width: 40ch;
+	}
+	.checkout__channels {
+		margin: 1.25rem 0 0;
+		padding: 0;
+		list-style: none;
+		font-family: var(--theme-font-mono);
+		font-size: var(--font-size-sm);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--kn-ink-muted);
+	}
+	.checkout__channels li {
+		margin-bottom: 0.5rem;
+	}
+	.checkout__channels li::before {
+		content: '// ';
+		color: var(--kn-red);
+	}
+	.checkout__form {
+		display: grid;
+		gap: 1.1rem;
+		align-self: start;
+	}
+	.checkout__field {
+		display: grid;
+		gap: 0.35rem;
+	}
+	.checkout__field input,
+	.checkout__field textarea {
+		width: 100%;
+		padding: 0.7rem;
+		background: transparent;
+		border: 2px solid var(--kn-ink);
+		border-radius: 0;
+		color: var(--kn-ink);
+		font-family: var(--theme-font-family-sans);
+		font-size: var(--font-size-base);
+		outline: none;
+		resize: vertical;
+	}
+	.checkout__field input:focus,
+	.checkout__field textarea:focus {
+		border-color: var(--kn-red);
+	}
+
+	@media (max-width: 860px) {
+		.cart__grid,
+		.checkout__grid {
+			grid-template-columns: 1fr;
+		}
+		.cart__summary {
+			position: static;
+		}
+	}
+</style>

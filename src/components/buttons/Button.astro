@@ -1,0 +1,99 @@
+---
+const { href, unelevated, outlined, customIcon, onPrimary, newTab } =
+  Astro.props;
+
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  class={`btn ${unelevated && `btn--unelevated`} ${
+    outlined && `btn--outlined`
+  } ${onPrimary && `btn--on-primary`}`}
+  href={href}
+  target={`${newTab ? '_blank': ``}`}
+  rel={`${newTab ? 'noopener noreferrer' : ``}`}
+>
+  <slot />
+  {customIcon && <span class="custom-icon__span"><slot name="icon">custom_icon</slot></span>}
+</Tag>
+
+<style>
+  .btn {
+    width: fit-content;
+    padding: 0.7rem 1.3rem;
+    margin-bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    background-color: var(--theme-primary);
+    color: var(--theme-on-primary);
+    border: 2px solid var(--theme-primary);
+    border-radius: var(--theme-button-border-radius);
+    font-family: var(--theme-font-family-sans);
+    font-weight: 800;
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+  .btn:hover {
+    background-color: var(--theme-primary-hover);
+    border-color: var(--theme-primary-hover);
+    transform: translateY(-1px);
+  }
+  .btn:active {
+    transform: translateY(0);
+  }
+  .btn--unelevated {
+    background-color: transparent;
+    color: var(--theme-on-bg);
+    border-color: transparent;
+    padding-left: 0;
+    padding-right: 0;
+    border-bottom: 2px solid currentColor;
+  }
+  .btn--unelevated:hover {
+    background-color: transparent;
+    border-color: transparent;
+    border-bottom-color: var(--kn-red);
+    color: var(--kn-red);
+    transform: none;
+  }
+  .btn--outlined {
+    color: var(--theme-on-bg);
+    background-color: transparent;
+    border: 2px solid var(--theme-on-bg);
+  }
+  .btn--outlined:hover {
+    background-color: var(--theme-on-bg);
+    color: var(--theme-bg);
+    border-color: var(--theme-on-bg);
+  }
+  .custom-icon__span {
+    margin-left: 0.1rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .custom-icon__span :global(svg) {
+    width: 20px;
+    height: 20px;
+    transition: transform var(--theme-transition);
+  }
+
+  .btn:hover .custom-icon__span :global(svg) {
+    transform: translateX(0.2rem);
+  }
+
+  a.btn {
+    text-decoration: none;
+  }
+  button.btn {
+    cursor: pointer;
+    outline: none;
+  }
+</style>

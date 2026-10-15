@@ -1,0 +1,18 @@
+npm warn Unknown project config "shamefully-hoist". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm notice run odyssey-theme@3.1.0 dev
+npm notice run astro dev --port 4321
+(node:11876) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+14:55:33 [types] Generated 1ms
+
+ astro  v4.15.9 ready in 784 ms
+
+┃ Local    http://localhost:4321/
+┃ Network  use --host to expose
+
+14:55:33 watching for file changes...
+14:55:41 [astro-icon] Loaded icons from src/icons, ic, mdi
+14:55:43 [200] / 18ms
+14:55:43 [200] /order-thank-you/ 4ms
+14:59:09 Configuration file updated. Restarting...
+14:59:09 [types] Generated 2ms
