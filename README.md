@@ -1,71 +1,46 @@
-<p align="center">
-  <img src="assets/gh-banner.png" alt="Odyssey Theme Banner">
-</p>
+# Kalye Noir
 
-<br/>
-<div align="center">
-  <a href="https://twitter.com/jaydanurwin">
-  <img src="assets/twitter-badge.svg" alt="Follow Jaydan Urwin on Twitter"/>
-</a>
-  <a href="https://sapling.lemonsqueezy.com/checkout/buy/9b78751f-6382-442d-ac99-32c2318b70a0">
-    <img src="assets/sponsor-badge.svg" alt="Sponsor This Repo" />
-  </a>
-</div>
-<br/>
+Manila streetwear. An Astro storefront: editorial landing page, a catalogue of collections, product detail pages, a cart (drawer + full page), and an enquiry-based checkout.
 
-# Odyssey Theme
+No prices are shown on the site — every order is confirmed by message, so the cart and checkout collect the request rather than a payment.
 
-Odyssey Theme is a modern theme/starter for a business or startup's marketing website. It provides landing page examples, a full-featured blog, contact forms, and more. It is fully themeable to match your business' branding and style. It even includes a theme switcher component to show how easily the entire style of the site can be changed with only a few lines of CSS.
+## Stack
 
-## Features
+- [Astro](https://astro.build) (static output)
+- Plain CSS design tokens (`src/styles/`) — no CSS framework
+- Vanilla JS for the cart (`src/scripts/cart.js`), persisted in `localStorage`
 
-<p align="center">
-  <img src="assets/lh-screenshot.png" alt="Screenshot of perfect score in Lighthouse benchmark">
-</p>
+## Structure
 
+```
+src/
+  data/products.js        # products + collections (single source of truth)
+  pages/
+    index.astro           # landing
+    products.astro        # catalogue
+    products/[slug].astro # product detail
+    cart.astro            # cart + checkout
+  components/             # header, footer, cart drawer, buttons, ...
+  layouts/Page.astro      # shell; loads the cart module on every page
+  scripts/cart.js         # cart state, rendering, checkout sync
+public/assets/images/brand/  # artwork used on the site
+```
 
-- ✅ **A perfect score in Lighthouse**
-- ✅ **Blazing fast performance thanks to Astro 🚀**
-- ✅ **A Full Featured Blog with Tagging**
-- ✅ **Fully theme-able styles with for buttons, shapes, backgrounds, surfaces, etc.**
-- ✅ **Responsive, mobile-friendly landing pages**
-- ✅ **SEO Best Practices (Open Graph, Canonical URLs, sitemap)**
-- ✅ **Performant Local Fonts Setup**
-- ✅ **Contact Forms Setup for Netlify, Formspree, Formspark, etc.**
-- ✅ **A package of ready-to-use UI components**
+## Local development
 
-
-## Demo
-
-View a [live demo](https://odyssey-theme.sapling.supply/) of the Odyssey Theme.
-
-## Documentation
-
-1. View the [Theme Setup Guide](https://odyssey-theme.sapling.supply/theme/theme-setup)
-2. View the [Customizing the Theme Guide](https://odyssey-theme.sapling.supply/theme/customizing-odyssey)
-
-## Usage
-
-```bash
-cd theme
-
+```sh
 npm install
-
-npm start
+npm run dev      # http://localhost:4321
+npm run build    # output in dist/
+npm run preview  # preview the build
 ```
 
 ## Deploy
 
-Feel free to deploy and host your site on your favorite static hosting service such as Netlify, Firebase Hosting, Vercel, GitHub Pages, etc.
+Configured for Netlify via `netlify.toml` (`npm run build` → `dist/`). Connect the repo in Netlify and it deploys on push.
 
-Astro has [an in-depth guide](https://docs.astro.build/en/guides/deploy/) on how to deploy an Astro project to each service.
+The checkout form posts to Netlify Forms (form name `order`, redirect to `/order-thank-you`), so form submissions appear under **Site → Forms** in the Netlify dashboard.
 
-## Sponsor
+## Assets
 
-If you find this theme useful, please consider donating to support the continued development of it with the link below
-
-[Donate to Odyssey Theme](https://sapling.lemonsqueezy.com/checkout/buy/9b78751f-6382-442d-ac99-32c2318b70a0)
-
-## Support
-
-Please feel free to post issues or submit PRs to this repo and we will do our best to respond in a timely manner, keeping in mind this template is offered for free as is on GitHub.
+Brand artwork lives in `public/assets/images/brand/`. The original working `Assets/` folder is not tracked.
