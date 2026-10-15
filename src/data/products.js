@@ -7,11 +7,6 @@ export const categories = [
 		title: 'Oversized Shirts',
 		blurb: 'Front & back print · S–2XL',
 	},
-	{
-		id: 'pouch',
-		title: 'Trinket Pouch',
-		blurb: 'Customizable · made to request',
-	},
 ];
 
 export const products = [
@@ -50,18 +45,6 @@ export const products = [
 		img: '/assets/images/brand/tee-kalyenoir.png',
 		alt: 'Kalye Noir KALYENOIR tee — front and back print',
 		sizes: ['S', 'M', 'L', 'XL', '2XL'],
-	},
-	{
-		slug: 'good-things-inside-pouch',
-		id: 'pouch-custom',
-		name: 'GOOD THINGS INSIDE Trinket Pouch',
-		short: 'GOOD THINGS INSIDE',
-		category: 'pouch',
-		meta: 'Customizable · made to request',
-		blurb: 'Zip pouch with the GOOD THINGS INSIDE label. Pick your colour, patch and cord — made to your style.',
-		img: '/assets/images/brand/pouch.png',
-		alt: 'Kalye Noir GOOD THINGS INSIDE trinket pouch',
-		sizes: ['Custom'],
 	},
 ];
 

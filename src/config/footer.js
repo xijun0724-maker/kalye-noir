@@ -31,10 +31,6 @@ export const footerLists = [
 				title: 'KALYENOIR Tee',
 				slug: '/products/kalyenoir-tee',
 			},
-			{
-				title: 'Trinket Pouch',
-				slug: '/products/good-things-inside-pouch',
-			},
 		],
 	},
 	{
