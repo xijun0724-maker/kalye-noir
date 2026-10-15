@@ -11,6 +11,10 @@
 </p>
 
 <p align="center">
+  <a href="https://xijun0724-maker.github.io/kalye-noir/"><strong>View the live site →</strong></a>
+</p>
+
+<p align="center">
   <img src="public/assets/images/brand/tee-kalyenoir.png" alt="Kalye Noir KALYENOIR tee" width="24%">
   <img src="public/assets/images/brand/tee-medusa.png" alt="Kalye Noir MEDUSA tee" width="24%">
   <img src="public/assets/images/brand/tee-maynila.png" alt="Kalye Noir MAYNILA tee" width="24%">
@@ -60,9 +64,12 @@ npm install
 npm run dev      # http://localhost:4321
 npm run build    # output in dist/
 npm run preview  # preview the build
+npm run deploy:pages   # build for the /kalye-noir/ subpath into dist-pages/
 ```
 
 Deploys on Netlify via `netlify.toml` (`npm run build` → `dist/`). Connect the repo and it ships on push; checkout submissions appear under **Site → Forms**.
+
+The live site runs on **GitHub Pages** from the `gh-pages` branch: [xijun0724-maker.github.io/kalye-noir](https://xijun0724-maker.github.io/kalye-noir/). Pages has no form handling, so there the checkout is display-only — use Netlify for real orders.
 
 ## In this repo
 

@@ -1,16 +1,18 @@
 {
-	"name": "odyssey-theme",
+	"name": "kalye-noir",
 	"version": "3.1.0",
 	"private": false,
+	"homepage": "https://xijun0724-maker.github.io/kalye-noir/",
 	"repository": {
 		"type": "git",
-		"url": "git@github.com:treefarmstudio/odyssey-theme"
+		"url": "git+https://github.com/xijun0724-maker/kalye-noir.git"
 	},
 	"scripts": {
 		"dev": "astro dev",
 		"start": "astro dev",
 		"build": "astro build",
 		"preview": "astro preview",
+		"deploy:pages": "astro build && node scripts/base-path.mjs /kalye-noir",
 		"format": "npx prettier -w ."
 	},
 	"devDependencies": {
