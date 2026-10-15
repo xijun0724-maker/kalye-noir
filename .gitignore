@@ -27,6 +27,7 @@ icon.d.ts
 
 # --- dev / tooling (not part of the published site) ---
 .agents/
+.github/
 .impeccable/
 .codex/
 .idx/
