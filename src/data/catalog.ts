@@ -13,8 +13,11 @@ export interface Product {
   image: string;
   alt: string;
   blurb: string;
+  price: number;
   variants: Variant[];
 }
+
+export const ITEM_PRICE = 300;
 
 // Every tee is black; the print is what sets it apart.
 const SIZES = ['S', 'M', 'L', 'XL', '2XL'];
@@ -35,6 +38,7 @@ export const products: Product[] = [
     alt: 'Kalye Noir KALYENOIR tee, front and back',
     blurb:
       'The wordmark, stacked three times across the back with a small chest mark. Heavyweight cotton, relaxed fit.',
+    price: ITEM_PRICE,
     variants: teeVariants('kalyenoir-tee'),
   },
   {
@@ -44,6 +48,7 @@ export const products: Product[] = [
     alt: 'Kalye Noir MEDUSA tee, front and back',
     blurb:
       'MEDUSA — “Not your myth.” Full-back illustration print, beauty in chaos, on heavyweight black cotton.',
+    price: ITEM_PRICE,
     variants: teeVariants('medusa-tee'),
   },
   {
@@ -53,6 +58,7 @@ export const products: Product[] = [
     alt: 'Kalye Noir MANILA tee, front and back',
     blurb:
       'A street-level photo print with “MANILA NEVER SLEEPS” across the back. Late nights, early dreams.',
+    price: ITEM_PRICE,
     variants: teeVariants('manila-tee'),
   },
 ];

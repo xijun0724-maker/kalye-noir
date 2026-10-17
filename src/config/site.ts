@@ -35,6 +35,7 @@ export const footerLists = [
 export const taglines = ['Manila streets', 'Real dreams', 'Same sky'];
 
 export const contact = {
+  name: 'KALYE NOIR',
   mobile: '09459864354',
   email: 'kalyenoirorders@gmail.com',
   facebook: 'www.facebook.com/kalyenoir',

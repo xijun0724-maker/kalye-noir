@@ -2,14 +2,16 @@
 import MainLayout from '../layouts/MainLayout.astro';
 ---
 
-<MainLayout title="Thank you — KALYE NOIR">
-  <section class="wrap flex flex-col items-center py-32 text-center">
-    <p class="label">Message received</p>
-    <h1 class="display mt-5 text-4xl sm:text-5xl">Thank you!</h1>
-    <p class="mt-5 max-w-md text-muted">
-      We've received your submission and will follow up by email shortly with the next steps.
+<MainLayout title="Request Received — KALYE NOIR">
+  <section class="wrap flex flex-col items-center py-28 text-center">
+    <div class="mb-6 flex h-16 w-16 items-center justify-center border border-dashed border-line">
+      <span class="h-3 w-3 rotate-45 bg-registration" aria-hidden="true"></span>
+    </div>
+    <h1 class="display text-4xl sm:text-5xl lg:text-6xl">Slip Received</h1>
+    <p class="mt-6 max-w-md text-sm leading-relaxed text-muted">
+      Your request slip has been logged with the studio. A print confirmation and exact courier dispatch timing will reach your inbox shortly.
     </p>
-    <a href="/products" class="btn btn-primary mt-8">Back to the tees</a>
+    <a href="/products" class="btn btn-primary mt-8">Explore Batch 001</a>
   </section>
 </MainLayout>
 

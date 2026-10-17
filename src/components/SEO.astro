@@ -1,5 +1,6 @@
 ---
-import { site } from '../config/site';
+import { site, contact } from '../config/site';
+import { products } from '../data/catalog';
 
 interface Props {
   title?: string;
@@ -9,6 +10,51 @@ interface Props {
 
 const { title = site.title, description = site.description, image = '/social.png' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = new URL(image, Astro.site).toString();
+
+const schemaData = {
+  '@context': 'https://schema.org',
+  '@type': 'ClothingStore',
+  name: site.name,
+  url: Astro.site?.toString() || 'https://kalyenoir.com',
+  logo: new URL('/favicon.png', Astro.site).toString(),
+  image: ogImageUrl,
+  description: site.description,
+  telephone: contact.mobile,
+  email: contact.email,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Manila',
+    addressRegion: 'Metro Manila',
+    addressCountry: 'PH',
+  },
+  priceRange: '₱300',
+  currenciesAccepted: 'PHP',
+  paymentAccepted: 'Cash on Delivery, GCash, Maya',
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Batch 001 Capsule',
+    itemListElement: products.map((p) => ({
+      '@type': 'Offer',
+      itemOffered: {
+        '@type': 'Product',
+        name: p.title,
+        description: p.blurb,
+        image: new URL(p.image, Astro.site).toString(),
+        brand: {
+          '@type': 'Brand',
+          name: site.name,
+        },
+        offers: {
+          '@type': 'Offer',
+          price: p.price,
+          priceCurrency: 'PHP',
+          availability: 'https://schema.org/InStock',
+        },
+      },
+    })),
+  },
+};
 ---
 
 <meta charset="utf-8" />
@@ -26,11 +72,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   rel="stylesheet"
 />
 
+<!-- OpenGraph / Facebook / Instagram -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content={canonical} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.site)} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:site_name" content={site.name} />
+
+<!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={canonical} />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />
+
+<!-- Schema.org JSON-LD Structured Data -->
+<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />

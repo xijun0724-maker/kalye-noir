@@ -12,14 +12,12 @@ import { products } from '../../data/catalog';
     <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
       <a href="/" class="transition-colors hover:text-registration">Home</a>
       <span aria-hidden="true">/</span>
-      <a href="/products" class="transition-colors hover:text-registration">Shop all tees</a>
-      <span aria-hidden="true">/</span>
-      <span class="text-ink">Kalye's Tee</span>
+      <span class="text-ink">Shop All Tees</span>
     </nav>
   </div>
 
   <header class="wrap py-12 text-center">
-    <h1 class="display reveal text-[2.75rem] sm:text-6xl lg:text-7xl">Kalye's Tee</h1>
+    <h1 class="display reveal text-4xl sm:text-5xl lg:text-6xl">Kalye's Tee</h1>
   </header>
 
   <div class="border-y border-line">
@@ -32,7 +30,7 @@ import { products } from '../../data/catalog';
         Sort by
         <select
           data-sort
-          class="cursor-pointer border-0 bg-transparent font-condensed text-[11px] font-semibold uppercase tracking-[0.28em] text-ink"
+          class="cursor-pointer border-0 bg-transparent font-condensed text-[11px] font-semibold uppercase tracking-[0.28em] text-ink focus:outline-none focus:ring-1 focus:ring-registration"
         >
           <option value="featured">Featured</option>
           <option value="az">Name A–Z</option>

@@ -58,16 +58,18 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
     </div>
   </div>
 
-  <details class="border-t border-line lg:hidden">
+  <details class="group border-t border-line lg:hidden">
     <summary
-      class="wrap flex cursor-pointer items-center justify-between py-3 text-[11px] uppercase tracking-[0.2em]"
+      class="wrap flex min-h-[48px] cursor-pointer items-center justify-between py-3.5 font-condensed text-xs font-semibold uppercase tracking-[0.24em] transition-colors hover:text-registration"
     >
-      Menu
-      <svg viewBox="0 0 24 24" width="22" height="22">
-        <path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" />
-      </svg>
+      <span>Menu</span>
+      <div class="relative flex h-5 w-5 items-center justify-center">
+        <svg viewBox="0 0 24 24" width="20" height="20" class="transition-transform duration-200 group-open:rotate-90">
+          <path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" />
+        </svg>
+      </div>
     </summary>
-    <ul class="wrap flex flex-col gap-3 pb-5">
+    <ul class="wrap flex flex-col gap-1 border-t border-line/40 pb-6 pt-2">
       {
         nav.map((item) => {
           const itemPath = item.href.replace(/\/$/, '') || '/';
@@ -77,12 +79,12 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
               <a
                 href={item.href}
                 aria-current={isActive ? 'page' : undefined}
-                class={`flex items-center justify-between font-condensed text-base font-semibold uppercase tracking-[0.2em] ${
-                  isActive ? 'text-registration font-bold' : 'text-ink'
+                class={`flex min-h-[44px] items-center justify-between py-2 font-condensed text-base font-semibold uppercase tracking-[0.2em] transition-colors ${
+                  isActive ? 'text-registration font-bold' : 'text-ink hover:text-registration'
                 }`}
               >
                 <span>{item.title}</span>
-                {isActive && <span class="h-1.5 w-1.5 rotate-45 bg-registration" />}
+                {isActive && <span class="h-2 w-2 rotate-45 bg-registration" />}
               </a>
             </li>
           );
@@ -91,3 +93,14 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
     </ul>
   </details>
 </header>
+
+<script>
+  const navDetails = document.querySelector<HTMLDetailsElement>('header details');
+  if (navDetails) {
+    navDetails.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        navDetails.removeAttribute('open');
+      });
+    });
+  }
+</script>

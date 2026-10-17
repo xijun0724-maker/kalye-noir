@@ -2,16 +2,17 @@
 import MainLayout from '../layouts/MainLayout.astro';
 import ProvinceSelect from '../components/ProvinceSelect.astro';
 import { deliveryLines, orderTerms, courier } from '../data/shipping';
+import { contact } from '../config/site';
 
 const field =
-  'w-full border border-line bg-transparent px-4 py-3 text-sm transition-colors placeholder:text-muted focus:border-ink';
+  'w-full border border-line bg-transparent px-4 py-3 text-sm transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration';
 ---
 
 <MainLayout
   title="Checkout — KALYE NOIR Order Request"
-  description="Confirm your Kalye Noir order request: delivery address, province and order notes. No payment is taken on this site — we confirm pricing by email."
+  description="Confirm your Kalye Noir order request: delivery address, province, payment preference and order notes. Transparent pricing and local courier dispatch."
 >
-  <section class="wrap py-14">
+  <div class="wrap pt-7">
     <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
       <a href="/" class="transition-colors hover:text-registration">Home</a>
       <span aria-hidden="true">/</span>
@@ -19,14 +20,17 @@ const field =
       <span aria-hidden="true">/</span>
       <span class="text-ink">Checkout</span>
     </nav>
+  </div>
 
-    <h1 class="display reveal mt-8 text-center text-4xl sm:text-5xl">Checkout</h1>
+  <section class="wrap py-12">
+    <h1 class="display reveal text-center text-4xl sm:text-5xl">Checkout</h1>
 
-    <div class="mt-14 grid gap-12 lg:grid-cols-[1fr_20rem] lg:gap-16">
+    <div class="mt-14 grid gap-12 lg:grid-cols-[1fr_22rem] lg:gap-16">
       <form
         name="order"
         method="POST"
         data-netlify="true"
+        enctype="multipart/form-data"
         action="/order-thank-you"
         data-order-form
         class="grid gap-5"
@@ -34,6 +38,10 @@ const field =
         <input type="hidden" name="form-name" value="order" />
         <input type="hidden" name="cart-contents" value="" />
         <input type="hidden" name="delivery-window" value="" />
+        <input type="hidden" name="payment-method" value="cod" />
+        <input type="hidden" name="subtotal" value="" />
+        <input type="hidden" name="shipping-fee" value="" />
+        <input type="hidden" name="grand-total" value="" />
 
         <p class="meta text-muted">Contact</p>
         <div class="grid gap-4 sm:grid-cols-2">
@@ -97,6 +105,80 @@ const field =
           </label>
         </div>
 
+        <div class="pt-2">
+          <p class="meta text-muted">Payment method</p>
+          <div class="mt-2 grid gap-3 sm:grid-cols-2" data-payment-selector>
+            <label class="flex cursor-pointer items-center justify-between border border-line bg-paper p-4 transition-colors has-[:checked]:border-ink has-[:checked]:bg-white">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="payment-type" value="cod" checked class="accent-registration" />
+                <div>
+                  <p class="font-condensed text-xs font-bold uppercase tracking-wider text-ink">Cash On Delivery (COD)</p>
+                  <p class="meta text-muted mt-0.5">Pay courier upon delivery</p>
+                </div>
+              </div>
+              <span class="font-condensed text-xs font-semibold text-muted">COD</span>
+            </label>
+
+            <label class="flex cursor-pointer items-center justify-between border border-line bg-paper p-4 transition-colors has-[:checked]:border-ink has-[:checked]:bg-white">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="payment-type" value="gcash" class="accent-registration" />
+                <div>
+                  <p class="font-condensed text-xs font-bold uppercase tracking-wider text-ink">GCash / Maya QR</p>
+                  <p class="meta text-muted mt-0.5">Instant transfer · Upload slip</p>
+                </div>
+              </div>
+              <span class="font-condensed text-xs font-semibold text-registration">QR</span>
+            </label>
+          </div>
+
+          <!-- GCash / Maya QR Panel -->
+          <div data-gcash-panel class="mt-3 hidden border border-line bg-paper p-5 sm:p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row items-center gap-6">
+              <div class="relative flex h-36 w-36 shrink-0 items-center justify-center border-2 border-dashed border-ink bg-white p-2">
+                <svg viewBox="0 0 100 100" class="h-full w-full text-ink">
+                  <rect x="6" y="6" width="26" height="26" fill="none" stroke="currentColor" stroke-width="4"/>
+                  <rect x="12" y="12" width="14" height="14" fill="currentColor"/>
+                  <rect x="68" y="6" width="26" height="26" fill="none" stroke="currentColor" stroke-width="4"/>
+                  <rect x="74" y="12" width="14" height="14" fill="currentColor"/>
+                  <rect x="6" y="68" width="26" height="26" fill="none" stroke="currentColor" stroke-width="4"/>
+                  <rect x="12" y="74" width="14" height="14" fill="currentColor"/>
+                  <rect x="42" y="10" width="16" height="16" fill="currentColor"/>
+                  <rect x="42" y="42" width="16" height="16" fill="currentColor"/>
+                  <rect x="68" y="42" width="14" height="14" fill="currentColor"/>
+                  <rect x="10" y="42" width="14" height="14" fill="currentColor"/>
+                  <rect x="42" y="72" width="16" height="16" fill="currentColor"/>
+                  <rect x="68" y="68" width="26" height="26" fill="currentColor"/>
+                </svg>
+                <span class="absolute -top-1.5 -right-1.5 h-3 w-3 rotate-45 bg-registration"></span>
+              </div>
+              <div class="space-y-1.5 text-center sm:text-left">
+                <span class="label">Merchant Payment Account</span>
+                <p class="font-display text-xl uppercase tracking-wider text-ink">{contact.name || 'KALYE NOIR'}</p>
+                <p class="font-condensed text-base font-bold tracking-widest text-ink">{contact.mobile}</p>
+                <p class="meta text-muted leading-relaxed">
+                  Scan QR via GCash or Maya app. Pay the exact grand total calculated on your order slip.
+                </p>
+              </div>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2 pt-3 border-t border-line">
+              <label class="grid gap-1.5">
+                <span class="label">Reference No.*</span>
+                <input type="text" name="payment-ref" data-payment-ref placeholder="13-digit Reference No." class={field} />
+              </label>
+              <label class="grid gap-1.5">
+                <span class="label">Transfer Receipt Screenshot</span>
+                <input
+                  type="file"
+                  name="payment-slip"
+                  accept="image/*,.pdf"
+                  class="w-full border border-line bg-transparent px-3 py-2 text-xs transition-colors file:mr-3 file:border file:border-line file:bg-white file:px-2.5 file:py-1 file:font-condensed file:text-xs file:uppercase file:tracking-wider hover:file:bg-line/40 focus:border-registration focus:outline-none"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+
         <div
           class="mt-4 space-y-4 border-y border-dashed border-muted/50 py-6 text-sm leading-relaxed text-muted"
         >
@@ -108,7 +190,7 @@ const field =
               {deliveryLines.map((line) => <li>{line}</li>)}
             </ul>
           </div>
-          <p class="border-t border-dashed border-muted/50 pt-4">{orderTerms.payment}</p>
+          <p class="border-t border-dashed border-muted/50 pt-4" data-terms-payment>{orderTerms.payment}</p>
         </div>
 
         <div data-checkout-error class="hidden border border-registration/40 bg-registration/10 p-3 text-center text-xs font-condensed uppercase tracking-wider text-registration">
@@ -118,20 +200,30 @@ const field =
       </form>
 
       <aside class="h-fit border border-line p-6 lg:sticky lg:top-24">
-        <h2 class="meta text-ink">Your order</h2>
+        <h2 class="meta text-ink">Order slip calculation</h2>
         <div class="mt-4" data-checkout-items></div>
-        <div class="mt-4 flex items-baseline justify-between border-t border-line pt-4">
-          <span class="meta text-muted">Total items</span>
-          <span class="text-lg font-semibold" data-checkout-count>0</span>
+
+        <div class="mt-4 space-y-2.5 border-t border-line pt-4">
+          <div class="flex items-baseline justify-between">
+            <span class="meta text-muted">Items (<span data-checkout-count>0</span>)</span>
+            <span class="font-condensed text-sm font-semibold text-ink" data-subtotal>₱0</span>
+          </div>
+          <div class="flex items-baseline justify-between border-t border-dashed border-line pt-3">
+            <span class="font-condensed text-xs font-bold uppercase tracking-wider text-ink">Total Payable</span>
+            <span class="font-display text-2xl text-ink" data-grand-total>₱0</span>
+          </div>
         </div>
-        <div class="mt-3 flex items-baseline justify-between gap-4">
-          <span class="meta text-muted">Est. delivery</span>
-          <span class="text-right text-sm font-semibold" data-delivery-window>Select your province</span>
+
+        <div class="mt-4 space-y-1 border-t border-line pt-3">
+          <div class="flex items-baseline justify-between gap-4">
+            <span class="meta text-muted">Est. delivery</span>
+            <span class="text-right text-xs font-semibold text-ink" data-delivery-window>Select your province</span>
+          </div>
+          <p class="meta text-muted">{courier} dispatch · Free delivery</p>
         </div>
-        <p class="meta mt-1 text-muted">{courier}</p>
-        <p class="mt-4 text-xs leading-relaxed text-muted">
-          No payment is taken on this site. We confirm pricing by email and collect the exact amount
-          on delivery.
+
+        <p class="mt-4 text-xs leading-relaxed text-muted" data-payment-reassurance>
+          Pay the exact amount directly to the courier upon delivery.
         </p>
         <a href="/cart" class="meta mt-5 inline-block text-muted underline underline-offset-4 hover:text-registration">
           Edit cart
@@ -150,35 +242,94 @@ const field =
     shippingZoneId,
     shippingProvince,
   } from '../stores/cartStore';
-  import { zoneById, courier } from '../data/shipping';
+  import { zoneById, courier, calculateShippingFee, FREE_SHIPPING_THRESHOLD } from '../data/shipping';
+  import { ITEM_PRICE } from '../data/catalog';
 
   const items = document.querySelector<HTMLElement>('[data-checkout-items]');
   const countEl = document.querySelector<HTMLElement>('[data-checkout-count]');
+  const subtotalEl = document.querySelector<HTMLElement>('[data-subtotal]');
+  const grandTotalEl = document.querySelector<HTMLElement>('[data-grand-total]');
   const form = document.querySelector<HTMLFormElement>('[data-order-form]');
   const note = document.querySelector<HTMLTextAreaElement>('[data-order-note]');
   const windowEl = document.querySelector<HTMLElement>('[data-delivery-window]');
   const provinceSelect = form?.querySelector<HTMLSelectElement>('[data-province]');
   const windowInput = form?.querySelector<HTMLInputElement>('input[name="delivery-window"]');
+  const subtotalInput = form?.querySelector<HTMLInputElement>('input[name="subtotal"]');
+  const shippingFeeInput = form?.querySelector<HTMLInputElement>('input[name="shipping-fee"]');
+  const grandTotalInput = form?.querySelector<HTMLInputElement>('input[name="grand-total"]');
+  const paymentMethodInput = form?.querySelector<HTMLInputElement>('input[name="payment-method"]');
+  const gcashPanel = form?.querySelector<HTMLElement>('[data-gcash-panel]');
+  const paymentRefInput = form?.querySelector<HTMLInputElement>('[data-payment-ref]');
+  const paymentReassurance = document.querySelector<HTMLElement>('[data-payment-reassurance]');
+  const termsPayment = form?.querySelector<HTMLElement>('[data-terms-payment]');
 
-  // The window follows the chosen province; the exact fee is confirmed by email.
+  let currentZoneId = shippingZoneId.get();
+
+  function updateTotals() {
+    const count = cartCount.get();
+    const subtotal = count * ITEM_PRICE;
+    const hasProvince = Boolean(provinceSelect?.value);
+    const shippingFee = count && hasProvince ? calculateShippingFee(currentZoneId, count) : 0;
+
+    if (subtotalEl) subtotalEl.textContent = `₱${subtotal.toLocaleString()}`;
+    if (grandTotalEl) grandTotalEl.textContent = `₱${subtotal.toLocaleString()}`;
+
+    if (subtotalInput) subtotalInput.value = `₱${subtotal}`;
+    if (shippingFeeInput) {
+      shippingFeeInput.value = hasProvince
+        ? count >= FREE_SHIPPING_THRESHOLD
+          ? 'FREE'
+          : `₱${shippingFee}`
+        : 'Pending';
+    }
+    if (grandTotalInput) grandTotalInput.value = `₱${subtotal}`;
+  }
+
+  // The window follows the chosen province; the exact fee is calculated live.
   function refreshDelivery() {
     if (!windowEl || !provinceSelect) return;
     const zone = zoneById(provinceSelect.selectedOptions[0]?.dataset.zone);
+    currentZoneId = zone?.id ?? '';
     if (!zone) {
       windowEl.textContent = 'Select your province';
       if (windowInput) windowInput.value = '';
+      updateTotals();
       return;
     }
     windowEl.textContent = `${zone.label} · ${zone.days} business days`;
     if (windowInput) {
       windowInput.value = `${courier} — ${zone.label} — ${zone.days} business days`;
     }
+    updateTotals();
   }
+
+  // Payment method switcher
+  form?.querySelectorAll<HTMLInputElement>('input[name="payment-type"]').forEach((radio) => {
+    radio.addEventListener('change', () => {
+      const isGCash = radio.value === 'gcash';
+      if (paymentMethodInput) paymentMethodInput.value = radio.value;
+      if (gcashPanel) gcashPanel.classList.toggle('hidden', !isGCash);
+      if (paymentRefInput) paymentRefInput.required = isGCash;
+
+      if (paymentReassurance) {
+        paymentReassurance.textContent = isGCash
+          ? 'Scan the studio QR code, pay the exact grand total, and enter your reference number above.'
+          : 'Pay the exact grand total directly to the courier upon delivery.';
+      }
+
+      if (termsPayment) {
+        termsPayment.textContent = isGCash
+          ? '* Payment is verified via your uploaded receipt slip and reference number before courier pick-up.'
+          : '* Please prepare exact cash for the courier upon parcel delivery.';
+      }
+    });
+  });
 
   if (provinceSelect) {
     if (shippingProvince.get()) provinceSelect.value = shippingProvince.get();
     provinceSelect.addEventListener('change', () => {
-      shippingZoneId.set(provinceSelect.selectedOptions[0]?.dataset.zone ?? '');
+      const zone = provinceSelect.selectedOptions[0]?.dataset.zone ?? '';
+      shippingZoneId.set(zone);
       shippingProvince.set(provinceSelect.value);
       refreshDelivery();
     });
@@ -195,13 +346,18 @@ const field =
           <div class="flex items-start justify-between gap-4 border-b border-line py-3 last:border-0">
             <div class="min-w-0">
               <p class="font-condensed text-[13px] font-semibold uppercase tracking-[0.12em]">${i.title}</p>
-              <p class="meta mt-1 text-muted">${i.variant}</p>
+              <p class="meta mt-1 text-muted">${i.variant} · ₱${ITEM_PRICE}</p>
             </div>
-            <span class="text-sm text-muted">×${i.qty}</span>
+            <span class="text-sm font-semibold text-ink">×${i.qty}</span>
           </div>`
             )
             .join('')
-        : '<div class="py-6 text-center"><p class="text-sm text-muted">Your order slip is empty.</p><a href="/#drop" class="meta mt-2 inline-block underline underline-offset-4 hover:text-registration">Select a print →</a></div>';
+        : `<div class="py-6 text-center">
+             <span class="inline-block h-2 w-2 rotate-45 bg-registration mb-2"></span>
+             <p class="font-condensed text-xs font-semibold uppercase tracking-wider text-ink">Your order slip is empty</p>
+             <p class="meta text-xs text-muted mt-1">Staged prints will appear here.</p>
+             <a href="/products" class="btn btn-primary mt-4 inline-block text-xs px-4 py-2">Select a print →</a>
+           </div>`;
       countEl.textContent = String(cartCount.get());
       refreshDelivery();
     };
@@ -216,6 +372,18 @@ const field =
   }
 
   const errBox = form?.querySelector<HTMLElement>('[data-checkout-error]');
+
+  form?.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea').forEach((el) => {
+    el.addEventListener('invalid', () => {
+      el.classList.add('!border-registration', '!bg-registration/5');
+    });
+    el.addEventListener('input', () => {
+      if (el.validity.valid) {
+        el.classList.remove('!border-registration', '!bg-registration/5');
+      }
+    });
+  });
+
   form?.addEventListener('submit', (e) => {
     if (!cartItems.get().length) {
       e.preventDefault();

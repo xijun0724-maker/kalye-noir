@@ -2,14 +2,14 @@
 import MainLayout from '../layouts/MainLayout.astro';
 
 const field =
-  'w-full border border-line bg-transparent px-4 py-3 text-sm transition-colors placeholder:text-muted focus:border-ink';
+  'w-full border border-line bg-transparent px-4 py-3 text-sm transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration';
 ---
 
 <MainLayout
   title="Incident Report — KALYE NOIR Order Claims"
   description="Report a missing, damaged or incorrect item from your Kalye Noir order. Attach photos and your order slip so we can settle the claim quickly."
 >
-  <section class="wrap py-14">
+  <div class="wrap pt-7">
     <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
       <a href="/" class="transition-colors hover:text-registration">Home</a>
       <span aria-hidden="true">/</span>
@@ -17,10 +17,12 @@ const field =
       <span aria-hidden="true">/</span>
       <span class="text-ink">Incident Report</span>
     </nav>
+  </div>
 
-    <h1 class="display reveal mt-8 text-center text-4xl sm:text-5xl">Incident Report</h1>
-    <p class="meta mx-auto mt-5 max-w-2xl text-center text-[13px] tracking-[0.18em] text-muted">
-      Tell us what went wrong and we'll sort it out.
+  <section class="wrap py-12">
+    <h1 class="display reveal text-center text-4xl sm:text-5xl">Incident Report</h1>
+    <p class="meta mx-auto mt-4 max-w-xl text-center text-muted">
+      Official claim slip for missing, damaged, or incorrect items.
     </p>
 
     <form
@@ -95,7 +97,7 @@ const field =
           class={`${field} mt-3`}></textarea>
       </div>
 
-      <div class="space-y-3 border-y border-dashed border-muted/50 py-5 text-xs leading-relaxed text-muted">
+      <div class="max-w-sm space-y-3 border-y border-dashed border-muted/50 py-5 text-xs leading-relaxed text-muted">
         <p>
           NOTE: Change of color and/or size is allowed but subject to applicable shipping fees
           shouldered by the Buyer. We may replace your item with the condition that the item is in
@@ -119,7 +121,7 @@ const field =
           required
           multiple
           accept=".jpg,.jpeg,.png,.gif,.pdf"
-          class="w-full border border-line bg-transparent px-4 py-3 text-sm transition-colors file:mr-4 file:border file:border-line file:bg-transparent file:px-3 file:py-1.5 file:text-xs file:uppercase file:tracking-[0.18em] hover:file:bg-line/40 focus:border-ink"
+          class="w-full border border-line bg-transparent px-4 py-3 text-sm transition-colors file:mr-4 file:border file:border-line file:bg-transparent file:px-3 file:py-1.5 file:text-xs file:uppercase file:tracking-[0.18em] hover:file:bg-line/40 focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration"
         />
       </label>
 
@@ -127,3 +129,17 @@ const field =
     </form>
   </section>
 </MainLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('form[name="incident-report"]');
+  form?.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea').forEach((el) => {
+    el.addEventListener('invalid', () => {
+      el.classList.add('!border-registration', '!bg-registration/5');
+    });
+    el.addEventListener('input', () => {
+      if (el.validity.valid) {
+        el.classList.remove('!border-registration', '!bg-registration/5');
+      }
+    });
+  });
+</script>
