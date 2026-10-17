@@ -40,9 +40,6 @@
   .btn-primary {
     @apply bg-ink text-paper hover:border-registration hover:bg-registration;
   }
-  .btn-outline {
-    @apply bg-transparent text-ink hover:bg-ink hover:text-paper;
-  }
   .btn-invert {
     @apply border-paper bg-paper text-ink hover:border-registration hover:bg-registration hover:text-paper;
   }
@@ -62,9 +59,6 @@
 
 @layer utilities {
   /* Film grain, matching the print texture on the posters. */
-  .grain {
-    @apply relative;
-  }
   .grain::after {
     content: '';
     position: absolute;

@@ -3,24 +3,31 @@ import type { Product } from '../data/catalog';
 
 interface Props {
   product: Product;
+  /** Above-the-fold first card: load eagerly so the grid's LCP image isn't deferred. */
+  priority?: boolean;
 }
 
-const { product } = Astro.props;
+const { product, priority = false } = Astro.props;
 ---
 
 <a href={`/products/${product.slug}`} class="group block">
-  <div class="relative overflow-hidden bg-line/40">
+  <div class="relative overflow-hidden bg-white p-2">
     <img
       src={product.image}
       alt={product.alt}
       width="600"
       height="750"
-      loading="lazy"
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : undefined}
       decoding="async"
       class="aspect-[4/5] w-full object-contain transition-transform duration-500 group-hover:scale-105"
     />
+    <span class="absolute left-0 top-0 h-0.5 w-0 bg-registration transition-all duration-500 group-hover:w-full" />
   </div>
-  <div class="pt-3">
-    <h3 class="text-sm font-medium leading-snug">{product.title}</h3>
+  <div class="pt-3 flex items-baseline justify-between gap-2">
+    <h3 class="font-condensed text-[13px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors duration-200 group-hover:text-registration">
+      {product.title}
+    </h3>
+    <span class="meta text-xs text-muted">S–2XL</span>
   </div>
 </a>

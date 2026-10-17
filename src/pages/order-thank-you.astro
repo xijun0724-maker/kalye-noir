@@ -15,5 +15,6 @@ import MainLayout from '../layouts/MainLayout.astro';
 
 <script>
   import { clearCart } from '../stores/cartStore';
-  clearCart();
+  // Only an order request empties the cart — an incident report must not.
+  if (!new URLSearchParams(location.search).has('incident')) clearCart();
 </script>

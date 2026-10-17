@@ -1,0 +1,25 @@
+---
+import { shippingZones } from '../data/shipping';
+
+interface Props {
+  required?: boolean;
+  class?: string;
+}
+
+const { required = false, class: cls = '' } = Astro.props;
+---
+
+<select name="province" required={required} data-province class={cls}>
+  <option value="">Select province</option>
+  {
+    shippingZones.map((zone) => (
+      <optgroup label={zone.label}>
+        {zone.provinces.map((province) => (
+          <option value={province} data-zone={zone.id}>
+            {province}
+          </option>
+        ))}
+      </optgroup>
+    ))
+  }
+</select>

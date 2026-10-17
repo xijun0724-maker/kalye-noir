@@ -50,6 +50,11 @@ export function setQty(sku: string, qty: number) {
   cartItems.set(cartItems.get().map((i) => (i.sku === sku ? { ...i, qty } : i)));
 }
 
+export function stepQty(sku: string, delta: number) {
+  const current = cartItems.get().find((i) => i.sku === sku);
+  if (current) setQty(sku, current.qty + delta);
+}
+
 export function clearCart() {
   cartItems.set([]);
 }

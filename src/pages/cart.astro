@@ -1,12 +1,12 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
-import ReviewWall from '../components/ReviewWall.astro';
-import { shippingZones, courier } from '../data/shipping';
+import ProvinceSelect from '../components/ProvinceSelect.astro';
+import { courier } from '../data/shipping';
 ---
 
 <MainLayout
-  title="Cart — KALYE NOIR"
-  description="Review your Kalye Noir selection, add an order note and estimate delivery."
+  title="Cart — KALYE NOIR Street Wear Manila"
+  description="Review your Kalye Noir cart, add an order note, pick your province and estimate delivery before you send your order request."
 >
   <section class="wrap py-14">
     <h1 class="display reveal text-center text-4xl sm:text-5xl">Cart</h1>
@@ -29,20 +29,24 @@ import { shippingZones, courier } from '../data/shipping';
           data-order-note
           rows="5"
           placeholder="How can we help you?"
-          class="w-full border border-line bg-transparent px-4 py-3 text-sm outline-hidden transition-colors focus:border-ink"
+          class="w-full border border-line bg-transparent px-4 py-3 text-sm transition-colors placeholder:text-muted focus:border-ink"
         ></textarea>
       </div>
 
       <div class="flex flex-col items-start gap-3 lg:items-end">
-        <p class="meta text-ink">
+        <p class="meta text-ink" aria-live="polite" aria-atomic="true">
           Total: <span data-cart-count-text>0</span>
           <span data-cart-count-word>items</span>
         </p>
         <p class="meta text-ink lg:text-right">
-          Estimated shipping: <span data-cart-shipping>Select a province below</span>
+          Estimated delivery: <span data-cart-shipping>Select a province below</span>
         </p>
         <p class="meta text-muted lg:text-right">
           Shipping via {courier}
+        </p>
+        <p class="text-xs leading-relaxed text-muted lg:text-right">
+          No payment is taken on this site. We confirm pricing by email and collect the exact amount
+          on delivery.
         </p>
         <a href="/checkout" class="btn btn-primary w-full sm:w-auto" data-checkout>Checkout</a>
       </div>
@@ -51,59 +55,16 @@ import { shippingZones, courier } from '../data/shipping';
 
   <section class="wrap pb-20">
     <fieldset class="relative border border-line px-6 pb-6 pt-0">
-      <legend class="meta mx-auto px-4 text-ink">Estimate shipping</legend>
+      <legend class="meta mx-auto px-4 text-ink">Estimate delivery</legend>
 
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-[10rem_1fr_1fr_auto]">
-        <label class="block">
-          <span class="meta mb-1.5 block text-muted">Country</span>
-          <select
-            class="w-full border border-line bg-transparent px-3 py-2.5 text-sm outline-hidden focus:border-ink"
-          >
-            <option>Philippines</option>
-          </select>
-        </label>
-
-        <label class="block">
-          <span class="meta mb-1.5 block text-muted">Province</span>
-          <select
-            data-province
-            class="w-full border border-line bg-transparent px-3 py-2.5 text-sm outline-hidden focus:border-ink"
-          >
-            <option value="">Select province</option>
-            {
-              shippingZones.map((zone) => (
-                <optgroup label={zone.label}>
-                  {zone.provinces.map((province) => (
-                    <option value={province} data-zone={zone.id}>
-                      {province}
-                    </option>
-                  ))}
-                </optgroup>
-              ))
-            }
-          </select>
-        </label>
-
-        <label class="block">
-          <span class="meta mb-1.5 block text-muted">Zip code</span>
-          <input
-            data-zip
-            inputmode="numeric"
-            placeholder="Zip code"
-            class="w-full border border-line bg-transparent px-3 py-2.5 text-sm outline-hidden focus:border-ink"
-          />
-        </label>
-
-        <button type="button" data-estimate class="btn btn-primary h-fit self-end sm:col-span-2 lg:col-span-1">
-          Estimate
-        </button>
-      </div>
+      <label class="block">
+        <span class="meta mb-1.5 block text-muted">Province</span>
+        <ProvinceSelect class="w-full border border-line bg-transparent px-3 py-2.5 text-sm focus:border-ink" />
+      </label>
 
       <p data-estimate-result class="meta mt-5 text-muted" aria-live="polite"></p>
     </fieldset>
   </section>
-
-  <ReviewWall />
 </MainLayout>
 
 <script>
@@ -111,14 +72,13 @@ import { shippingZones, courier } from '../data/shipping';
     cartItems,
     cartCount,
     removeFromCart,
-    setQty,
+    stepQty,
     orderNote,
     shippingZoneId,
     shippingProvince,
   } from '../stores/cartStore';
   import type { CartItem } from '../stores/cartStore';
-  import { zoneById, estimateFee } from '../data/shipping';
-  import { formatPHP } from '../lib/format';
+  import { zoneById } from '../data/shipping';
 
   const rows = document.querySelector<HTMLElement>('[data-cart-rows]');
   const countEl = document.querySelector<HTMLElement>('[data-cart-count-text]');
@@ -127,13 +87,13 @@ import { shippingZones, courier } from '../data/shipping';
   const note = document.querySelector<HTMLTextAreaElement>('[data-order-note]');
   const shipEl = document.querySelector<HTMLElement>('[data-cart-shipping]');
 
-  // Derived from the stored zone + current cart, so it never goes stale.
+  // Derived from the stored zone, so it never goes stale.
   function refreshShipping() {
     if (!shipEl) return;
     const zone = zoneById(shippingZoneId.get());
-    const fee = estimateFee(shippingZoneId.get(), cartCount.get());
-    shipEl.textContent =
-      zone && fee !== null ? `${formatPHP(fee)} · ${zone.days} business days` : 'Select a province below';
+    shipEl.textContent = zone
+      ? `${zone.label} · ${zone.days} business days`
+      : 'Select a province below';
   }
 
   if (rows && countEl && countWord && checkout) {
@@ -141,14 +101,14 @@ import { shippingZones, courier } from '../data/shipping';
       <div data-sku="${i.sku}" class="grid grid-cols-[6rem_1fr] items-start gap-5 border-b border-line py-6 sm:grid-cols-[6rem_1fr_auto]">
         <img src="${i.image}" alt="" width="96" height="120" loading="lazy" class="h-[120px] w-24 bg-white object-contain p-2" />
         <div class="min-w-0">
-          <p class="font-condensed text-sm font-semibold uppercase tracking-[0.14em]">${i.title}</p>
+          <p class="font-condensed text-[13px] font-semibold uppercase tracking-[0.12em]">${i.title}</p>
           <p class="meta mt-1.5 text-muted">${i.variant}</p>
         </div>
         <div class="col-span-2 flex flex-col items-start gap-2 sm:col-span-1 sm:items-end">
           <div class="flex items-stretch border border-line">
-            <button type="button" data-step="-1" class="h-10 w-10 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Decrease quantity">−</button>
+            <button type="button" data-step="-1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Decrease quantity"><span aria-hidden="true">−</span></button>
             <span class="flex w-12 items-center justify-center text-sm">${i.qty}</span>
-            <button type="button" data-step="1" class="h-10 w-10 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Increase quantity">+</button>
+            <button type="button" data-step="1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Increase quantity"><span aria-hidden="true">+</span></button>
           </div>
           <button type="button" data-remove class="meta text-muted underline underline-offset-4 transition-colors hover:text-registration">Remove</button>
         </div>
@@ -177,10 +137,12 @@ import { shippingZones, courier } from '../data/shipping';
       if (!sku) return;
       if (t.closest('[data-remove]')) return removeFromCart(sku);
       const step = t.closest<HTMLElement>('[data-step]');
-      if (step) {
-        const current = cartItems.get().find((i) => i.sku === sku);
-        if (current) setQty(sku, current.qty + Number(step.dataset.step));
-      }
+      if (step) stepQty(sku, Number(step.dataset.step));
+    });
+
+    // pointer-events-none only stops the mouse; a link still activates on Enter.
+    checkout.addEventListener('click', (e) => {
+      if (!cartCount.get()) e.preventDefault();
     });
 
     const unsubscribe = cartItems.subscribe(render);
@@ -195,27 +157,18 @@ import { shippingZones, courier } from '../data/shipping';
   }
 
   const province = document.querySelector<HTMLSelectElement>('[data-province]');
-  const zip = document.querySelector<HTMLInputElement>('[data-zip]');
-  const estimate = document.querySelector<HTMLElement>('[data-estimate]');
   const result = document.querySelector<HTMLElement>('[data-estimate-result]');
 
-  if (province && zip && estimate && result) {
+  if (province && result) {
     if (shippingProvince.get()) province.value = shippingProvince.get();
 
-    estimate.addEventListener('click', () => {
+    province.addEventListener('change', () => {
       const zone = zoneById(province.selectedOptions[0]?.dataset.zone);
-      if (!zone) {
-        result.textContent = 'Choose a province to see the delivery estimate.';
-        return;
-      }
-      const fee = estimateFee(zone.id, cartCount.get());
-      if (fee === null) {
-        result.textContent = 'Add a tee to your cart to estimate shipping.';
-        return;
-      }
-      shippingZoneId.set(zone.id);
+      shippingZoneId.set(zone?.id ?? '');
       shippingProvince.set(province.value);
-      result.textContent = `${formatPHP(fee)} — ${zone.days} business days`;
+      result.textContent = zone
+        ? `Delivering to ${zone.label} in ${zone.days} business days.`
+        : 'Choose a province to see the delivery estimate.';
       refreshShipping();
     });
   }

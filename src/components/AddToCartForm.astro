@@ -1,168 +1,150 @@
 ---
 import type { Product } from '../data/catalog';
-import { uniqueColors, uniqueSizes, uniqueGenders } from '../data/catalog';
+import { uniqueSizes } from '../data/catalog';
 
 interface Props {
   product: Product;
 }
 
 const { product } = Astro.props;
-const colors = uniqueColors(product);
 const sizes = uniqueSizes(product);
-const genders = uniqueGenders(product);
-// Seed the island with a real variant so hidden single-option groups (e.g. the
-// fixed Black colourway) still resolve to a purchasable SKU.
+// Seed the island with a real size so the add button always resolves to a SKU.
 const first = product.variants[0];
 
 const pill =
-  'border border-line px-3 py-2 text-xs transition-colors hover:border-ink data-[selected=true]:border-ink data-[selected=true]:bg-ink data-[selected=true]:text-paper disabled:cursor-not-allowed disabled:opacity-40';
+  'border border-line px-3 py-2 text-xs transition-colors hover:border-ink data-[selected=true]:border-ink data-[selected=true]:bg-ink data-[selected=true]:text-paper';
 ---
 
 <div
   data-atc
   data-slug={product.slug}
-  data-title={product.title}
-  data-image={product.image}
-  data-default-color={first.color}
   data-default-size={first.size}
-  data-default-gender={first.gender}
 >
-  {
-    colors.length > 1 && (
-      <div class="mb-5">
-        <p class="label mb-2">Color</p>
-        <div class="flex flex-wrap gap-2" data-group="color">
-          {colors.map((c) => (
-            <button type="button" data-value={c} class={pill}>
-              {c}
-            </button>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  {
-    sizes.length > 1 && (
-      <div class="mb-5">
-        <p class="label mb-2">Size</p>
-        <div class="flex flex-wrap gap-2" data-group="size">
-          {sizes.map((s) => (
-            <button type="button" data-value={s} class={pill}>
-              {s}
-            </button>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  {
-    genders.length > 1 && (
-      <div class="mb-5">
-        <p class="label mb-2">Fit</p>
-        <div class="flex flex-wrap gap-2" data-group="gender">
-          {genders.map((g) => (
-            <button type="button" data-value={g} class={pill}>
-              {g}
-            </button>
-          ))}
-        </div>
-      </div>
-    )
-  }
+  <div class="mb-5">
+    <div class="flex items-center justify-between mb-2">
+      <p class="label">Size</p>
+      <button
+        type="button"
+        data-size-guide-open
+        class="font-condensed text-[11px] uppercase tracking-[0.2em] text-muted underline underline-offset-4 transition-colors hover:text-registration"
+      >
+        Fit Guide (Inches / CM)
+      </button>
+    </div>
+    <div class="flex flex-wrap gap-2" aria-label="Available garment sizes">
+      {
+        sizes.map((size) => (
+          <button type="button" data-value={size} class={pill} aria-label={`Size ${size}`}>
+            {size}
+          </button>
+        ))
+      }
+    </div>
+  </div>
 
   <div class="mb-5 flex items-center gap-4">
     <p class="label">Qty</p>
     <div class="flex items-center gap-4">
       <button type="button" data-step="-1" class="h-8 w-8 border border-line" aria-label="Decrease quantity">
-        −
+        <span aria-hidden="true">−</span>
       </button>
       <span data-qty class="min-w-4 text-center text-sm">1</span>
       <button type="button" data-step="1" class="h-8 w-8 border border-line" aria-label="Increase quantity">
-        +
+        <span aria-hidden="true">+</span>
       </button>
     </div>
   </div>
 
-  <button type="button" data-add class="btn btn-primary w-full">Add to cart</button>
-  <p data-stock-note class="mt-2 text-xs text-muted" aria-live="polite"></p>
+  <button type="button" data-add class="btn btn-primary w-full">Add to order slip</button>
+
+  <dialog data-size-dialog class="cart-dialog max-w-lg p-6 bg-paper border border-line text-ink shadow-2xl backdrop:bg-ink/60">
+    <div class="flex items-center justify-between border-b border-line pb-4">
+      <div>
+        <h3 class="font-display text-xl uppercase tracking-wider">Garment Measurements</h3>
+        <p class="meta text-xs text-muted mt-0.5">Heavyweight boxy cut · S–2XL</p>
+      </div>
+      <button type="button" data-size-dialog-close class="text-2xl leading-none -m-2 p-2 hover:text-registration" aria-label="Close size guide">×</button>
+    </div>
+    <div class="mt-4 overflow-x-auto">
+      <table class="w-full text-left font-condensed text-xs uppercase tracking-wider">
+        <thead>
+          <tr class="border-b border-ink/40 text-muted">
+            <th class="py-2 pr-4">Size</th>
+            <th class="py-2 px-3">Chest Width</th>
+            <th class="py-2 px-3">Body Length</th>
+            <th class="py-2 pl-3">Fit Profile</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+          <tr><td class="py-2.5 pr-4 font-bold text-ink">S</td><td class="py-2.5 px-3">20" / 51cm</td><td class="py-2.5 px-3">28" / 71cm</td><td class="py-2.5 pl-3 text-muted">Relaxed</td></tr>
+          <tr><td class="py-2.5 pr-4 font-bold text-ink">M</td><td class="py-2.5 px-3">21" / 53cm</td><td class="py-2.5 px-3">29" / 74cm</td><td class="py-2.5 pl-3 text-muted">Relaxed</td></tr>
+          <tr><td class="py-2.5 pr-4 font-bold text-ink">L</td><td class="py-2.5 px-3">22" / 56cm</td><td class="py-2.5 px-3">30" / 76cm</td><td class="py-2.5 pl-3 text-muted">Oversized</td></tr>
+          <tr><td class="py-2.5 pr-4 font-bold text-ink">XL</td><td class="py-2.5 px-3">23" / 58cm</td><td class="py-2.5 px-3">31" / 79cm</td><td class="py-2.5 pl-3 text-muted">Oversized</td></tr>
+          <tr><td class="py-2.5 pr-4 font-bold text-ink">2XL</td><td class="py-2.5 px-3">24" / 61cm</td><td class="py-2.5 px-3">32" / 81cm</td><td class="py-2.5 pl-3 text-muted">Boxy Heavyweight</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="meta text-xs text-muted mt-4 border-t border-line pt-3">
+      Cold wash recommended. Shrinkage is pre-treated during screen printing.
+    </p>
+  </dialog>
 </div>
 
 <script>
-  import { findVariant } from '../data/catalog';
+  import { findVariant, getProduct } from '../data/catalog';
   import { addToCart } from '../stores/cartStore';
 
   const root = document.querySelector<HTMLElement>('[data-atc]');
   if (root) {
-    const state: Record<string, string | number> = {
-      color: root.dataset.defaultColor ?? '',
-      size: root.dataset.defaultSize ?? '',
-      gender: root.dataset.defaultGender ?? '',
-      qty: 1,
-    };
-    const addBtn = root.querySelector<HTMLButtonElement>('[data-add]')!;
-    const note = root.querySelector<HTMLElement>('[data-stock-note]')!;
-    const qtyEl = root.querySelector<HTMLElement>('[data-qty]')!;
+    let size = root.dataset.defaultSize ?? '';
+    let qty = 1;
 
-    // Preselect the first option in each group (hidden single-option groups too).
-    root.querySelectorAll<HTMLElement>('[data-group]').forEach((group) => {
-      const opts = group.querySelectorAll<HTMLElement>('[data-value]');
-      if (opts[0]) {
-        opts[0].dataset.selected = 'true';
-        state[group.dataset.group!] = opts[0].dataset.value!;
-      }
+    const addBtn = root.querySelector<HTMLButtonElement>('[data-add]')!;
+    const qtyEl = root.querySelector<HTMLElement>('[data-qty]')!;
+    const sizeModal = root.querySelector<HTMLDialogElement>('[data-size-dialog]');
+    const openGuide = root.querySelector<HTMLElement>('[data-size-guide-open]');
+    const closeGuide = root.querySelector<HTMLElement>('[data-size-dialog-close]');
+
+    openGuide?.addEventListener('click', () => sizeModal?.showModal());
+    closeGuide?.addEventListener('click', () => sizeModal?.close());
+    sizeModal?.addEventListener('click', (e) => {
+      if (e.target === sizeModal) sizeModal.close();
     });
 
-    function variant() {
-      return findVariant(
-        root!.dataset.slug!,
-        state.color as string,
-        state.size as string,
-        state.gender as string
-      );
-    }
-
-    function refreshStock() {
-      const v = variant();
-      const inStock = !!v && v.stock > 0;
-      addBtn.disabled = !inStock;
-      note.textContent = !v ? 'Select an option' : inStock ? 'In stock' : 'Out of stock';
-    }
+    root.querySelectorAll<HTMLElement>('[data-value]').forEach((btn) => {
+      btn.dataset.selected = String(btn.dataset.value === size);
+    });
 
     root.addEventListener('click', (e) => {
       const t = e.target as HTMLElement;
       const opt = t.closest<HTMLElement>('[data-value]');
       if (opt) {
-        const group = opt.closest<HTMLElement>('[data-group]')!;
-        group.querySelectorAll<HTMLElement>('[data-value]').forEach((b) => {
-          b.dataset.selected = 'false';
+        root.querySelectorAll<HTMLElement>('[data-value]').forEach((btn) => {
+          btn.dataset.selected = 'false';
         });
         opt.dataset.selected = 'true';
-        state[group.dataset.group!] = opt.dataset.value!;
-        refreshStock();
+        size = opt.dataset.value!;
         return;
       }
       const step = t.closest<HTMLElement>('[data-step]');
       if (step) {
-        state.qty = Math.max(1, (state.qty as number) + Number(step.dataset.step));
-        qtyEl.textContent = String(state.qty);
+        qty = Math.max(1, qty + Number(step.dataset.step));
+        qtyEl.textContent = String(qty);
       }
     });
 
     addBtn.addEventListener('click', () => {
-      const v = variant();
-      if (!v || v.stock < 1) return;
+      const v = findVariant(root.dataset.slug!, size);
+      const p = getProduct(root.dataset.slug!);
+      if (!v || !p) return;
       addToCart({
         sku: v.sku,
         slug: root.dataset.slug!,
-        title: root.dataset.title!,
-        variant: [state.color, state.size, state.gender].filter(Boolean).join(' · '),
-        image: root.dataset.image!,
-        qty: state.qty as number,
+        title: p.title,
+        variant: [v.color, v.size].filter(Boolean).join(' · '),
+        image: p.image,
+        qty,
       });
     });
-
-    refreshStock();
   }
 </script>

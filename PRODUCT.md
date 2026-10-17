@@ -16,7 +16,7 @@ Manila / Philippine streetwear buyers — largely late-teens to early-thirties �
 
 ## Product Purpose
 
-Sell small-batch Manila streetwear: oversized graphic shirts and a customizable trinket pouch. Success is a filled order request — cart contents plus contact and sizing — that the brand can follow up on.
+Sell small-batch Manila streetwear: three heavyweight graphic tees. Success is a filled order request — cart contents plus contact and sizing — that the brand can follow up on.
 
 ## Positioning
 
@@ -26,31 +26,26 @@ Sell small-batch Manila streetwear: oversized graphic shirts and a customizable 
 
 - Orders run through the site form and through Facebook / Instagram promos in parallel.
 - Pricing is confirmed per order; the site publishes no prices.
-- Sizes S–2XL for shirts; the pouch is made to request.
+- Sizes S–2XL, black only.
 - Garments are sourced small-batch (Taytay and Divisoria referenced in existing copy).
 
 ## Capabilities and Constraints
 
 - Working: product browsing, size selection, localStorage cart with a slide-in drawer, order form handoff, post-submit thank-you page.
 - Not to be invented: prices, stock counts, delivery times, testimonials, or payment capability.
-- Customization requests are accepted through the order form.
 
 ## Brand Commitments
 
 - Name: **Kalye Noir**. Established line mood: black garments, cream/ink poster art, a single registration red.
-- Language already in use: "NASA KALYE NANGANGARAP", "MANILA NEVER SLEEPS", "LATE NIGHTS. EARLY DREAMS. REAL STREETS. REAL STORIES.", "STREET WEAR • MANILA", "NOT YOUR MYTH", "BEAUTY IN CHAOS / FEARED BY MANY / LEGENDS NEVER DIE", "EST. 2026", coordinates 14.5995° N — 120.9842° E, "GOOD THINGS INSIDE".
-- Three shirt designs named **MEDUSA**, **MAYNILA**, **KALYENOIR**; one trinket pouch.
+- Language already in use: "NASA KALYE NANGANGARAP", "MANILA NEVER SLEEPS", "LATE NIGHTS. EARLY DREAMS. REAL STREETS. REAL STORIES.", "STREET WEAR • MANILA", "NOT YOUR MYTH", "BEAUTY IN CHAOS / FEARED BY MANY / LEGENDS NEVER DIE", "EST. 2026", coordinates 14.5995° N — 120.9842° E.
+- Three shirt designs: **KALYENOIR**, **MEDUSA**, **MANILA**.
 
 ## Evidence on Hand
 
-Real brand artwork in `Assets/`, copied to `public/assets/images/brand/`:
+Brand artwork lives in `Assets/` (dev-only); the published copies live in `public/assets/images/`:
 
-- `banner-aesthetic-1.png` — KALYENOIR wordmark poster
-- `banner-aesthetic-3.png` — MANILA NEVER SLEEPS street poster
-- `shirt-banner.png` — shirts on a rail
-- `medusa-poster.png` — MEDUSA poster
-- `tee-kalyenoir.png`, `tee-medusa.png`, `tee-maynila.png` — shirt front/back mockups
-- `pouch.png` — GOOD THINGS INSIDE pouch
+- `design/kalyenoir-poster.jpg`, `design/medusa-poster.jpg`, `design/manila-poster.jpg` — the print posters
+- `brand/tee-kalyenoir.png`, `brand/tee-medusa.png`, `brand/tee-manila.png` — tee front/back mockups
 
 No prices, stock, testimonials or delivery claims exist. Future work must not fabricate them.
 

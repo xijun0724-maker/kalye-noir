@@ -10,9 +10,7 @@ export function getStaticPaths() {
 }
 
 const { product } = Astro.props;
-const related = products.filter((p) => p.category === product.category && p.slug !== product.slug);
-const other = products.filter((p) => p.category !== product.category);
-const suggestions = [...related, ...other].slice(0, 4);
+const suggestions = products.filter((p) => p.slug !== product.slug).slice(0, 4);
 ---
 
 <style>
@@ -36,7 +34,7 @@ const suggestions = [...related, ...other].slice(0, 4);
 
 <MainLayout title={`${product.title} — KALYE NOIR`} description={product.blurb} image={product.image}>
   <nav class="wrap py-6 text-xs uppercase tracking-[0.18em] text-muted" aria-label="Breadcrumb">
-    <a href="/products" class="hover:text-ink">Shop</a>
+    <a href="/products" class="hover:text-ink">Shop all tees</a>
     <span class="mx-2">/</span>
     <span class="text-ink">{product.title}</span>
   </nav>
@@ -48,6 +46,7 @@ const suggestions = [...related, ...other].slice(0, 4);
         alt={product.alt}
         width="800"
         height="1000"
+        fetchpriority="high"
         class="aspect-[4/5] w-full object-contain"
       />
     </div>

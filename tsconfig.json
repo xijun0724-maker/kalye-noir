@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"baseUrl": "src",
 		// Add type definitions for our Vite runtime.
 		"types": ["astro/client"]
 	},

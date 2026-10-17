@@ -3,43 +3,43 @@
 // only renders handlers + list markup and subscribes to the store.
 ---
 
-<div class="pointer-events-none fixed inset-0 z-50" data-cart-root aria-hidden="true">
-  <div
-    class="absolute inset-0 bg-ink/40 opacity-0 backdrop-blur-xs transition-opacity duration-300"
-    data-cart-backdrop
-  >
+<dialog data-cart-panel class="cart-dialog shadow-2xl" aria-label="Shopping cart">
+  <div class="flex items-center justify-between border-b border-line px-5 py-5">
+    <h2 class="meta text-ink">Cart</h2>
+    <button type="button" class="-m-3 p-3 text-2xl leading-none" data-cart-close aria-label="Close cart">
+      <span aria-hidden="true">×</span>
+    </button>
   </div>
-  <aside
-    data-cart-panel
-    class="absolute right-0 top-0 flex h-full w-full max-w-md translate-x-full flex-col bg-paper shadow-2xl transition-transform duration-300"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Shopping cart"
-  >
-    <div class="flex items-center justify-between border-b border-line px-5 py-5">
-      <h2 class="meta text-ink">Cart</h2>
-      <button type="button" class="text-2xl leading-none" data-cart-close aria-label="Close cart">
-        ×
-      </button>
-    </div>
 
-    <div class="flex-1 overflow-y-auto px-5" data-cart-items></div>
+  <div class="flex-1 overflow-y-auto px-5" data-cart-items></div>
 
-    <div class="border-t border-line px-5 py-5">
-      <label class="label mb-2 block" for="drawer-order-note">Add order note</label>
-      <textarea
-        id="drawer-order-note"
-        data-cart-note
-        rows="2"
-        placeholder="How can we help you?"
-        class="w-full border border-line bg-transparent px-3 py-2 text-sm outline-hidden transition-colors focus:border-ink"
-      ></textarea>
-      <p class="meta mt-3 text-muted">Shipping estimated at checkout</p>
-      <a href="/cart" class="btn btn-primary mt-4 w-full">View cart</a>
-      <a href="/checkout" data-drawer-checkout class="btn btn-primary mt-2 w-full">Checkout</a>
+  <div class="border-t border-line px-5 py-5">
+    <div class="mb-3 flex items-center justify-between text-muted">
+      <span class="flex items-center gap-1.5 font-condensed text-[11px] uppercase tracking-[0.2em] text-ink/75">
+        <svg viewBox="0 0 24 24" width="13" height="13" class="text-registration" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        Saved to device
+      </span>
+      <span class="font-condensed text-[11px] uppercase tracking-[0.2em] text-muted">Order Request Slip</span>
     </div>
-  </aside>
-</div>
+    <label class="label mb-2 block" for="drawer-order-note">Add order note</label>
+    <textarea
+      id="drawer-order-note"
+      data-cart-note
+      rows="2"
+      placeholder="How can we help you?"
+      class="w-full border border-line bg-transparent px-3 py-2 text-sm transition-colors placeholder:text-muted focus:border-ink"
+    ></textarea>
+    <p class="meta mt-3 text-muted">Estimated delivery confirmed post-request</p>
+    <a
+      href="/cart"
+      class="meta mt-4 block text-center text-muted underline underline-offset-4 hover:text-registration"
+      >View full slip</a
+    >
+    <a href="/checkout" data-drawer-checkout class="btn btn-primary mt-2 w-full">Send Order Request</a>
+  </div>
+</dialog>
 
 <script>
   import {
@@ -47,43 +47,46 @@
     cartItems,
     cartCount,
     removeFromCart,
-    setQty,
+    stepQty,
     orderNote,
   } from '../stores/cartStore';
 
-  const root = document.querySelector<HTMLElement>('[data-cart-root]');
-  if (root) {
-    const backdrop = root.querySelector<HTMLElement>('[data-cart-backdrop]')!;
-    const panel = root.querySelector<HTMLElement>('[data-cart-panel]')!;
-    const list = root.querySelector<HTMLElement>('[data-cart-items]')!;
-    const note = root.querySelector<HTMLTextAreaElement>('[data-cart-note]');
-    const checkout = root.querySelector<HTMLAnchorElement>('[data-drawer-checkout]');
+  const panel = document.querySelector<HTMLDialogElement>('[data-cart-panel]');
+  if (panel) {
+    const list = panel.querySelector<HTMLElement>('[data-cart-items]')!;
+    const note = panel.querySelector<HTMLTextAreaElement>('[data-cart-note]');
+    const checkout = panel.querySelector<HTMLAnchorElement>('[data-drawer-checkout]');
 
     const close = () => isCartOpen.set(false);
-    root.querySelector('[data-cart-close]')?.addEventListener('click', close);
-    backdrop.addEventListener('click', close);
-    document.addEventListener('keydown', (e) => e.key === 'Escape' && close());
+    panel.querySelector('[data-cart-close]')?.addEventListener('click', close);
+    // Escape closes the modal natively; mirror that back into the store.
+    panel.addEventListener('close', () => isCartOpen.set(false));
     document.addEventListener('click', (e) => {
       if ((e.target as HTMLElement).closest('[data-cart-open]')) isCartOpen.set(true);
+      if ((e.target as HTMLElement).closest('[data-cart-close]')) isCartOpen.set(false);
     });
 
-    root.addEventListener('click', (e) => {
+    panel.addEventListener('click', (e) => {
       const t = e.target as HTMLElement;
+      // A click on ::backdrop targets the dialog itself, never a child.
+      if (t === panel) return close();
       const line = t.closest<HTMLElement>('[data-sku]');
       if (!line) return;
       const sku = line.dataset.sku!;
       if (t.closest('[data-remove]')) return removeFromCart(sku);
       const step = t.closest<HTMLElement>('[data-step]');
-      if (step) {
-        const current = cartItems.get().find((i) => i.sku === sku);
-        if (current) setQty(sku, current.qty + Number(step.dataset.step));
-      }
+      if (step) stepQty(sku, Number(step.dataset.step));
     });
 
     if (note) {
       note.value = orderNote.get();
       note.addEventListener('input', () => orderNote.set(note.value));
     }
+
+    // aria-disabled plus pointer-events-none do not stop Enter on a link.
+    checkout?.addEventListener('click', (e) => {
+      if (!cartCount.get()) e.preventDefault();
+    });
 
     function render() {
       const items = cartItems.get();
@@ -98,9 +101,9 @@
               <p class="meta mt-1.5 text-muted">${i.variant}</p>
               <div class="mt-auto flex items-center gap-4 pt-3">
                 <div class="flex items-stretch border border-line">
-                  <button type="button" data-step="-1" class="h-8 w-8 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Decrease quantity">−</button>
+                  <button type="button" data-step="-1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Decrease quantity"><span aria-hidden="true">−</span></button>
                   <span class="flex w-10 items-center justify-center text-sm">${i.qty}</span>
-                  <button type="button" data-step="1" class="h-8 w-8 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Increase quantity">+</button>
+                  <button type="button" data-step="1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Increase quantity"><span aria-hidden="true">+</span></button>
                 </div>
                 <button type="button" data-remove class="meta text-muted underline underline-offset-4 transition-colors hover:text-registration">Remove</button>
               </div>
@@ -108,7 +111,17 @@
           </div>`
             )
             .join('')
-        : '<p class="py-16 text-center text-sm text-muted">Your cart is empty.</p>';
+        : `<div class="flex flex-col items-center justify-center py-16 text-center">
+            <div class="relative mb-4 flex h-16 w-16 items-center justify-center border border-line bg-paper">
+              <svg viewBox="0 0 24 24" width="28" height="28" class="text-muted" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+              <span class="absolute -right-1 -top-1 h-2 w-2 rotate-45 bg-registration"></span>
+            </div>
+            <p class="font-display text-xl uppercase tracking-wider text-ink">Your Slip Is Empty</p>
+            <p class="mt-1 text-xs text-muted max-w-[220px]">Pick a piece from Drop 001. Sizing and delivery confirmed per request.</p>
+            <a href="/#drop" data-cart-close class="btn btn-primary mt-6 text-xs px-6 py-2.5">Explore Drop 001</a>
+          </div>`;
 
       const count = cartCount.get();
       if (checkout) {
@@ -122,12 +135,8 @@
     }
 
     const unsubOpen = isCartOpen.subscribe((open) => {
-      root.setAttribute('aria-hidden', String(!open));
-      root.classList.toggle('pointer-events-none', !open);
-      root.classList.toggle('pointer-events-auto', open);
-      backdrop.classList.toggle('opacity-0', !open);
-      panel.classList.toggle('translate-x-full', !open);
-      document.body.classList.toggle('overflow-hidden', open);
+      if (open && !panel.open) panel.showModal();
+      else if (!open && panel.open) panel.close();
     });
 
     const unsubItems = cartItems.subscribe(render);
@@ -135,10 +144,59 @@
     document.addEventListener(
       'astro:before-swap',
       () => {
+        // Reset after unsubscribing, or the next island's subscriber re-opens it.
         unsubOpen();
+        isCartOpen.set(false);
         unsubItems();
       },
       { once: true }
     );
   }
 </script>
+
+<style>
+  /* The platform supplies the focus trap, the inert background and Escape; all
+     this adds is the slide and the scrim. */
+  .cart-dialog {
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 0 auto;
+    width: 100%;
+    max-width: 28rem;
+    height: 100%;
+    max-height: 100%;
+    padding: 0;
+    border: 0;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    transform: translateX(100%);
+    transition:
+      transform 0.3s ease,
+      display 0.3s allow-discrete,
+      overlay 0.3s allow-discrete;
+  }
+  .cart-dialog[open] {
+    transform: none;
+  }
+  /* Open modal: the platform already makes the page inert, this stops it scrolling. */
+  :global(body:has(dialog[open])) {
+    overflow: hidden;
+  }
+  .cart-dialog::backdrop {
+    background: color-mix(in srgb, var(--color-ink) 40%, transparent);
+    transition: opacity 0.3s ease;
+  }
+  @starting-style {
+    .cart-dialog[open] {
+      transform: translateX(100%);
+    }
+    .cart-dialog[open]::backdrop {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cart-dialog {
+      transition: none;
+    }
+  }
+</style>

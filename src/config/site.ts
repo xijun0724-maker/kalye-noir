@@ -2,8 +2,7 @@ export const site = {
   name: 'KALYE NOIR',
   title: 'KALYE NOIR — Street Wear · Manila',
   description:
-    'Kalye Noir. Manila streetwear — heavyweight tees. KALYENOIR, MEDUSA and MANILA prints. Order now.',
-  url: 'https://kalyenoir.com',
+    'Kalye Noir — Manila streetwear built on heavyweight cotton. Three prints: KALYENOIR, MEDUSA and MANILA. Order by request, confirmed by email.',
 } as const;
 
 export const nav = [
@@ -12,10 +11,7 @@ export const nav = [
   { title: 'Contact Us', href: '/contact' },
 ] as const;
 
-export const footerLists: {
-  title: string;
-  items: { title: string; href: string }[];
-}[] = [
+export const footerLists = [
   {
     title: 'Shop',
     items: [
@@ -42,5 +38,4 @@ export const contact = {
   mobile: '09459864354',
   email: 'kalyenoirorders@gmail.com',
   facebook: 'www.facebook.com/kalyenoir',
-  facebookUrl: 'https://www.facebook.com/kalyenoir',
 };

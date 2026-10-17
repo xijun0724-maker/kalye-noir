@@ -1,7 +1,7 @@
 ---
-import { Icon } from 'astro-icon/components';
 import { nav, site } from '../config/site';
 import CartButton from './CartButton.astro';
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
 <header class="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
@@ -17,31 +17,42 @@ import CartButton from './CartButton.astro';
     <nav class="hidden lg:block" aria-label="Primary">
       <ul class="flex items-center gap-8">
         {
-          nav.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class="font-condensed text-[11px] font-semibold uppercase tracking-[0.26em] text-muted transition-colors hover:text-registration"
-              >
-                {item.title}
-              </a>
-            </li>
-          ))
+          nav.map((item) => {
+            const itemPath = item.href.replace(/\/$/, '') || '/';
+            const isActive = currentPath === itemPath || (itemPath !== '/' && currentPath.startsWith(itemPath));
+            return (
+              <li>
+                <a
+                  href={item.href}
+                  aria-current={isActive ? 'page' : undefined}
+                  class={`relative py-1 font-condensed text-[11px] font-semibold uppercase tracking-[0.26em] transition-colors ${
+                    isActive ? 'text-ink' : 'text-muted hover:text-registration'
+                  }`}
+                >
+                  {item.title}
+                  {isActive && (
+                    <span class="absolute -bottom-1 left-0 right-0 h-0.5 bg-registration" />
+                  )}
+                </a>
+              </li>
+            );
+          })
         }
       </ul>
     </nav>
 
     <div class="flex items-center gap-4">
-      <button
-        type="button"
-        data-search-open
-        aria-label="Search"
-        class="text-ink/80 transition-colors hover:text-ink"
+      <a
+        href="/contact"
+        aria-label="Contact and order inquiries"
+        class="text-ink/80 transition-colors hover:text-registration"
       >
-        <Icon name="mdi:magnify" width={22} height={22} />
-      </button>
-      <a href="/contact" aria-label="Account" class="text-ink/80 transition-colors hover:text-ink">
-        <Icon name="mdi:account-outline" width={22} height={22} />
+        <svg viewBox="0 0 24 24" width="20" height="20">
+          <path
+            fill="currentColor"
+            d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"
+          />
+        </svg>
       </a>
       <CartButton />
     </div>
@@ -52,20 +63,30 @@ import CartButton from './CartButton.astro';
       class="wrap flex cursor-pointer items-center justify-between py-3 text-[11px] uppercase tracking-[0.2em]"
     >
       Menu
-      <Icon name="mdi:menu" width={22} height={22} />
+      <svg viewBox="0 0 24 24" width="22" height="22">
+        <path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" />
+      </svg>
     </summary>
     <ul class="wrap flex flex-col gap-3 pb-5">
       {
-        nav.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              class="font-condensed text-base font-semibold uppercase tracking-[0.2em]"
-            >
-              {item.title}
-            </a>
-          </li>
-        ))
+        nav.map((item) => {
+          const itemPath = item.href.replace(/\/$/, '') || '/';
+          const isActive = currentPath === itemPath || (itemPath !== '/' && currentPath.startsWith(itemPath));
+          return (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive ? 'page' : undefined}
+                class={`flex items-center justify-between font-condensed text-base font-semibold uppercase tracking-[0.2em] ${
+                  isActive ? 'text-registration font-bold' : 'text-ink'
+                }`}
+              >
+                <span>{item.title}</span>
+                {isActive && <span class="h-1.5 w-1.5 rotate-45 bg-registration" />}
+              </a>
+            </li>
+          );
+        })
       }
     </ul>
   </details>
