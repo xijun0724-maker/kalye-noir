@@ -10,7 +10,6 @@ const drop = [
     alt: 'KalyeNoir poster — the wordmark stacked across a Manila street sign',
     href: '/products/kalyenoir-tee',
     line: 'Real dreams, same sky',
-    teeImage: '/assets/images/brand/tee-kalyenoir.png',
   },
   {
     name: 'MEDUSA',
@@ -18,7 +17,6 @@ const drop = [
     alt: 'Medusa poster — a hand-drawn gorgon with snakes for hair',
     href: '/products/medusa-tee',
     line: 'Not your myth',
-    teeImage: '/assets/images/brand/tee-medusa.png',
   },
   {
     name: 'MANILA',
@@ -26,7 +24,6 @@ const drop = [
     alt: 'Manila poster — a jeepney on a crowded Manila street',
     href: '/products/manila-tee',
     line: 'The city never sleeps',
-    teeImage: '/assets/images/brand/tee-manila.png',
   },
 ];
 
@@ -107,7 +104,7 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
     </div>
   </div>
 
-  <!-- ============ THE DROP (ART & GARMENT SHOWCASE) ============ -->
+  <!-- ============ THE DROP (ART SHOWCASE) ============ -->
   <section id="drop" class="wrap py-16 lg:py-24">
     <header class="flex flex-wrap items-end justify-between gap-6 border-b-2 border-ink pb-5">
       <div>
@@ -140,21 +137,6 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
                 <span class="meta absolute right-3 top-3 text-paper/70">
                   {String(i + 1).padStart(3, '0')}
                 </span>
-
-                <div class="absolute bottom-3 right-3 w-20 sm:w-24 bg-white p-1.5 shadow-lg transition-transform duration-300 group-hover:scale-105">
-                  <img
-                    src={print.teeImage}
-                    alt={`${print.name} Tee`}
-                    width="200"
-                    height="250"
-                    loading="lazy"
-                    decoding="async"
-                    class="aspect-[4/5] w-full object-contain"
-                  />
-                  <span class="meta block text-center text-[11px] text-ink font-semibold tracking-wider uppercase mt-1">
-                    Tee
-                  </span>
-                </div>
               </div>
 
               <div class="mt-4 flex items-baseline justify-between gap-4">
