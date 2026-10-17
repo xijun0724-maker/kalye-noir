@@ -33,7 +33,7 @@ icon.d.ts
 .idx/
 .vscode/
 .astro/
-Assets/
+/Assets/
 skills-lock.json
 sandbox.config.json
 .stackblitzrc
