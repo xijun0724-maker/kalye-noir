@@ -2,7 +2,7 @@
 import MainLayout from '../layouts/MainLayout.astro';
 
 const field =
-  'w-full border border-line bg-transparent px-4 py-3 text-sm outline-none transition-colors focus:border-ink';
+  'w-full border border-line bg-transparent px-4 py-3 text-sm outline-hidden transition-colors focus:border-ink';
 ---
 
 <MainLayout
@@ -107,7 +107,7 @@ const field =
           required
           multiple
           accept=".jpg,.jpeg,.png,.gif,.pdf"
-          class="w-full border border-line bg-transparent px-4 py-3 text-sm outline-none transition-colors file:mr-4 file:border file:border-line file:bg-transparent file:px-3 file:py-1.5 file:text-xs file:uppercase file:tracking-[0.18em] hover:file:bg-line/40 focus:border-ink"
+          class="w-full border border-line bg-transparent px-4 py-3 text-sm outline-hidden transition-colors file:mr-4 file:border file:border-line file:bg-transparent file:px-3 file:py-1.5 file:text-xs file:uppercase file:tracking-[0.18em] hover:file:bg-line/40 focus:border-ink"
         />
       </label>
 

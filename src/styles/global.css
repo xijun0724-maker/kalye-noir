@@ -1,6 +1,19 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+/* Theme carried over 1:1 from the old tailwind.config.mjs. */
+@theme {
+  --color-ink: #111110;
+  --color-paper: #f4ede2;
+  --color-registration: #c8202a;
+  --color-muted: #6d6459;
+  --color-line: #e2d8c8;
+
+  --font-sans: Archivo, system-ui, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: Anton, Impact, system-ui, sans-serif;
+  --font-condensed: 'Barlow Condensed', Archivo, system-ui, sans-serif;
+
+  --container-content: 1280px;
+}
 
 @layer base {
   :root {
