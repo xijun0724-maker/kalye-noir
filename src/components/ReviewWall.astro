@@ -1,0 +1,66 @@
+---
+// Bottom-of-page review band: star average, count and the customer photo wall.
+// Everything comes from src/data/reviews.ts — empty stays quiet until real
+// entries land, no invented numbers.
+import { reviewSummary } from '../data/reviews';
+
+const { count, stars, photoReviews } = reviewSummary();
+---
+
+<section class="border-t border-line bg-line/20">
+  <div class="wrap max-w-4xl py-14 sm:py-16">
+    {
+      count ? (
+        <>
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <p class="flex items-center gap-4">
+              <span class="text-base tracking-[0.24em] text-registration" aria-label={`${stars} out of 5 stars`}>
+                {'★'.repeat(stars)}
+                {'☆'.repeat(5 - stars)}
+              </span>
+              <span class="meta text-ink">
+                {count} {count === 1 ? 'review' : 'reviews'}
+              </span>
+            </p>
+            <span class="meta hidden text-muted sm:block">Kalye Noir in the wild</span>
+          </div>
+
+          {photoReviews.length > 0 && (
+            <ul class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {photoReviews.map((review) => (
+                <li class="group relative overflow-hidden bg-ink">
+                  <img
+                    src={review.photo}
+                    alt={`${review.product} worn by ${review.name}`}
+                    width="600"
+                    height="600"
+                    loading="lazy"
+                    decoding="async"
+                    class="aspect-square w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                  />
+                  <span class="absolute left-0 top-0 h-0.5 w-0 bg-registration transition-all duration-500 group-hover:w-full" />
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      ) : (
+        <div class="text-center">
+          <p class="text-base tracking-[0.24em] text-muted" aria-hidden="true">
+            ☆☆☆☆☆
+          </p>
+          <p class="meta mt-5 text-ink">No reviews yet</p>
+          <p class="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted">
+            Send us a photo of your tee and we'll print it here — first wearers get the wall.
+          </p>
+          <a
+            href="/contact"
+            class="meta mt-6 inline-block text-ink underline underline-offset-4 transition-colors hover:text-registration"
+          >
+            Tell us about your tee
+          </a>
+        </div>
+      )
+    }
+  </div>
+</section>

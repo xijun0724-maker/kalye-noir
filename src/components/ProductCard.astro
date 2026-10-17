@@ -1,0 +1,26 @@
+---
+import type { Product } from '../data/catalog';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+---
+
+<a href={`/products/${product.slug}`} class="group block">
+  <div class="relative overflow-hidden bg-line/40">
+    <img
+      src={product.image}
+      alt={product.alt}
+      width="600"
+      height="750"
+      loading="lazy"
+      decoding="async"
+      class="aspect-[4/5] w-full object-contain transition-transform duration-500 group-hover:scale-105"
+    />
+  </div>
+  <div class="pt-3">
+    <h3 class="text-sm font-medium leading-snug">{product.title}</h3>
+  </div>
+</a>

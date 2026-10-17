@@ -1,232 +1,112 @@
-html,
-body {
-	height: 100%;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  body {
+    @apply bg-paper text-ink antialiased;
+  }
+  img {
+    @apply block max-w-full;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-registration;
+  }
 }
 
-body {
-	max-width: 1920px;
-	margin: 0 auto;
-	background-color: var(--theme-bg);
-	position: relative;
+@layer components {
+  .wrap {
+    @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 border-2 border-ink px-6 py-3 font-condensed text-xs font-semibold uppercase tracking-[0.24em] transition-colors;
+  }
+  .btn-primary {
+    @apply bg-ink text-paper hover:border-registration hover:bg-registration;
+  }
+  .btn-outline {
+    @apply bg-transparent text-ink hover:bg-ink hover:text-paper;
+  }
+  .btn-invert {
+    @apply border-paper bg-paper text-ink hover:border-registration hover:bg-registration hover:text-paper;
+  }
+  .btn-ghost {
+    @apply border-paper/40 bg-transparent text-paper hover:border-paper hover:bg-paper hover:text-ink;
+  }
+  .label {
+    @apply font-condensed text-[11px] font-medium uppercase tracking-[0.28em] text-muted;
+  }
+  .display {
+    @apply font-display uppercase leading-[0.88] tracking-tight;
+  }
+  .meta {
+    @apply font-condensed text-[11px] uppercase tracking-[0.28em];
+  }
 }
 
-/* ---- browser surfaces belong to the design ---- */
-::selection {
-	background: var(--kn-ink);
-	color: var(--kn-paper);
+@layer utilities {
+  /* Film grain, matching the print texture on the posters. */
+  .grain {
+    @apply relative;
+  }
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.18;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Poster barcode mark. */
+  .barcode {
+    background-image: repeating-linear-gradient(
+      90deg,
+      currentColor 0 1px,
+      transparent 1px 3px,
+      currentColor 3px 5px,
+      transparent 5px 6px,
+      currentColor 6px 7px,
+      transparent 7px 11px
+    );
+  }
+
+  .marquee {
+    animation: kn-marquee 30s linear infinite;
+  }
+  .reveal {
+    animation: kn-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .reveal-2 {
+    animation-delay: 0.12s;
+  }
+  .reveal-3 {
+    animation-delay: 0.24s;
+  }
 }
 
-:focus-visible {
-	outline: 2px solid var(--kn-red);
-	outline-offset: 2px;
+@keyframes kn-marquee {
+  to {
+    transform: translateX(-50%);
+  }
 }
 
-html {
-	scrollbar-color: var(--kn-ink) var(--kn-paper-2);
-	scrollbar-width: thin;
-}
-::-webkit-scrollbar {
-	width: 12px;
-	height: 12px;
-}
-::-webkit-scrollbar-track {
-	background: var(--kn-paper-2);
-}
-::-webkit-scrollbar-thumb {
-	background: var(--kn-ink);
-	border: 3px solid var(--kn-paper-2);
-}
-::-webkit-scrollbar-thumb:hover {
-	background: var(--kn-red);
+@keyframes kn-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.75rem);
+  }
 }
 
-input,
-select,
-textarea {
-	caret-color: var(--kn-red);
-}
-
-pre {
-	padding: 1em;
-	border-radius: 0;
-	overflow: auto;
-}
-
-pre .language-id {
-	display: none;
-}
-
-/* ---- Cart drawer ---- */
-.cart-drawer[open],
-.cart-drawer[open] .cart-drawer__scrim,
-.cart-drawer[open] .cart-drawer__panel {
-	display: block;
-}
-.cart-drawer,
-.cart-drawer .cart-drawer__scrim,
-.cart-drawer .cart-drawer__panel {
-	display: none;
-}
-.cart-drawer .cart-drawer__scrim {
-	position: fixed;
-	inset: 0;
-	background: rgba(18, 16, 14, 0.6);
-	z-index: 998;
-}
-.cart-drawer .cart-drawer__panel {
-	position: fixed;
-	top: 0;
-	right: 0;
-	height: 100dvh;
-	width: min(26rem, 92vw);
-	background: var(--kn-paper);
-	color: var(--kn-ink);
-	z-index: 999;
-	display: flex;
-	flex-direction: column;
-	border-left: 3px solid var(--kn-ink);
-	overflow: hidden;
-}
-.cart-drawer__head {
-	padding: 1rem 1.25rem;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	border-bottom: 2px solid var(--kn-ink);
-}
-.cart-drawer__head h2 {
-	font-size: var(--font-size-lg);
-	margin: 0;
-}
-.cart-drawer__close {
-	background: none;
-	border: none;
-	font-size: 1.6rem;
-	line-height: 1;
-	cursor: pointer;
-	color: inherit;
-	padding: 0.25rem 0.5rem;
-}
-.cart-drawer__close:hover {
-	color: var(--kn-red);
-}
-.cart-drawer__body {
-	flex: 1;
-	overflow-y: auto;
-	padding: 1rem 1.25rem;
-}
-.cart-drawer__empty {
-	color: var(--kn-ink-muted);
-	margin: 2rem 0;
-	text-align: center;
-}
-.cart-line {
-	display: grid;
-	grid-template-columns: auto 1fr auto auto;
-	gap: 0.75rem;
-	align-items: center;
-	padding: 0.85rem 0;
-	border-bottom: 1px solid color-mix(in srgb, var(--kn-ink) 22%, transparent);
-}
-.cart-line img {
-	border-radius: 0;
-	object-fit: cover;
-	border: 1px solid color-mix(in srgb, var(--kn-ink) 25%, transparent);
-}
-.cart-line__name {
-	font-weight: 700;
-	margin: 0;
-	text-transform: uppercase;
-	letter-spacing: 0.01em;
-}
-.cart-line__meta {
-	font-family: var(--theme-font-mono);
-	font-size: 0.72rem;
-	letter-spacing: 0.06em;
-	color: var(--kn-ink-muted);
-	margin: 0;
-	text-transform: uppercase;
-}
-.cart-line__qty {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5rem;
-	font-family: var(--theme-font-mono);
-}
-.cart-line__qty button {
-	width: 1.75rem;
-	height: 1.75rem;
-	border-radius: 0;
-	border: 1.5px solid var(--kn-ink);
-	background: transparent;
-	color: inherit;
-	cursor: pointer;
-	line-height: 1;
-}
-.cart-line__qty button:hover {
-	background: var(--kn-ink);
-	color: var(--kn-paper);
-}
-.cart-line__remove {
-	background: none;
-	border: none;
-	color: inherit;
-	font-size: 1.2rem;
-	cursor: pointer;
-	opacity: 0.6;
-}
-.cart-line__remove:hover {
-	opacity: 1;
-	color: var(--kn-red);
-}
-.cart-drawer__foot {
-	padding: 1rem 1.25rem;
-	border-top: 2px solid var(--kn-ink);
-	display: grid;
-	gap: 0.6rem;
-}
-.cart-drawer__note {
-	font-family: var(--theme-font-mono);
-	font-size: 0.72rem;
-	letter-spacing: 0.04em;
-	color: var(--kn-ink-muted);
-	margin: 0;
-	text-transform: uppercase;
-}
-
-/* ---- Add-to-cart control ---- */
-.product-card {
-	position: relative;
-}
-.add-to-cart {
-	margin-top: auto;
-	width: 100%;
-	padding: 0.7rem 1rem;
-	border: 2px solid var(--kn-ink);
-	border-radius: 0;
-	background: transparent;
-	color: var(--kn-ink);
-	font: inherit;
-	font-family: var(--theme-font-family-sans);
-	font-weight: 800;
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	font-size: var(--font-size-sm);
-	cursor: pointer;
-	transition:
-		background-color 0.2s ease,
-		color 0.2s ease,
-		transform 0.2s ease;
-}
-.add-to-cart:hover {
-	background: var(--kn-ink);
-	color: var(--kn-paper);
-}
-.add-to-cart:active {
-	transform: translateY(1px);
-}
-.add-to-cart.is-added {
-	background: var(--kn-red);
-	border-color: var(--kn-red);
-	color: var(--kn-paper);
+@media (prefers-reduced-motion: reduce) {
+  .marquee,
+  .reveal,
+  .reveal-2,
+  .reveal-3 {
+    animation: none;
+  }
 }

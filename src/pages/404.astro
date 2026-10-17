@@ -1,43 +1,13 @@
 ---
-import { Button, Container, TextCardSection } from '@components/odyssey-theme';
-import Layout from '../layouts/Page.astro';
-
-const seo = {
-	title: 'Page not found | Kalye Noir',
-	description: 'That page is not on the rail. Head back to the shop.',
-};
+import MainLayout from '../layouts/MainLayout.astro';
 ---
 
-<Layout {seo}>
-	<Container>
-		<TextCardSection>
-			<h1>404</h1>
-			<h2>Nawawala sa kalye.</h2>
-			<p>That page isn't here. Head back to the shop.</p>
-			<div class="cta-buttons__container">
-				<Button href="/products">Shop the line</Button>
-				<Button href="/" unelevated>Return home</Button>
-			</div>
-		</TextCardSection>
-	</Container>
-</Layout>
-
-<style>
-	.cta-buttons__container {
-		display: flex;
-		flex-wrap: wrap;
-	}
-	.cta-buttons__container :global(a) {
-		margin-right: 1rem;
-		margin-bottom: 1rem;
-	}
-	.code-buttons__container {
-		margin: 1rem auto;
-		display: flex;
-		flex-wrap: wrap;
-	}
-	.code-buttons__container > a {
-		margin-right: 1rem;
-		margin-bottom: 1rem;
-	}
-</style>
+<MainLayout title="Page not found — KALYE NOIR">
+  <section class="wrap flex flex-col items-center py-32 text-center">
+    <h1 class="display text-5xl sm:text-6xl">Page not found</h1>
+    <p class="mt-6 max-w-md text-muted">
+      The page you're looking for moved or never existed. The tees are all still here.
+    </p>
+    <a href="/products" class="btn btn-primary mt-8">Shop now</a>
+  </section>
+</MainLayout>

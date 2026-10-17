@@ -1,0 +1,30 @@
+---
+import type { Product } from '../data/catalog';
+import ProductCard from './ProductCard.astro';
+
+interface Props {
+  products: Product[];
+  id?: string;
+}
+
+const { products, id } = Astro.props;
+---
+
+<section id={id} class="wrap py-12">
+  {
+    products.length ? (
+      <ul
+        data-product-grid
+        class="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3"
+      >
+        {products.map((product, index) => (
+          <li data-name={product.title} data-index={index}>
+            <ProductCard product={product} />
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="py-16 text-center text-sm text-muted">No products found.</p>
+    )
+  }
+</section>

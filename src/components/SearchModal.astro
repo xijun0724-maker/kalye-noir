@@ -1,0 +1,89 @@
+---
+// Search island. Filters the static catalog client-side — no server round-trip.
+---
+
+<div class="pointer-events-none fixed inset-0 z-50" data-search-root aria-hidden="true">
+  <div
+    class="absolute inset-0 bg-ink/50 opacity-0 backdrop-blur-sm transition-opacity duration-200"
+    data-search-backdrop
+  >
+  </div>
+  <div
+    data-search-panel
+    class="relative mx-auto mt-24 w-[calc(100%-2rem)] max-w-2xl -translate-y-3 bg-paper p-5 opacity-0 shadow-2xl transition-all duration-200"
+  >
+    <div class="flex items-center gap-3 border-b border-line pb-3">
+      <input
+        type="search"
+        data-search-input
+        placeholder="Search products…"
+        aria-label="Search products"
+        class="w-full text-lg outline-none placeholder:text-muted"
+      />
+      <button type="button" data-search-close aria-label="Close search" class="text-2xl leading-none">
+        ×
+      </button>
+    </div>
+    <div data-search-results class="mt-4 max-h-[60vh] overflow-y-auto"></div>
+  </div>
+</div>
+
+<script>
+  import { products } from '../data/catalog';
+
+  const root = document.querySelector<HTMLElement>('[data-search-root]');
+  if (root) {
+    const backdrop = root.querySelector<HTMLElement>('[data-search-backdrop]')!;
+    const panel = root.querySelector<HTMLElement>('[data-search-panel]')!;
+    const input = root.querySelector<HTMLInputElement>('[data-search-input]')!;
+    const results = root.querySelector<HTMLElement>('[data-search-results]')!;
+
+    function open() {
+      root!.setAttribute('aria-hidden', 'false');
+      root!.classList.add('pointer-events-auto');
+      root!.classList.remove('pointer-events-none');
+      backdrop.classList.remove('opacity-0');
+      panel.classList.remove('opacity-0', '-translate-y-3');
+      input.focus();
+    }
+
+    function close() {
+      root!.setAttribute('aria-hidden', 'true');
+      root!.classList.remove('pointer-events-auto');
+      root!.classList.add('pointer-events-none');
+      backdrop.classList.add('opacity-0');
+      panel.classList.add('opacity-0', '-translate-y-3');
+    }
+
+    function render(query: string) {
+      const q = query.trim().toLowerCase();
+      const matches = products.filter(
+        (p) =>
+          !q ||
+          p.title.toLowerCase().includes(q) ||
+          p.blurb.toLowerCase().includes(q) ||
+          p.category.includes(q)
+      );
+      results.innerHTML = matches.length
+        ? matches
+            .map(
+              (p) => `
+        <a href="/products/${p.slug}" class="flex items-center gap-4 border-b border-line py-3 hover:bg-line/30">
+          <img src="${p.image}" alt="" width="48" height="60" class="h-[60px] w-[48px] object-contain" loading="lazy" />
+          <span class="flex-1 text-sm">${p.title}</span>
+        </a>`
+            )
+            .join('')
+        : '<p class="py-10 text-center text-sm text-muted">No matches.</p>';
+    }
+
+    document.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('[data-search-open]')) open();
+    });
+    root.querySelector('[data-search-close]')?.addEventListener('click', close);
+    backdrop.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => e.key === 'Escape' && close());
+    input.addEventListener('input', () => render(input.value));
+    render('');
+  }
+</script>

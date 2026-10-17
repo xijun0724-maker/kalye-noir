@@ -1,0 +1,168 @@
+---
+import type { Product } from '../data/catalog';
+import { uniqueColors, uniqueSizes, uniqueGenders } from '../data/catalog';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const colors = uniqueColors(product);
+const sizes = uniqueSizes(product);
+const genders = uniqueGenders(product);
+// Seed the island with a real variant so hidden single-option groups (e.g. the
+// fixed Black colourway) still resolve to a purchasable SKU.
+const first = product.variants[0];
+
+const pill =
+  'border border-line px-3 py-2 text-xs transition-colors hover:border-ink data-[selected=true]:border-ink data-[selected=true]:bg-ink data-[selected=true]:text-paper disabled:cursor-not-allowed disabled:opacity-40';
+---
+
+<div
+  data-atc
+  data-slug={product.slug}
+  data-title={product.title}
+  data-image={product.image}
+  data-default-color={first.color}
+  data-default-size={first.size}
+  data-default-gender={first.gender}
+>
+  {
+    colors.length > 1 && (
+      <div class="mb-5">
+        <p class="label mb-2">Color</p>
+        <div class="flex flex-wrap gap-2" data-group="color">
+          {colors.map((c) => (
+            <button type="button" data-value={c} class={pill}>
+              {c}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  {
+    sizes.length > 1 && (
+      <div class="mb-5">
+        <p class="label mb-2">Size</p>
+        <div class="flex flex-wrap gap-2" data-group="size">
+          {sizes.map((s) => (
+            <button type="button" data-value={s} class={pill}>
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  {
+    genders.length > 1 && (
+      <div class="mb-5">
+        <p class="label mb-2">Fit</p>
+        <div class="flex flex-wrap gap-2" data-group="gender">
+          {genders.map((g) => (
+            <button type="button" data-value={g} class={pill}>
+              {g}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  <div class="mb-5 flex items-center gap-4">
+    <p class="label">Qty</p>
+    <div class="flex items-center gap-4">
+      <button type="button" data-step="-1" class="h-8 w-8 border border-line" aria-label="Decrease quantity">
+        −
+      </button>
+      <span data-qty class="min-w-4 text-center text-sm">1</span>
+      <button type="button" data-step="1" class="h-8 w-8 border border-line" aria-label="Increase quantity">
+        +
+      </button>
+    </div>
+  </div>
+
+  <button type="button" data-add class="btn btn-primary w-full">Add to cart</button>
+  <p data-stock-note class="mt-2 text-xs text-muted" aria-live="polite"></p>
+</div>
+
+<script>
+  import { findVariant } from '../data/catalog';
+  import { addToCart } from '../stores/cartStore';
+
+  const root = document.querySelector<HTMLElement>('[data-atc]');
+  if (root) {
+    const state: Record<string, string | number> = {
+      color: root.dataset.defaultColor ?? '',
+      size: root.dataset.defaultSize ?? '',
+      gender: root.dataset.defaultGender ?? '',
+      qty: 1,
+    };
+    const addBtn = root.querySelector<HTMLButtonElement>('[data-add]')!;
+    const note = root.querySelector<HTMLElement>('[data-stock-note]')!;
+    const qtyEl = root.querySelector<HTMLElement>('[data-qty]')!;
+
+    // Preselect the first option in each group (hidden single-option groups too).
+    root.querySelectorAll<HTMLElement>('[data-group]').forEach((group) => {
+      const opts = group.querySelectorAll<HTMLElement>('[data-value]');
+      if (opts[0]) {
+        opts[0].dataset.selected = 'true';
+        state[group.dataset.group!] = opts[0].dataset.value!;
+      }
+    });
+
+    function variant() {
+      return findVariant(
+        root!.dataset.slug!,
+        state.color as string,
+        state.size as string,
+        state.gender as string
+      );
+    }
+
+    function refreshStock() {
+      const v = variant();
+      const inStock = !!v && v.stock > 0;
+      addBtn.disabled = !inStock;
+      note.textContent = !v ? 'Select an option' : inStock ? 'In stock' : 'Out of stock';
+    }
+
+    root.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      const opt = t.closest<HTMLElement>('[data-value]');
+      if (opt) {
+        const group = opt.closest<HTMLElement>('[data-group]')!;
+        group.querySelectorAll<HTMLElement>('[data-value]').forEach((b) => {
+          b.dataset.selected = 'false';
+        });
+        opt.dataset.selected = 'true';
+        state[group.dataset.group!] = opt.dataset.value!;
+        refreshStock();
+        return;
+      }
+      const step = t.closest<HTMLElement>('[data-step]');
+      if (step) {
+        state.qty = Math.max(1, (state.qty as number) + Number(step.dataset.step));
+        qtyEl.textContent = String(state.qty);
+      }
+    });
+
+    addBtn.addEventListener('click', () => {
+      const v = variant();
+      if (!v || v.stock < 1) return;
+      addToCart({
+        sku: v.sku,
+        slug: root.dataset.slug!,
+        title: root.dataset.title!,
+        variant: [state.color, state.size, state.gender].filter(Boolean).join(' · '),
+        image: root.dataset.image!,
+        qty: state.qty as number,
+      });
+    });
+
+    refreshStock();
+  }
+</script>

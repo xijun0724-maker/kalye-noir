@@ -1,295 +1,222 @@
 ---
-import Layout from '../layouts/Page.astro';
-import { Button } from '@components/odyssey-theme';
-
-const seo = {
-	title: 'Your Cart | Kalye Noir',
-	description:
-		'Review your Kalye Noir pieces and send the order request. Pricing confirmed per order.',
-};
+import MainLayout from '../layouts/MainLayout.astro';
+import ReviewWall from '../components/ReviewWall.astro';
+import { shippingZones, courier } from '../data/shipping';
 ---
 
-<Layout {seo}>
-	<header class="cart-head">
-		<div class="kn-wrap">
-			<p class="kn-label">Your selection</p>
-			<h1 class="cart-head__title">Your cart</h1>
-			<div class="kn-rule cart-head__rule"></div>
-		</div>
-	</header>
+<MainLayout
+  title="Cart — KALYE NOIR"
+  description="Review your Kalye Noir selection, add an order note and estimate delivery."
+>
+  <section class="wrap py-14">
+    <h1 class="display reveal text-center text-4xl sm:text-5xl">Cart</h1>
 
-	<section class="cart" aria-label="Cart contents">
-		<div class="kn-wrap cart__grid">
-			<div class="cart__main">
-				<div class="cart__cols" aria-hidden="true">
-					<span>Item</span>
-					<span>Quantity</span>
-				</div>
-				<div class="cart__lines" data-cart-items></div>
-				<div class="cart__foot">
-					<a class="cart__continue" href="/products">← Continue shopping</a>
-				</div>
-			</div>
+    <div class="mt-14">
+      <div
+        class="meta hidden border-b border-line pb-3 text-muted sm:flex sm:items-center sm:justify-between"
+      >
+        <span>Product</span>
+        <span>Quantity</span>
+      </div>
+      <div data-cart-rows></div>
+    </div>
 
-			<aside class="cart__summary" aria-labelledby="summary-title">
-				<h2 id="summary-title" class="cart__summary-title">Summary</h2>
-				<div class="cart__count">
-					<span class="kn-label">Total items</span>
-					<span class="cart__count-num" data-cart-count-text>0</span>
-				</div>
-				<p class="cart__note">
-					No prices on the site — pricing is confirmed per order. No
-					payment is taken here; we follow up with sizes, price and
-					payment details.
-				</p>
-				<a class="cart__checkout" href="#checkout">Proceed to checkout</a>
-			</aside>
-		</div>
-	</section>
+    <div class="mt-10 grid gap-10 lg:grid-cols-2">
+      <div>
+        <label class="label mb-3 block" for="order-note">Add order note</label>
+        <textarea
+          id="order-note"
+          data-order-note
+          rows="5"
+          placeholder="How can we help you?"
+          class="w-full border border-line bg-transparent px-4 py-3 text-sm outline-none transition-colors focus:border-ink"
+        ></textarea>
+      </div>
 
-	<!-- ============ CHECKOUT ============ -->
-	<section id="checkout" class="checkout" aria-labelledby="checkout-title">
-		<div class="kn-wrap checkout__grid">
-			<div class="checkout__intro">
-				<p class="kn-label">Final step</p>
-				<h2 id="checkout-title" class="checkout__title">Checkout</h2>
-				<p class="checkout__text">
-					Your cart is attached to this request automatically. Send it and
-					we'll follow up with pricing, sizes and payment details.
-				</p>
-				<ul class="checkout__channels">
-					<li>Facebook &amp; Instagram promos</li>
-					<li>Direct orders through this site</li>
-					<li>Custom designs on request</li>
-				</ul>
-			</div>
+      <div class="flex flex-col items-start gap-3 lg:items-end">
+        <p class="meta text-ink">
+          Total: <span data-cart-count-text>0</span>
+          <span data-cart-count-word>items</span>
+        </p>
+        <p class="meta text-ink lg:text-right">
+          Estimated shipping: <span data-cart-shipping>Select a province below</span>
+        </p>
+        <p class="meta text-muted lg:text-right">
+          Shipping via {courier}
+        </p>
+        <a href="/checkout" class="btn btn-primary w-full sm:w-auto" data-checkout>Checkout</a>
+      </div>
+    </div>
+  </section>
 
-			<form
-				class="checkout__form"
-				name="order"
-				method="POST"
-				data-netlify="true"
-				action="/order-thank-you"
-			>
-				<input type="hidden" name="form-name" value="order" />
-				<input type="hidden" name="cart-contents" value="" />
+  <section class="wrap pb-20">
+    <fieldset class="relative border border-line px-6 pb-6 pt-0">
+      <legend class="meta mx-auto px-4 text-ink">Estimate shipping</legend>
 
-				<label class="checkout__field">
-					<span class="kn-label">Name</span>
-					<input type="text" name="name" placeholder="Your name" required />
-				</label>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-[10rem_1fr_1fr_auto]">
+        <label class="block">
+          <span class="meta mb-1.5 block text-muted">Country</span>
+          <select
+            class="w-full border border-line bg-transparent px-3 py-2.5 text-sm outline-none focus:border-ink"
+          >
+            <option>Philippines</option>
+          </select>
+        </label>
 
-				<label class="checkout__field">
-					<span class="kn-label">Email</span>
-					<input type="email" name="email" placeholder="you@example.com" required />
-				</label>
+        <label class="block">
+          <span class="meta mb-1.5 block text-muted">Province</span>
+          <select
+            data-province
+            class="w-full border border-line bg-transparent px-3 py-2.5 text-sm outline-none focus:border-ink"
+          >
+            <option value="">Select province</option>
+            {
+              shippingZones.map((zone) => (
+                <optgroup label={zone.label}>
+                  {zone.provinces.map((province) => (
+                    <option value={province} data-zone={zone.id}>
+                      {province}
+                    </option>
+                  ))}
+                </optgroup>
+              ))
+            }
+          </select>
+        </label>
 
-				<label class="checkout__field">
-					<span class="kn-label">Order note</span>
-					<textarea
-						name="note"
-						rows="4"
-						placeholder="Sizes, customization requests, delivery notes…"></textarea>
-				</label>
+        <label class="block">
+          <span class="meta mb-1.5 block text-muted">Zip code</span>
+          <input
+            data-zip
+            inputmode="numeric"
+            placeholder="Zip code"
+            class="w-full border border-line bg-transparent px-3 py-2.5 text-sm outline-none focus:border-ink"
+          />
+        </label>
 
-				<Button customIcon>Send order request
-					<Fragment slot="icon">
-						<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
-							><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"></path></svg
-						>
-					</Fragment>
-				</Button>
-			</form>
-		</div>
-	</section>
-</Layout>
+        <button type="button" data-estimate class="btn btn-primary h-fit self-end sm:col-span-2 lg:col-span-1">
+          Estimate
+        </button>
+      </div>
 
-<style>
-	.cart-head {
-		padding-block: clamp(2.5rem, 7vw, 5rem) clamp(1rem, 3vw, 1.75rem);
-	}
-	.cart-head__title {
-		font-size: clamp(3rem, 11vw, 8rem);
-		line-height: 0.85;
-		letter-spacing: -0.02em;
-		margin: 0.75rem 0 1.5rem;
-	}
-	.cart-head__rule {
-		max-width: 14rem;
-	}
+      <p data-estimate-result class="meta mt-5 text-muted" aria-live="polite"></p>
+    </fieldset>
+  </section>
 
-	.cart__grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
-		gap: clamp(1.5rem, 5vw, 4rem);
-		align-items: start;
-	}
-	.cart__cols {
-		display: flex;
-		justify-content: space-between;
-		padding-bottom: 0.85rem;
-		border-bottom: 2px solid var(--kn-ink);
-		font-family: var(--theme-font-mono);
-		font-size: var(--font-size-sm);
-		text-transform: uppercase;
-		letter-spacing: 0.18em;
-		color: var(--kn-ink-muted);
-	}
-	/* injected line markup from cart.js */
-	.cart__lines :global(.cart-line) {
-		padding: 1.1rem 0;
-	}
-	.cart__lines :global(.cart-line img) {
-		width: 72px;
-		height: 90px;
-	}
-	.cart__lines :global(.cart-line__name) {
-		font-size: var(--font-size-md);
-	}
-	.cart__lines :global(.cart-drawer__empty) {
-		padding: 3rem 0;
-		text-align: left;
-	}
-	.cart__lines :global(.cart-drawer__empty a) {
-		color: var(--kn-red);
-	}
-	.cart__foot {
-		padding-top: 1.25rem;
-	}
-	.cart__continue {
-		font-family: var(--theme-font-mono);
-		font-size: var(--font-size-sm);
-		text-transform: uppercase;
-		letter-spacing: 0.12em;
-		text-decoration: none;
-	}
-	.cart__continue:hover {
-		color: var(--kn-red);
-	}
+  <ReviewWall />
+</MainLayout>
 
-	.cart__summary {
-		position: sticky;
-		top: 1.5rem;
-		background: var(--kn-paper-2);
-		border: 2px solid var(--kn-ink);
-		padding: clamp(1.25rem, 3vw, 2rem);
-	}
-	.cart__summary-title {
-		font-size: var(--font-size-lg);
-		margin: 0 0 1rem;
-	}
-	.cart__count {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: 1rem;
-		padding-bottom: 1rem;
-		border-bottom: 2px solid var(--kn-ink);
-	}
-	.cart__count-num {
-		font-family: var(--theme-font-display);
-		font-size: var(--font-size-lg);
-		line-height: 1;
-	}
-	.cart__note {
-		font-family: var(--theme-font-mono);
-		font-size: var(--font-size-sm);
-		line-height: 1.7;
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
-		color: var(--kn-ink-muted);
-		margin: 1rem 0 1.25rem;
-	}
-	.cart__checkout {
-		display: block;
-		width: 100%;
-		text-align: center;
-		padding: 0.95rem 1rem;
-		background: var(--kn-ink);
-		color: var(--kn-paper);
-		border: 2px solid var(--kn-ink);
-		font-weight: 800;
-		font-size: var(--font-size-sm);
-		text-transform: uppercase;
-		letter-spacing: 0.12em;
-		text-decoration: none;
-		transition: background-color 0.2s ease, border-color 0.2s ease;
-	}
-	.cart__checkout:hover {
-		background: var(--kn-red);
-		border-color: var(--kn-red);
-	}
+<script>
+  import {
+    cartItems,
+    cartCount,
+    removeFromCart,
+    setQty,
+    orderNote,
+    shippingZoneId,
+    shippingProvince,
+  } from '../stores/cartStore';
+  import type { CartItem } from '../stores/cartStore';
+  import { zoneById, estimateFee } from '../data/shipping';
+  import { formatPHP } from '../lib/format';
 
-	/* checkout */
-	.checkout {
-		margin-top: var(--section-margin);
-	}
-	.checkout__grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-		gap: clamp(1.5rem, 5vw, 4rem);
-		background: var(--kn-paper-2);
-		border: 2px solid var(--kn-ink);
-		padding: clamp(1.5rem, 4vw, 3rem);
-	}
-	.checkout__title {
-		font-size: clamp(2.4rem, 6vw, 4.5rem);
-		margin: 0.5rem 0 1rem;
-	}
-	.checkout__text {
-		max-width: 40ch;
-	}
-	.checkout__channels {
-		margin: 1.25rem 0 0;
-		padding: 0;
-		list-style: none;
-		font-family: var(--theme-font-mono);
-		font-size: var(--font-size-sm);
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
-		color: var(--kn-ink-muted);
-	}
-	.checkout__channels li {
-		margin-bottom: 0.5rem;
-	}
-	.checkout__channels li::before {
-		content: '// ';
-		color: var(--kn-red);
-	}
-	.checkout__form {
-		display: grid;
-		gap: 1.1rem;
-		align-self: start;
-	}
-	.checkout__field {
-		display: grid;
-		gap: 0.35rem;
-	}
-	.checkout__field input,
-	.checkout__field textarea {
-		width: 100%;
-		padding: 0.7rem;
-		background: transparent;
-		border: 2px solid var(--kn-ink);
-		border-radius: 0;
-		color: var(--kn-ink);
-		font-family: var(--theme-font-family-sans);
-		font-size: var(--font-size-base);
-		outline: none;
-		resize: vertical;
-	}
-	.checkout__field input:focus,
-	.checkout__field textarea:focus {
-		border-color: var(--kn-red);
-	}
+  const rows = document.querySelector<HTMLElement>('[data-cart-rows]');
+  const countEl = document.querySelector<HTMLElement>('[data-cart-count-text]');
+  const countWord = document.querySelector<HTMLElement>('[data-cart-count-word]');
+  const checkout = document.querySelector<HTMLAnchorElement>('[data-checkout]');
+  const note = document.querySelector<HTMLTextAreaElement>('[data-order-note]');
+  const shipEl = document.querySelector<HTMLElement>('[data-cart-shipping]');
 
-	@media (max-width: 860px) {
-		.cart__grid,
-		.checkout__grid {
-			grid-template-columns: 1fr;
-		}
-		.cart__summary {
-			position: static;
-		}
-	}
-</style>
+  // Derived from the stored zone + current cart, so it never goes stale.
+  function refreshShipping() {
+    if (!shipEl) return;
+    const zone = zoneById(shippingZoneId.get());
+    const fee = estimateFee(shippingZoneId.get(), cartCount.get());
+    shipEl.textContent =
+      zone && fee !== null ? `${formatPHP(fee)} · ${zone.days} business days` : 'Select a province below';
+  }
+
+  if (rows && countEl && countWord && checkout) {
+    const line = (i: CartItem) => `
+      <div data-sku="${i.sku}" class="grid grid-cols-[6rem_1fr] items-start gap-5 border-b border-line py-6 sm:grid-cols-[6rem_1fr_auto]">
+        <img src="${i.image}" alt="" width="96" height="120" loading="lazy" class="h-[120px] w-24 bg-white object-contain p-2" />
+        <div class="min-w-0">
+          <p class="font-condensed text-sm font-semibold uppercase tracking-[0.14em]">${i.title}</p>
+          <p class="meta mt-1.5 text-muted">${i.variant}</p>
+        </div>
+        <div class="col-span-2 flex flex-col items-start gap-2 sm:col-span-1 sm:items-end">
+          <div class="flex items-stretch border border-line">
+            <button type="button" data-step="-1" class="h-10 w-10 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Decrease quantity">−</button>
+            <span class="flex w-12 items-center justify-center text-sm">${i.qty}</span>
+            <button type="button" data-step="1" class="h-10 w-10 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Increase quantity">+</button>
+          </div>
+          <button type="button" data-remove class="meta text-muted underline underline-offset-4 transition-colors hover:text-registration">Remove</button>
+        </div>
+      </div>`;
+
+    function render() {
+      const items = cartItems.get();
+      rows!.innerHTML = items.length
+        ? items.map(line).join('')
+        : `<p class="border-b border-line py-16 text-center text-sm text-muted">
+             Your cart is empty. <a class="underline underline-offset-4 hover:text-registration" href="/products">Shop the tees</a>.
+           </p>`;
+
+      const count = cartCount.get();
+      countEl!.textContent = String(count);
+      countWord!.textContent = count === 1 ? 'item' : 'items';
+      checkout!.classList.toggle('pointer-events-none', count === 0);
+      checkout!.classList.toggle('opacity-40', count === 0);
+      checkout!.setAttribute('aria-disabled', String(count === 0));
+      refreshShipping();
+    }
+
+    rows.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      const sku = t.closest<HTMLElement>('[data-sku]')?.dataset.sku;
+      if (!sku) return;
+      if (t.closest('[data-remove]')) return removeFromCart(sku);
+      const step = t.closest<HTMLElement>('[data-step]');
+      if (step) {
+        const current = cartItems.get().find((i) => i.sku === sku);
+        if (current) setQty(sku, current.qty + Number(step.dataset.step));
+      }
+    });
+
+    const unsubscribe = cartItems.subscribe(render);
+    render();
+
+    document.addEventListener('astro:before-swap', () => unsubscribe(), { once: true });
+  }
+
+  if (note) {
+    note.value = orderNote.get();
+    note.addEventListener('input', () => orderNote.set(note.value));
+  }
+
+  const province = document.querySelector<HTMLSelectElement>('[data-province]');
+  const zip = document.querySelector<HTMLInputElement>('[data-zip]');
+  const estimate = document.querySelector<HTMLElement>('[data-estimate]');
+  const result = document.querySelector<HTMLElement>('[data-estimate-result]');
+
+  if (province && zip && estimate && result) {
+    if (shippingProvince.get()) province.value = shippingProvince.get();
+
+    estimate.addEventListener('click', () => {
+      const zone = zoneById(province.selectedOptions[0]?.dataset.zone);
+      if (!zone) {
+        result.textContent = 'Choose a province to see the delivery estimate.';
+        return;
+      }
+      const fee = estimateFee(zone.id, cartCount.get());
+      if (fee === null) {
+        result.textContent = 'Add a tee to your cart to estimate shipping.';
+        return;
+      }
+      shippingZoneId.set(zone.id);
+      shippingProvince.set(province.value);
+      result.textContent = `${formatPHP(fee)} — ${zone.days} business days`;
+      refreshShipping();
+    });
+  }
+</script>

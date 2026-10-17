@@ -1,0 +1,233 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import {
+  shippingZones,
+  deliveryLines,
+  orderTerms,
+  courier,
+} from '../data/shipping';
+
+const field =
+  'w-full border border-line bg-transparent px-4 py-3 text-sm outline-none transition-colors focus:border-ink';
+---
+
+<MainLayout
+  title="Checkout — KALYE NOIR"
+  description="Confirm your Kalye Noir order request — delivery details and order notes."
+>
+  <section class="wrap py-14">
+    <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
+      <a href="/" class="transition-colors hover:text-registration">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="/cart" class="transition-colors hover:text-registration">Cart</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-ink">Checkout</span>
+    </nav>
+
+    <h1 class="display reveal mt-8 text-center text-4xl sm:text-5xl">Checkout</h1>
+
+    <div class="mt-14 grid gap-12 lg:grid-cols-[1fr_20rem] lg:gap-16">
+      <form
+        name="order"
+        method="POST"
+        data-netlify="true"
+        action="/order-thank-you"
+        data-order-form
+        class="grid gap-5"
+      >
+        <input type="hidden" name="form-name" value="order" />
+        <input type="hidden" name="cart-contents" value="" />
+        <input type="hidden" name="shipping-fee" value="" />
+
+        <p class="meta text-muted">Contact</p>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="grid gap-1.5">
+            <span class="label">Name</span>
+            <input type="text" name="name" required placeholder="Your name" class={field} />
+          </label>
+          <label class="grid gap-1.5">
+            <span class="label">Email</span>
+            <input type="email" name="email" required placeholder="you@example.com" class={field} />
+          </label>
+          <label class="grid gap-1.5 sm:col-span-2">
+            <span class="label">Mobile number</span>
+            <input type="tel" name="phone" required placeholder="09XX XXX XXXX" class={field} />
+          </label>
+        </div>
+
+        <p class="meta mt-2 text-muted">Delivery address</p>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="grid gap-1.5 sm:col-span-2">
+            <span class="label">Street / house no. / barangay</span>
+            <input type="text" name="street" required placeholder="123 Kalye St., Barangay 1" class={field} />
+          </label>
+          <label class="grid gap-1.5">
+            <span class="label">Province</span>
+            <select name="province" required class={field}>
+              <option value="">Select province</option>
+              {
+                shippingZones.map((zone) => (
+                  <optgroup label={zone.label}>
+                    {zone.provinces.map((province) => (
+                      <option value={province} data-zone={zone.id}>
+                        {province}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))
+              }
+            </select>
+          </label>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="grid gap-1.5">
+              <span class="label">City / municipality</span>
+              <input type="text" name="city" required class={field} />
+            </label>
+            <label class="grid gap-1.5">
+              <span class="label">Zip code</span>
+              <input type="text" name="zip" inputmode="numeric" required class={field} />
+            </label>
+          </div>
+          <label class="grid gap-1.5 sm:col-span-2">
+            <span class="label">Order note</span>
+            <textarea
+              name="note"
+              rows="3"
+              placeholder="How can we help you?"
+              data-order-note
+              class={field}
+            ></textarea>
+          </label>
+        </div>
+
+        <div
+          class="mt-4 space-y-4 border-y border-dashed border-muted/50 py-6 text-sm leading-relaxed text-muted"
+        >
+          <p>{orderTerms.receipt}</p>
+          <p>{orderTerms.preparation}</p>
+          <div class="space-y-2">
+            <p>{orderTerms.deliveryIntro}</p>
+            <ul class="space-y-1">
+              {deliveryLines.map((line) => <li>{line}</li>)}
+            </ul>
+          </div>
+          <p class="border-t border-dashed border-muted/50 pt-4">{orderTerms.payment}</p>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full">Complete order</button>
+      </form>
+
+      <aside class="h-fit border border-line p-6 lg:sticky lg:top-24">
+        <h2 class="meta text-ink">Your order</h2>
+        <div class="mt-4" data-checkout-items></div>
+        <div class="mt-4 flex items-baseline justify-between border-t border-line pt-4">
+          <span class="meta text-muted">Total items</span>
+          <span class="text-lg font-semibold" data-checkout-count>0</span>
+        </div>
+        <div class="mt-3 flex items-baseline justify-between gap-4">
+          <span class="meta text-muted">Est. shipping</span>
+          <span class="text-right text-sm font-semibold" data-shipping-fee>Select your province</span>
+        </div>
+        <p class="meta mt-1 text-muted">{courier}</p>
+        <p class="mt-4 text-xs leading-relaxed text-muted">
+          No payment is taken on this site. We confirm pricing by email and collect the exact amount
+          on delivery.
+        </p>
+        <a href="/cart" class="meta mt-5 inline-block text-muted underline underline-offset-4 hover:text-registration">
+          Edit cart
+        </a>
+      </aside>
+    </div>
+  </section>
+</MainLayout>
+
+<script>
+  import {
+    cartItems,
+    cartCount,
+    cartSummary,
+    orderNote,
+    shippingZoneId,
+    shippingProvince,
+  } from '../stores/cartStore';
+  import { zoneById, estimateFee, courier } from '../data/shipping';
+  import { formatPHP } from '../lib/format';
+
+  const items = document.querySelector<HTMLElement>('[data-checkout-items]');
+  const countEl = document.querySelector<HTMLElement>('[data-checkout-count]');
+  const form = document.querySelector<HTMLFormElement>('[data-order-form]');
+  const note = document.querySelector<HTMLTextAreaElement>('[data-order-note]');
+  const feeEl = document.querySelector<HTMLElement>('[data-shipping-fee]');
+  const provinceSelect = form?.querySelector<HTMLSelectElement>('select[name="province"]');
+  const feeInput = form?.querySelector<HTMLInputElement>('input[name="shipping-fee"]');
+
+  // Fee follows the chosen province and the live cart weight.
+  function refreshFee() {
+    if (!feeEl || !provinceSelect) return;
+    const zone = zoneById(provinceSelect.selectedOptions[0]?.dataset.zone);
+    const fee = estimateFee(zone?.id, cartCount.get());
+    if (!zone || fee === null) {
+      feeEl.textContent = zone ? 'Add a tee to your cart' : 'Select your province';
+      if (feeInput) feeInput.value = '';
+      return;
+    }
+    feeEl.textContent = `${formatPHP(fee)} · ${zone.days} business days`;
+    if (feeInput) {
+      feeInput.value = `${courier} — ${zone.label} — PHP ${(fee / 100).toFixed(2)} — ${
+        zone.days
+      } business days`;
+    }
+  }
+
+  if (provinceSelect) {
+    if (shippingProvince.get()) provinceSelect.value = shippingProvince.get();
+    provinceSelect.addEventListener('change', () => {
+      shippingZoneId.set(provinceSelect.selectedOptions[0]?.dataset.zone ?? '');
+      shippingProvince.set(provinceSelect.value);
+      refreshFee();
+    });
+    refreshFee();
+  }
+
+  if (items && countEl) {
+    const render = () => {
+      const cart = cartItems.get();
+      items.innerHTML = cart.length
+        ? cart
+            .map(
+              (i) => `
+          <div class="flex items-start justify-between gap-4 border-b border-line py-3 last:border-0">
+            <div class="min-w-0">
+              <p class="font-condensed text-[13px] font-semibold uppercase tracking-[0.12em]">${i.title}</p>
+              <p class="meta mt-1 text-muted">${i.variant}</p>
+            </div>
+            <span class="text-sm text-muted">×${i.qty}</span>
+          </div>`
+            )
+            .join('')
+        : '<p class="py-6 text-sm text-muted">Your cart is empty.</p>';
+      countEl.textContent = String(cartCount.get());
+      refreshFee();
+    };
+    const unsubscribe = cartItems.subscribe(render);
+    render();
+    document.addEventListener('astro:before-swap', () => unsubscribe(), { once: true });
+  }
+
+  if (note) {
+    note.value = orderNote.get();
+    note.addEventListener('input', () => orderNote.set(note.value));
+  }
+
+  form?.addEventListener('submit', (e) => {
+    if (!cartItems.get().length) {
+      e.preventDefault();
+      alert('Your cart is empty.');
+      return;
+    }
+    orderNote.set(note?.value ?? '');
+    refreshFee();
+    const field = form.querySelector<HTMLInputElement>('input[name="cart-contents"]');
+    if (field) field.value = cartSummary();
+  });
+</script>

@@ -1,0 +1,72 @@
+---
+import { Icon } from 'astro-icon/components';
+import { nav, site } from '../config/site';
+import CartButton from './CartButton.astro';
+---
+
+<header class="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
+  <div class="wrap flex h-16 items-center justify-between gap-4">
+    <a
+      href="/"
+      class="font-display text-xl uppercase leading-none tracking-[0.18em]"
+      aria-label={`${site.name} home`}
+    >
+      {site.name}
+    </a>
+
+    <nav class="hidden lg:block" aria-label="Primary">
+      <ul class="flex items-center gap-8">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="font-condensed text-[11px] font-semibold uppercase tracking-[0.26em] text-muted transition-colors hover:text-registration"
+              >
+                {item.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-4">
+      <button
+        type="button"
+        data-search-open
+        aria-label="Search"
+        class="text-ink/80 transition-colors hover:text-ink"
+      >
+        <Icon name="mdi:magnify" width={22} height={22} />
+      </button>
+      <a href="/contact" aria-label="Account" class="text-ink/80 transition-colors hover:text-ink">
+        <Icon name="mdi:account-outline" width={22} height={22} />
+      </a>
+      <CartButton />
+    </div>
+  </div>
+
+  <details class="border-t border-line lg:hidden">
+    <summary
+      class="wrap flex cursor-pointer items-center justify-between py-3 text-[11px] uppercase tracking-[0.2em]"
+    >
+      Menu
+      <Icon name="mdi:menu" width={22} height={22} />
+    </summary>
+    <ul class="wrap flex flex-col gap-3 pb-5">
+      {
+        nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class="font-condensed text-base font-semibold uppercase tracking-[0.2em]"
+            >
+              {item.title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </details>
+</header>

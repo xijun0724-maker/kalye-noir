@@ -1,0 +1,31 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<button
+  type="button"
+  data-cart-open
+  aria-label="Open cart"
+  class="relative text-ink/80 transition-colors hover:text-ink"
+>
+  <Icon name="mdi:cart-outline" width={22} height={22} />
+  <span
+    class="absolute -right-2 -top-2 min-w-[1.1rem] items-center justify-center rounded-full bg-registration px-1 text-center text-[10px] font-bold leading-[1.1rem] text-paper"
+    data-cart-count
+    style="display:none"
+  >
+  </span>
+</button>
+
+<script>
+  import { cartCount } from '../stores/cartStore';
+
+  const badge = document.querySelector<HTMLElement>('[data-cart-count]');
+  if (badge) {
+    const unsub = cartCount.subscribe((n) => {
+      badge.textContent = String(n);
+      badge.style.display = n === 0 ? 'none' : 'inline-flex';
+    });
+    document.addEventListener('astro:before-swap', () => unsub(), { once: true });
+  }
+</script>

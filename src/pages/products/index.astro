@@ -1,0 +1,65 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import ProductGrid from '../../components/ProductGrid.astro';
+import { products } from '../../data/catalog';
+---
+
+<MainLayout
+  title="Kalye's Tee — KALYE NOIR"
+  description="Kalye's Tee — the Kalye Noir collection. KALYENOIR, MEDUSA and MANILA prints on heavyweight cotton."
+>
+  <div class="wrap pt-7">
+    <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
+      <a href="/" class="transition-colors hover:text-registration">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="/products" class="transition-colors hover:text-registration">Shop</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-ink">Kalye's Tee</span>
+    </nav>
+  </div>
+
+  <header class="wrap py-12 text-center">
+    <h1 class="display reveal text-[2.75rem] sm:text-6xl lg:text-7xl">Kalye's Tee</h1>
+  </header>
+
+  <div class="border-y border-line">
+    <div class="wrap flex items-center justify-between gap-6 py-3">
+      <p class="meta text-muted">
+        {products.length}
+        {products.length === 1 ? 'print' : 'prints'}
+      </p>
+      <label class="meta flex cursor-pointer items-center gap-3 text-muted">
+        Sort by
+        <select
+          data-sort
+          class="cursor-pointer border-0 bg-transparent font-condensed text-[11px] font-semibold uppercase tracking-[0.28em] text-ink outline-none"
+        >
+          <option value="featured">Featured</option>
+          <option value="az">Name A–Z</option>
+          <option value="za">Name Z–A</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <ProductGrid products={products} />
+</MainLayout>
+
+<script>
+  const grid = document.querySelector<HTMLElement>('[data-product-grid]');
+  const sort = document.querySelector<HTMLSelectElement>('[data-sort]');
+
+  if (grid && sort) {
+    // Keep the server-rendered order for "featured"; reorder the same nodes for A–Z / Z–A.
+    const items = Array.from(grid.children) as HTMLElement[];
+
+    sort.addEventListener('change', () => {
+      const ordered = [...items].sort((a, b) => {
+        if (sort.value === 'az') return a.dataset.name!.localeCompare(b.dataset.name!);
+        if (sort.value === 'za') return b.dataset.name!.localeCompare(a.dataset.name!);
+        return Number(a.dataset.index) - Number(b.dataset.index);
+      });
+      grid.replaceChildren(...ordered);
+    });
+  }
+</script>

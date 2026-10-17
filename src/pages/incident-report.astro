@@ -1,0 +1,117 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+
+const field =
+  'w-full border border-line bg-transparent px-4 py-3 text-sm outline-none transition-colors focus:border-ink';
+---
+
+<MainLayout
+  title="Incident Report — KALYE NOIR"
+  description="Report a missing, damaged or incorrect item from your Kalye Noir order."
+>
+  <section class="wrap py-14">
+    <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
+      <a href="/" class="transition-colors hover:text-registration">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="/contact" class="transition-colors hover:text-registration">Contact Us</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-ink">Incident Report</span>
+    </nav>
+
+    <h1 class="display reveal mt-8 text-center text-4xl sm:text-5xl">Incident Report</h1>
+    <p class="meta mx-auto mt-5 max-w-2xl text-center text-[13px] tracking-[0.18em] text-muted">
+      Tell us what went wrong and we'll sort it out.
+    </p>
+
+    <form
+      name="incident-report"
+      method="POST"
+      data-netlify="true"
+      enctype="multipart/form-data"
+      action="/order-thank-you"
+      class="mx-auto mt-12 grid max-w-3xl gap-5 border border-line p-6 sm:p-9"
+    >
+      <input type="hidden" name="form-name" value="incident-report" />
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="grid gap-1.5">
+          <span class="label">First Name*</span>
+          <input type="text" name="first-name" required class={field} />
+        </label>
+        <label class="grid gap-1.5">
+          <span class="label">Last Name*</span>
+          <input type="text" name="last-name" required class={field} />
+        </label>
+      </div>
+
+      <label class="grid gap-1.5">
+        <span class="label">Facebook Name*</span>
+        <input type="text" name="facebook-name" required class={field} />
+      </label>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="grid gap-1.5">
+          <span class="label">Date Today*</span>
+          <input type="date" name="date-today" required class={field} />
+        </label>
+        <label class="grid gap-1.5">
+          <span class="label">Date item / package was received*</span>
+          <input type="date" name="date-received" required class={field} />
+        </label>
+      </div>
+
+      <label class="grid gap-1.5">
+        <span class="label">Invoice / Order Slip Number*</span>
+        <input type="text" name="order-slip" required class={field} />
+      </label>
+
+      <label class="grid gap-1.5">
+        <span class="label">Email Address*</span>
+        <input type="email" name="email" required class={field} />
+      </label>
+
+      <label class="grid max-w-xs gap-1.5">
+        <span class="label">Contact Number*</span>
+        <input type="tel" name="contact-number" required placeholder="09XX XXX XXXX" class={field} />
+      </label>
+
+      <div class="mt-2">
+        <p class="text-sm font-semibold">Reason For Complaint / Return</p>
+        <p class="mt-2 text-xs leading-relaxed text-muted">
+          (To simplify and speed up your concern, describe in detail the nature of complaint.)*
+        </p>
+        <textarea name="reason" rows="4" required class={`${field} mt-3`}></textarea>
+      </div>
+
+      <div class="space-y-3 border-y border-dashed border-muted/50 py-5 text-xs leading-relaxed text-muted">
+        <p>
+          NOTE: Change of color and/or size is allowed but subject to applicable shipping fees
+          shouldered by the Buyer. We may replace your item with the condition that the item is in
+          its original packaging with tag, unworn, and unused.
+        </p>
+        <p>
+          Please attach photos to support your claims. (Acceptable file type: JPEG, JPG, PNG, GIF &
+          PDF; up to 10mb file size)
+        </p>
+        <p class="font-semibold text-ink">
+          **Our team will ask you to send via email an unboxing video for claims of missing or
+          damaged item/s**
+        </p>
+      </div>
+
+      <label class="grid gap-1.5">
+        <span class="label">Attach a file*</span>
+        <input
+          type="file"
+          name="attachment"
+          required
+          multiple
+          accept=".jpg,.jpeg,.png,.gif,.pdf"
+          class="w-full border border-line bg-transparent px-4 py-3 text-sm outline-none transition-colors file:mr-4 file:border file:border-line file:bg-transparent file:px-3 file:py-1.5 file:text-xs file:uppercase file:tracking-[0.18em] hover:file:bg-line/40 focus:border-ink"
+        />
+      </label>
+
+      <button type="submit" class="btn btn-primary mt-2 w-full">Submit</button>
+    </form>
+  </section>
+</MainLayout>
