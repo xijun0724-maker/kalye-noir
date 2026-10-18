@@ -14,7 +14,7 @@ const { products } = Astro.props;
     {
       products.map((product: Product, index: number) => (
         <li data-name={product.title} data-index={index}>
-          <ProductCard product={product} priority={index === 0} />
+          <ProductCard product={product} priority={index < 2} />
         </li>
       ))
     }

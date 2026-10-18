@@ -1,26 +1,30 @@
 ---
+import { Image } from 'astro:assets';
 import MainLayout from '../layouts/MainLayout.astro';
 import { site, taglines } from '../config/site';
+import posterKalyenoir from '../assets/images/design/kalyenoir-poster.jpg';
+import posterMedusa from '../assets/images/design/medusa-poster.jpg';
+import posterManila from '../assets/images/design/manila-poster.jpg';
 
-// The drop — one poster per print. Poster art lives in /Assets.
+// The drop — one poster per print. Poster art lives in src/assets/images/design.
 const drop = [
   {
     name: 'KALYENOIR',
-    poster: '/assets/images/design/kalyenoir-poster.jpg',
+    poster: posterKalyenoir,
     alt: 'KalyeNoir poster — the wordmark stacked across a Manila street sign',
     href: '/products/kalyenoir-tee',
     line: 'Real dreams, same sky',
   },
   {
     name: 'MEDUSA',
-    poster: '/assets/images/design/medusa-poster.jpg',
+    poster: posterMedusa,
     alt: 'Medusa poster — a hand-drawn gorgon with snakes for hair',
     href: '/products/medusa-tee',
     line: 'Not your myth',
   },
   {
     name: 'MANILA',
-    poster: '/assets/images/design/manila-poster.jpg',
+    poster: posterManila,
     alt: 'Manila poster — a jeepney on a crowded Manila street',
     href: '/products/manila-tee',
     line: 'The city never sleeps',
@@ -38,12 +42,14 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
 
     <div class="wrap grid gap-12 py-16 lg:grid-cols-[1.02fr_1fr] lg:gap-20 lg:py-24">
       <figure class="reveal relative">
-        <img
-          src="/assets/images/design/kalyenoir-poster.jpg"
+        <Image
+          src={posterKalyenoir}
           alt="Kalye Noir KALYENOIR poster — the wordmark stacked beside a Manila street sign"
-          width="1000"
-          height="1294"
+          widths={[400, 600, 800, 1000]}
+          sizes="(min-width: 1024px) 48vw, 92vw"
+          format="webp"
           fetchpriority="high"
+          loading="eager"
           class="w-full border border-paper/15 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]"
         />
         <figcaption class="meta mt-4 flex items-center justify-between text-paper/75">
@@ -124,11 +130,12 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
           <li class={i === 1 ? 'lg:mt-12' : ''}>
             <a href={print.href} class="group block">
               <div class="relative overflow-hidden bg-ink">
-                <img
+                <Image
                   src={print.poster}
                   alt={print.alt}
-                  width="800"
-                  height="1035"
+                  widths={[300, 450, 600]}
+                  sizes="(min-width: 1024px) 30vw, 92vw"
+                  format="webp"
                   loading="lazy"
                   decoding="async"
                   class="aspect-[3/4] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"

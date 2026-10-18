@@ -25,7 +25,7 @@ Sell small-batch Manila streetwear: three heavyweight graphic tees. Success is a
 ## Operating Context
 
 - Orders run through the site form and through Facebook / Instagram promos in parallel.
-- Pricing is established at ₱300 per print across all Batch 001 designs.
+- Pricing is established at ₱325 per print across all Batch 001 designs.
 - Sizes S–2XL, black only.
 - Payment methods supported: Cash On Delivery (COD) and instant GCash / Maya QR with slip upload.
 - Garments are sourced small-batch (Taytay and Divisoria referenced in existing copy).
@@ -33,7 +33,7 @@ Sell small-batch Manila streetwear: three heavyweight graphic tees. Success is a
 ## Capabilities and Constraints
 
 - Working: product browsing, size selection, localStorage cart with slide-in drawer, order form handoff with COD/GCash QR support, post-submit thank-you page.
-- Confirmed pricing: ₱300 per tee; Delivery Parcel Express courier dispatch. Not to be invented: arbitrary discounts, fake stock counts, or fabricated customer testimonials.
+- Confirmed pricing: ₱325 per tee; Delivery Parcel Express courier dispatch. Not to be invented: arbitrary discounts, fake stock counts, or fabricated customer testimonials.
 
 ## Brand Commitments
 
@@ -43,12 +43,12 @@ Sell small-batch Manila streetwear: three heavyweight graphic tees. Success is a
 
 ## Evidence on Hand
 
-Brand artwork lives in `Assets/` (dev-only); the published copies live in `public/assets/images/`:
+Brand artwork lives in `Assets/` (dev-only); the versions the site builds from live in `src/assets/images/`:
 
 - `design/kalyenoir-poster.jpg`, `design/medusa-poster.jpg`, `design/manila-poster.jpg` — the print posters
 - `brand/tee-kalyenoir.png`, `brand/tee-medusa.png`, `brand/tee-manila.png` — tee front/back mockups
 
-Batch 001 pricing is ₱300 per garment. Stock counts and customer review counts are not fabricated.
+Batch 001 pricing is ₱325 per garment. Stock counts and customer review counts are not fabricated.
 
 ## Product Principles
 

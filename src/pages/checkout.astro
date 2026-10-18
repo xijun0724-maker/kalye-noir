@@ -55,7 +55,16 @@ const field =
           </label>
           <label class="grid gap-1.5 sm:col-span-2">
             <span class="label">Mobile number</span>
-            <input type="tel" name="phone" autocomplete="tel" required placeholder="09XX XXX XXXX" class={field} />
+            <input
+              type="tel"
+              name="phone"
+              autocomplete="tel"
+              required
+              pattern="^(09|\\+639)\\d{9}$"
+              title="Philippine mobile format (e.g. 09171234567 or +639171234567)"
+              placeholder="09XX XXX XXXX"
+              class={field}
+            />
           </label>
         </div>
 
@@ -155,7 +164,7 @@ const field =
                 <span class="label">Merchant Payment Account</span>
                 <p class="font-display text-xl uppercase tracking-wider text-ink">{contact.name || 'KALYE NOIR'}</p>
                 <p class="font-condensed text-base font-bold tracking-widest text-ink">{contact.mobile}</p>
-                <p class="meta text-muted leading-relaxed">
+                <p class="text-xs text-muted leading-relaxed">
                   Scan QR via GCash or Maya app. Pay the exact grand total calculated on your order slip.
                 </p>
               </div>
@@ -164,7 +173,15 @@ const field =
             <div class="grid gap-4 sm:grid-cols-2 pt-3 border-t border-line">
               <label class="grid gap-1.5">
                 <span class="label">Reference No.*</span>
-                <input type="text" name="payment-ref" data-payment-ref placeholder="13-digit Reference No." class={field} />
+                <input
+                  type="text"
+                  name="payment-ref"
+                  data-payment-ref
+                  pattern="\\d{13}"
+                  title="13-digit transaction reference number"
+                  placeholder="13-digit Reference No."
+                  class={field}
+                />
               </label>
               <label class="grid gap-1.5">
                 <span class="label">Transfer Receipt Screenshot</span>
@@ -193,7 +210,8 @@ const field =
           <p class="border-t border-dashed border-muted/50 pt-4" data-terms-payment>{orderTerms.payment}</p>
         </div>
 
-        <div data-checkout-error class="hidden border border-registration/40 bg-registration/10 p-3 text-center text-xs font-condensed uppercase tracking-wider text-registration">
+        <div data-checkout-error class="hidden border-2 border-registration bg-paper px-4 py-3 text-center font-condensed text-xs font-semibold text-ink">
+          <span class="inline-block font-bold text-registration mr-1.5" aria-hidden="true">[!]</span>
           Your request slip is empty. Please select a print before submitting.
         </div>
         <button type="submit" class="btn btn-primary w-full">Send Order Request</button>
@@ -208,6 +226,10 @@ const field =
             <span class="meta text-muted">Items (<span data-checkout-count>0</span>)</span>
             <span class="font-condensed text-sm font-semibold text-ink" data-subtotal>₱0</span>
           </div>
+          <div class="flex items-baseline justify-between">
+            <span class="meta text-muted">Delivery</span>
+            <span class="font-condensed text-sm font-semibold text-ink" data-shipping-fee-display>—</span>
+          </div>
           <div class="flex items-baseline justify-between border-t border-dashed border-line pt-3">
             <span class="font-condensed text-xs font-bold uppercase tracking-wider text-ink">Total Payable</span>
             <span class="font-display text-2xl text-ink" data-grand-total>₱0</span>
@@ -219,7 +241,7 @@ const field =
             <span class="meta text-muted">Est. delivery</span>
             <span class="text-right text-xs font-semibold text-ink" data-delivery-window>Select your province</span>
           </div>
-          <p class="meta text-muted">{courier} dispatch · Free delivery</p>
+          <p class="meta text-muted" data-shipping-badge>{courier} dispatch · Free delivery on 3+ prints</p>
         </div>
 
         <p class="mt-4 text-xs leading-relaxed text-muted" data-payment-reassurance>
@@ -248,7 +270,9 @@ const field =
   const items = document.querySelector<HTMLElement>('[data-checkout-items]');
   const countEl = document.querySelector<HTMLElement>('[data-checkout-count]');
   const subtotalEl = document.querySelector<HTMLElement>('[data-subtotal]');
+  const shippingFeeEl = document.querySelector<HTMLElement>('[data-shipping-fee-display]');
   const grandTotalEl = document.querySelector<HTMLElement>('[data-grand-total]');
+  const shippingBadge = document.querySelector<HTMLElement>('[data-shipping-badge]');
   const form = document.querySelector<HTMLFormElement>('[data-order-form]');
   const note = document.querySelector<HTMLTextAreaElement>('[data-order-note]');
   const windowEl = document.querySelector<HTMLElement>('[data-delivery-window]');
@@ -270,9 +294,17 @@ const field =
     const subtotal = count * ITEM_PRICE;
     const hasProvince = Boolean(provinceSelect?.value);
     const shippingFee = count && hasProvince ? calculateShippingFee(currentZoneId, count) : 0;
+    const grandTotal = subtotal + shippingFee;
 
     if (subtotalEl) subtotalEl.textContent = `₱${subtotal.toLocaleString()}`;
-    if (grandTotalEl) grandTotalEl.textContent = `₱${subtotal.toLocaleString()}`;
+    if (shippingFeeEl) {
+      shippingFeeEl.textContent = !hasProvince
+        ? 'Pending'
+        : count >= FREE_SHIPPING_THRESHOLD
+          ? 'FREE'
+          : `₱${shippingFee}`;
+    }
+    if (grandTotalEl) grandTotalEl.textContent = `₱${grandTotal.toLocaleString()}`;
 
     if (subtotalInput) subtotalInput.value = `₱${subtotal}`;
     if (shippingFeeInput) {
@@ -282,7 +314,17 @@ const field =
           : `₱${shippingFee}`
         : 'Pending';
     }
-    if (grandTotalInput) grandTotalInput.value = `₱${subtotal}`;
+    if (grandTotalInput) grandTotalInput.value = `₱${grandTotal}`;
+
+    if (shippingBadge) {
+      if (!hasProvince) {
+        shippingBadge.textContent = `${courier} dispatch · Select province for rate`;
+      } else if (count >= FREE_SHIPPING_THRESHOLD) {
+        shippingBadge.textContent = `${courier} dispatch · FREE DELIVERY (3+ prints)`;
+      } else {
+        shippingBadge.textContent = `${courier} dispatch · ₱${shippingFee} delivery`;
+      }
+    }
   }
 
   // The window follows the chosen province; the exact fee is calculated live.
@@ -361,9 +403,8 @@ const field =
       countEl.textContent = String(cartCount.get());
       refreshDelivery();
     };
-    const unsubscribe = cartItems.subscribe(render);
+    cartItems.subscribe(render);
     render();
-    document.addEventListener('astro:before-swap', () => unsubscribe(), { once: true });
   }
 
   if (note) {
@@ -395,5 +436,11 @@ const field =
     refreshDelivery();
     const field = form.querySelector<HTMLInputElement>('input[name="cart-contents"]');
     if (field) field.value = cartSummary();
+
+    const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.textContent = 'Logging Request Slip...';
+      submitBtn.classList.add('opacity-75', 'pointer-events-none');
+    }
   });
 </script>

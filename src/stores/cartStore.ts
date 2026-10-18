@@ -1,5 +1,5 @@
-// Cross-island cart state. Persisted to localStorage so it survives reloads and
-// Astro view-transition navigation; shared by every island via nanostores.
+// Cross-island cart state. Persisted to localStorage so it survives reloads
+// and page navigations; shared by every island via nanostores.
 import { atom, computed } from 'nanostores';
 import { persistentAtom } from '@nanostores/persistent';
 
@@ -8,7 +8,6 @@ export interface CartItem {
   slug: string;
   title: string;
   variant: string; // "Black / M"
-  image: string;
   qty: number;
 }
 

@@ -1,5 +1,5 @@
 // Single source of truth for the Kalye Noir catalog.
-// Product art lives in /public/assets/images/brand (sourced from /Assets).
+// Art for each print lives in src/data/productArt.ts.
 
 export interface Variant {
   sku: string;
@@ -10,14 +10,13 @@ export interface Variant {
 export interface Product {
   slug: string;
   title: string;
-  image: string;
   alt: string;
   blurb: string;
   price: number;
   variants: Variant[];
 }
 
-export const ITEM_PRICE = 300;
+export const ITEM_PRICE = 325;
 
 // Every tee is black; the print is what sets it apart.
 const SIZES = ['S', 'M', 'L', 'XL', '2XL'];
@@ -34,7 +33,6 @@ export const products: Product[] = [
   {
     slug: 'kalyenoir-tee',
     title: 'KALYENOIR Tee',
-    image: '/assets/images/brand/tee-kalyenoir.png',
     alt: 'Kalye Noir KALYENOIR tee, front and back',
     blurb:
       'The wordmark, stacked three times across the back with a small chest mark. Heavyweight cotton, relaxed fit.',
@@ -44,7 +42,6 @@ export const products: Product[] = [
   {
     slug: 'medusa-tee',
     title: 'MEDUSA Tee',
-    image: '/assets/images/brand/tee-medusa.png',
     alt: 'Kalye Noir MEDUSA tee, front and back',
     blurb:
       'MEDUSA — “Not your myth.” Full-back illustration print, beauty in chaos, on heavyweight black cotton.',
@@ -54,7 +51,6 @@ export const products: Product[] = [
   {
     slug: 'manila-tee',
     title: 'MANILA Tee',
-    image: '/assets/images/brand/tee-manila.png',
     alt: 'Kalye Noir MANILA tee, front and back',
     blurb:
       'A street-level photo print with “MANILA NEVER SLEEPS” across the back. Late nights, early dreams.',

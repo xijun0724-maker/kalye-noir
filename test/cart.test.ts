@@ -16,7 +16,6 @@ const base = {
   slug: 'kalyenoir-tee',
   title: 'KALYENOIR Tee',
   variant: 'Black · M',
-  image: '/x.png',
 };
 
 test('cart: dedupe by sku, qty and removal', () => {

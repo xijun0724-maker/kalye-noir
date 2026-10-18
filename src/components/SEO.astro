@@ -1,6 +1,7 @@
 ---
 import { site, contact } from '../config/site';
-import { products } from '../data/catalog';
+import { products, ITEM_PRICE } from '../data/catalog';
+import { productArt } from '../data/productArt';
 
 interface Props {
   title?: string;
@@ -8,7 +9,7 @@ interface Props {
   image?: string;
 }
 
-const { title = site.title, description = site.description, image = '/social.png' } = Astro.props;
+const { title = site.title, description = site.description, image = '/social.jpg' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImageUrl = new URL(image, Astro.site).toString();
 
@@ -28,7 +29,7 @@ const schemaData = {
     addressRegion: 'Metro Manila',
     addressCountry: 'PH',
   },
-  priceRange: '₱300',
+  priceRange: `₱${ITEM_PRICE}`,
   currenciesAccepted: 'PHP',
   paymentAccepted: 'Cash on Delivery, GCash, Maya',
   hasOfferCatalog: {
@@ -40,7 +41,7 @@ const schemaData = {
         '@type': 'Product',
         name: p.title,
         description: p.blurb,
-        image: new URL(p.image, Astro.site).toString(),
+        image: new URL(productArt[p.slug].src, Astro.site).toString(),
         brand: {
           '@type': 'Brand',
           name: site.name,
@@ -67,10 +68,20 @@ const schemaData = {
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Off the critical path: the CSS is fetched immediately but applied after first paint.
+     display=swap paints text in the fallback face rather than waiting on the webfont. -->
 <link
   href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600&family=Barlow+Condensed:wght@400;500;600;700&display=swap"
   rel="stylesheet"
+  media="print"
+  onload="this.media='all'"
 />
+<noscript>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600&family=Barlow+Condensed:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+</noscript>
 
 <!-- OpenGraph / Facebook / Instagram -->
 <meta property="og:type" content="website" />

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/assets/images/design/kalyenoir-poster.jpg" alt="Kalye Noir — KALYENOIR wordmark poster" width="100%">
+  <img src="src/assets/images/design/kalyenoir-poster.jpg" alt="Kalye Noir — KALYENOIR wordmark poster" width="100%">
 </p>
 
 <h1 align="center">KALYE NOIR</h1>
@@ -11,9 +11,9 @@
 </p>
 
 <p align="center">
-  <img src="public/assets/images/brand/tee-kalyenoir.png" alt="Kalye Noir KALYENOIR tee" width="32%">
-  <img src="public/assets/images/brand/tee-medusa.png" alt="Kalye Noir MEDUSA tee" width="32%">
-  <img src="public/assets/images/brand/tee-manila.png" alt="Kalye Noir MANILA tee" width="32%">
+  <img src="src/assets/images/brand/tee-kalyenoir.png" alt="Kalye Noir KALYENOIR tee" width="32%">
+  <img src="src/assets/images/brand/tee-medusa.png" alt="Kalye Noir MEDUSA tee" width="32%">
+  <img src="src/assets/images/brand/tee-manila.png" alt="Kalye Noir MANILA tee" width="32%">
 </p>
 
 ---

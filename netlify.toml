@@ -1,3 +1,9 @@
 [build]
   publish = "dist/"
   command = "npm run build"
+
+# Stable-path art is gone; only hashed build output needs a long TTL now.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

@@ -26,10 +26,9 @@
 
   const badge = document.querySelector<HTMLElement>('[data-cart-count]');
   if (badge) {
-    const unsub = cartCount.subscribe((n) => {
+    cartCount.subscribe((n) => {
       badge.textContent = String(n);
       badge.style.display = n === 0 ? 'none' : 'inline-flex';
     });
-    document.addEventListener('astro:before-swap', () => unsub(), { once: true });
   }
 </script>

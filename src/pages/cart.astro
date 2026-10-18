@@ -91,6 +91,7 @@ import { ITEM_PRICE } from '../data/catalog';
   import type { CartItem } from '../stores/cartStore';
   import { zoneById } from '../data/shipping';
   import { ITEM_PRICE } from '../data/catalog';
+  import { productArt } from '../data/productArt';
 
   const rows = document.querySelector<HTMLElement>('[data-cart-rows]');
   const countEl = document.querySelector<HTMLElement>('[data-cart-count-text]');
@@ -112,7 +113,7 @@ import { ITEM_PRICE } from '../data/catalog';
   if (rows && countEl && countWord && checkout) {
     const line = (i: CartItem) => `
       <div data-sku="${i.sku}" class="grid grid-cols-[6rem_1fr] items-start gap-5 border-b border-line py-6 sm:grid-cols-[6rem_1fr_auto]">
-        <img src="${i.image}" alt="" width="96" height="120" loading="lazy" class="h-[120px] w-24 bg-white object-contain p-2" />
+        <img src="${productArt[i.slug]?.src ?? ''}" alt="" width="96" height="120" loading="lazy" class="h-[120px] w-24 bg-white object-contain p-2" />
         <div class="min-w-0">
           <p class="font-condensed text-[13px] font-semibold uppercase tracking-[0.12em]">${i.title}</p>
           <p class="font-condensed text-sm font-bold text-ink mt-1">₱${ITEM_PRICE}</p>
@@ -169,10 +170,8 @@ import { ITEM_PRICE } from '../data/catalog';
       if (!cartCount.get()) e.preventDefault();
     });
 
-    const unsubscribe = cartItems.subscribe(render);
+    cartItems.subscribe(render);
     render();
-
-    document.addEventListener('astro:before-swap', () => unsubscribe(), { once: true });
   }
 
   if (note) {
