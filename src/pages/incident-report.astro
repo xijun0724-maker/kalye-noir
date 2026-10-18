@@ -2,11 +2,11 @@
 import MainLayout from '../layouts/MainLayout.astro';
 
 const field =
-  'w-full border border-line bg-transparent px-4 py-3 text-sm transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration';
+  'w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm';
 ---
 
 <MainLayout
-  title="Incident Report — KALYE NOIR Order Claims"
+  title="Incident Report: KALYE NOIR Order Claims"
   description="Report a missing, damaged or incorrect item from your Kalye Noir order. Attach photos and your order slip so we can settle the claim quickly."
 >
   <div class="wrap pt-7">
@@ -121,7 +121,7 @@ const field =
           required
           multiple
           accept=".jpg,.jpeg,.png,.gif,.pdf"
-          class="w-full border border-line bg-transparent px-4 py-3 text-sm transition-colors file:mr-4 file:border file:border-line file:bg-transparent file:px-3 file:py-1.5 file:text-xs file:uppercase file:tracking-[0.18em] hover:file:bg-line/40 focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration"
+          class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-sm transition-colors file:mr-4 file:border file:border-line file:bg-transparent file:px-3 file:py-1.5 file:text-xs file:uppercase file:tracking-[0.18em] hover:file:bg-line/40 focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration"
         />
       </label>
 

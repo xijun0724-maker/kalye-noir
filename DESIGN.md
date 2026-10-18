@@ -1,12 +1,14 @@
 ---
 name: Kalye Noir
-description: Manila streetwear printed, not extruded — a screen-print room on cream paper stock.
+description: Manila streetwear printed, not extruded: a screen-print room on cream paper stock.
+dial: 'ENERGY 2 / RHYTHM 2 / MOTION 2'
 colors:
   registration-red: '#c8202a'
   paper-stock: '#f4ede2'
   ink-black: '#111110'
   densitometer-gray: '#6d6459'
   plate-line: '#e2d8c8'
+  control-line: '#8d8073'
 typography:
   display:
     fontFamily: 'Anton, Impact, system-ui, sans-serif'
@@ -103,49 +105,58 @@ components:
 
 **Creative North Star: "The Kalye Print Room"**
 
-Kalye Noir is a screen-print room running after hours: cream stock on the table, ink still wet, one red registration mark per sheet. The interface *is* the paper. Surfaces are flat stock and are never panels floating above it — separation comes from a hairline rule or a barely-tinted band, the way a printer divides a sheet rather than a card. Nothing is extruded. Nothing glows.
+Kalye Noir is a screen-print room running after hours: cream stock on the table, ink still wet, one red registration mark per sheet. The interface *is* the paper. Surfaces are flat stock and are never panels floating above it. Separation comes from a hairline rule or a barely-tinted band, the way a printer divides a sheet rather than a card. Nothing is extruded. Nothing glows.
 
-The density is studio-clean editorial. One idea per band, generous cream space around it, and the type carries the whole load: Anton for the shout, Barlow Condensed for every label and control, Archivo for the single lowercase voice in the system. The artwork does the selling — posters and product photography sit at full width on white grounds with nothing laid over them, no badges, no gradient scrims, no "shop now" pasted on the print.
+The density is studio-clean editorial. One idea per band, generous cream space around it, and the type carries the whole load: Anton for the shout, Barlow Condensed for every label and control, Archivo for the single lowercase voice in the system. The artwork does the selling: posters and product photography sit at full width on white grounds with nothing laid over them, no badges, no gradient scrims, no "shop now" pasted on the print.
 
 The system refuses a second accent, paper textures that pretend to be linen, and any depth that isn't a state change. Restraint is what makes the red land: it appears on maybe two elements per screen, and the eye goes straight to it every time.
 
 **Key Characteristics:**
 - Flat paper surfaces divided by hairlines and 8% tonal bands, never by cards.
-- Exactly one accent — registration red — on under 5% of any given screen.
-- Squared corners throughout; the only curves are the cart badge and the outer edge of the reviews tab.
+- Exactly one accent, registration red, on under 5% of any given screen.
+- Squared corners throughout; the only curves are the cart badge and the outer edge of the reviews tab, which is planned and not built yet.
 - Three faces with one job each: Anton displays, Barlow Condensed labels and controls, Archivo reads.
 - The artwork leads. Photography sits on a pure white ground with no decoration on top of it.
 - One authored motion per page (a staggered rise), plus transform-only hover states.
 - Type case is a system rule, not a style choice: display and labels are uppercase, body is the only lowercase.
 
+### Dials
+
+`Dial: ENERGY 2 / RHYTHM 2 / MOTION 2.`
+
+- **ENERGY 2**: loud type, quiet colour. Anton shouts and registration red stays under 5% of a screen, so the page greets you through composition rather than decor.
+- **RHYTHM 2**: consistent bands with deliberate breaks. Hero, marquee, print wall, slip band and closing CTA each compose differently, so neighbouring sections never read as the same block.
+- **MOTION 2**: one authored motion per page, the staggered rise, plus transform-only hover states. No parallax, no scroll-jacking.
+
 ## Colors
 
-A warm cream stock, one near-black ink, and a single registration red — the palette of a two-colour press plus paper.
+A warm cream stock, one near-black ink, and a single registration red: the palette of a two-colour press plus paper.
 
 ### Primary
-- **Registration Red** (#c8202a): The only accent. It marks the thing to notice and nothing else — the marquee band, the hover state of every button and link, the active star row, the corner rule over a poster on hover, the reviews tab. Used on fewer than 5% of the pixels in any viewport.
+- **Registration Red** (#c8202a): The only accent. It marks the thing to notice and nothing else: the marquee band, the hover state of every button and link, the corner rule over a poster on hover, and the focus ring. The star row and the reviews tab join that list only when the planned reviews wall ships. Used on fewer than 5% of the pixels in any viewport.
 
 ### Neutral
 - **Paper Stock** (#f4ede2): The ground for every page, form field and panel. Also the foreground wherever ink is the surface.
 - **Ink Black** (#111110): All body and display text, the primary button fill, and the 2px rules that set a section's edge. Subdued text on an ink ground is paper at partial opacity over whatever is beneath, never a second gray.
-- **Densitometer Gray** (#6d6459): Secondary text only — meta lines, variants, breadcrumb crumbs, field labels. Measured at 4.98:1 on paper stock, so there is very little headroom: do not lighten it.
-- **Plate Line** (#e2d8c8): The hairline. Every divider, field border, chip outline and grid rule. At 20% over paper stock it becomes the tonal band that alternates sections.
+- **Densitometer Gray** (#6d6459): Secondary text only: meta lines, variants, breadcrumb crumbs, field labels. Measured at 4.98:1 on paper stock, so there is very little headroom: do not lighten it.
+- **Plate Line** (#e2d8c8): The hairline. Every divider, panel edge, grid rule and dashed rule. At 20% over paper stock it becomes the tonal band that alternates sections. It is decoration, so it does not carry a control.
+- **Control Line** (#8d8073): The same hairline, darkened to carry a control. Field, textarea, select, file, radio card and size chip outlines use it, because a control boundary has to be visible at 3:1 against the surface it sits on and plate line only reaches 1.21:1 on paper stock. It measures 3.30:1 on paper, 3.84:1 on the white under photography and 3.18:1 on the tonal band, so it holds on all three. Selected chips and filled buttons switch to ink, which is the stronger state.
 
 ### Named Rules
 **The One Mark Rule.** Registration red is a registration mark, not a theme color. If a screen needs a second red element to feel finished, the layout is unfinished.
 
-**The Paper Rule.** Every surface is paper stock. Pure white (#ffffff) exists in exactly one place — under product photography — because a white ground is what the shirt was shot on, not a UI surface.
+**The Paper Rule.** Every surface is paper stock. Pure white (#ffffff) exists in exactly one place, under product photography, because a white ground is what the shirt was shot on, not a UI surface.
 
 ## Typography
 
 **Display Font:** Anton (with Impact, system-ui fallback)
 **Body Font:** Archivo (with system-ui, Segoe UI, Helvetica Neue, Arial fallback)
-**Label/Mono Font:** Barlow Condensed — used for every label, control, nav item, meta line and button.
+**Label/Mono Font:** Barlow Condensed, used for every label, control, nav item, meta line and button.
 
 **Character:** A poster face over a workhorse grotesque, mediated by a condensed signage face. Anton is the print; Barlow Condensed is the studio's hand-lettered labelling; Archivo is the one voice that speaks in sentences.
 
 ### Hierarchy
-- **Display** (400, `clamp(2.25rem, 6vw, 6rem)`, line-height 0.88): Page and hero headlines only, always uppercase via the `.display` class. The 0.88 leading is deliberate — the caps stack tight like set type.
+- **Display** (400, `clamp(2.25rem, 6vw, 6rem)`, line-height 0.88): Page and hero headlines only, always uppercase via the `.display` class. The 0.88 leading is deliberate: the caps stack tight like set type.
 - **Headline** (400, `2.25rem` → `3rem`): Section headings inside a page ("The drop", "Kalye's Tee").
 - **Title** (600, `0.8125rem`, tracking 0.12em, uppercase): Product names in cart lines, drawer lines and checkout summaries. Never larger than 14px.
 - **Body** (400, `1rem`, line-height 1.6): Product blurbs and explanatory paragraphs, held to a `max-w-md`/`max-w-prose` measure. Sets in ink black for primary copy and densitometer gray when subordinate.
@@ -158,24 +169,25 @@ A warm cream stock, one near-black ink, and a single registration red — the pa
 
 ## Layout
 
-A single container class, `.wrap`, sets the page: `max-width: 1280px` centred with `16px / 24px / 32px` gutters at the `sm` / `lg` breaks. Content never escapes it, including full-bleed bands — the band's background bleeds, its contents stay in the wrap.
+A single container class, `.wrap`, sets the page: `max-width: 1280px` centred with `16px / 24px / 32px` gutters at the `sm` / `lg` breaks. Content never escapes it, including full-bleed bands: the band's background bleeds, its contents stay in the wrap.
 
 Pages alternate between paper stock and an `8%` plate-line band to separate major sections, and every section is closed by a hairline rule rather than a card. Vertical rhythm is `56px` on phones and `96px` at `lg` (`py-14 lg:py-24`); interior stacks run on a `4 / 8 / 16 / 24 / 40px` scale, with `40px` reserved for the gap between a section heading and its content.
 
-Two structural patterns carry most screens:
-- **The split** — a content column against a fixed-width sidebar (`1fr / 20rem` on checkout) that sticks below the header at `lg` (`lg:sticky lg:top-24`).
-- **The print wall** — a 2-up grid on phones and 3-up at `md`, with one tile deliberately offset (`lg:mt-16`) so the row never reads as a table of equal cards.
+Three structural patterns carry most screens:
+- **The split**: a content column against a fixed-width sidebar (`1fr / 20rem` on checkout) that sticks below the header at `lg` (`lg:sticky lg:top-24`).
+- **The print wall**: a 2-up grid on phones and 3-up at `md`. The home wall offsets its middle tile (`lg:mt-12`) so the row never reads as a table of equal cards; the catalog grid stays uniform instead, because there the row exists to be compared.
+- **The slip band**: the three ordering steps are numbered `01 / 02 / 03` because an order travels as a numbered request slip (select, send, confirm). Three steps is the real protocol, not a template shape.
 
 ### Named Rules
 **The Band Rule.** Separate with a hairline or an 8% band. Never with a card, never with a nested container.
 
-**The Breaks Rule.** One breakpoint set — `sm 640`, `md 768`, `lg 1024`, `xl 1280`. Mobile is the design, not the fallback; every layout is authored at 360px first.
+**The Breaks Rule.** One breakpoint set: `sm 640`, `md 768`, `lg 1024`, `xl 1280`. Mobile is the design, not the fallback; every layout is authored at 360px first.
 
 ## Elevation & Depth
 
-**There is no shadow at rest.** Depth is entirely planar, which is the point: this is paper. A surface's importance is set by its order in the stack — paper stock, then a plate-line band, then ink black — never by lifting it off the page. The primary button reads as pressed because it is a 2px ink border around solid ink, not because it floats.
+**There is no shadow at rest.** Depth is entirely planar, which is the point: this is paper. A surface's importance is set by its order in the stack (paper stock, then a plate-line band, then ink black), never by lifting it off the page. The primary button reads as pressed because it is a 2px ink border around solid ink, not because it floats.
 
-Two exceptions exist and both are overlays that genuinely sit above the page: the cart drawer and the reviews panel (`0 25px 50px -12px rgba(0,0,0,0.25)`), and the fixed reviews tab, which carries a one-off lift.
+Two exceptions exist and both are overlays that genuinely sit above the page: the cart drawer, and (once the reviews tab is built) the reviews panel (`0 25px 50px -12px rgba(0,0,0,0.25)`) and the fixed tab, which carries a one-off lift.
 
 ### Shadow Vocabulary
 - **Overlay** (`0 25px 50px -12px rgba(0, 0, 0, 0.25)`): The cart drawer and the reviews slide-over, and nothing else.
@@ -185,11 +197,11 @@ Two exceptions exist and both are overlays that genuinely sit above the page: th
 ### Named Rules
 **The Flat-At-Rest Rule.** Everything is flat until it is above the page. A panel, card or summary block that gains a shadow has taken on a state it did not earn.
 
-**The One Or The Other Rule.** Declare separation once — a hairline *or* a band *or* ink. A bordered block with a shadow underneath is the ghost card and does not belong in this system.
+**The One Or The Other Rule.** Declare separation once: a hairline *or* a band *or* ink. A bordered block with a shadow underneath is the ghost card and does not belong in this system.
 
 ## Shapes
 
-Squared. The corner radius is `0` on every button, field, chip, panel, tile and band, which makes the system read as cut rather than moulded. The only curves in the whole interface are the cart count badge (`9999px`) and the outer edge of the fixed reviews tab (`6px 0 0 6px`), both of which exist because a tab and a badge are physical objects with a rounded edge.
+Squared. The corner radius is `0` on every button, field, chip, panel, tile and band, which makes the system read as cut rather than moulded. The only curves in the whole interface are the cart count badge (`9999px`) and, when the planned reviews tab ships, its outer edge (`6px 0 0 6px`), both of which exist because a tab and a badge are physical objects with a rounded edge.
 
 Borders carry the form language: `1px` plate line for fields, hairlines, chips and grid rules; `2px` ink for buttons and for the rule under a section heading. Nothing is clipped, masked or rounded, and no element uses a border-left accent stripe.
 
@@ -198,44 +210,46 @@ Signature geometry, all of it screen-print derived: a barcode built from a `repe
 ### Named Rules
 **The Squared Rule.** Radius is 0 unless the element is a badge or a tab edge. A rounded card is a different brand.
 
-**The Cut Rule.** Geometry comes from print: barcodes, rules, registration marks, rotated squares. Anything that would read as a browser default — a pill, a rounded panel, a glow — is replaced with a cut or a rule.
+**The Cut Rule.** Geometry comes from print: barcodes, rules, registration marks, rotated squares. Anything that would read as a browser default (a pill, a rounded panel, a glow) is replaced with a cut or a rule.
 
 ## Components
 
 ### Buttons
 - **Shape:** Squared (`border-radius: 0`), 2px ink border, `12px 24px` padding, inline-flex with an 8px gap for an icon.
 - **Primary:** Solid ink (`#111110`) with paper stock text. The single most important action on a screen, and there is only ever one.
-- **Invert:** Paper stock fill with ink text — the primary inverted, for use on the dark hero.
+- **Invert:** Paper stock fill with ink text: the primary inverted, for use on the dark hero.
 - **Ghost:** Transparent with a `paper/40` border and paper text, only on dark grounds, where it must never compete with the invert button beside it.
-- **Hover / Focus:** Registration red replaces both border and fill on hover — the whole button flips, no tint. Focus is the global ring: 2px registration red at a 2px offset.
+- **Hover / Focus:** Registration red replaces both border and fill on hover: the whole button flips, no tint. Focus is the global ring: 2px registration red at a 2px offset.
 - **Type:** Every button is `.btn` plus Barlow Condensed 11–12px, semibold, uppercase, 0.24em tracking.
 
 ### Chips (variant pills)
 - **Style:** Transparent with a 1px plate-line border, ink text, `8px 12px`, squared. Size and (historically) colour options on the product page.
-- **State:** Selected flips to solid ink with paper text and an ink border — the same mechanism as the primary button, so the language stays consistent. Out of stock sits at 40% opacity and is `disabled`, never hidden.
+- **State:** Selected flips to solid ink with paper text and an ink border, the same mechanism as the primary button, so the language stays consistent. Out of stock sits at 40% opacity and is `disabled`, never hidden.
 
 ### Cards / Containers
 - **Corner Style:** None.
 - **Background:** Paper stock, or an `8%` plate-line band when it needs to alternate.
-- **Shadow Strategy:** None at rest — see Elevation & Depth.
+- **Shadow Strategy:** None at rest, see Elevation & Depth.
 - **Border:** Hairline plate line, or 2px ink when the block leads a section.
 - **Internal Padding:** `24px` on phones, `36px` at `sm` for boxed panels (the incident-report form), `20px` for overlay panel bodies.
 
 ### Inputs / Fields
 - **Style:** Transparent background over paper stock, 1px plate-line border, squared, `12px 16px`, 14px Archivo.
-- **Focus:** The border shifts to ink black. Where a field also carries `outline-none`, this is the *only* focus signal — 1px is thin, and the intended treatment is the global 2px registration ring on top of it.
+- **Focus:** The border shifts to ink black. Where a field also carries `outline-none`, this is the *only* focus signal: 1px is thin, and the intended treatment is the global 2px registration ring on top of it.
 - **Labels:** Always a real `<label>` with a `.label`-styled span in plate-line-adjacent densitometer gray. Never a placeholder standing in for a label.
 
 ### Navigation
 - **Style:** Sticky at the top (`z-40`), 64px tall, `paper/95` with a backdrop blur and a hairline under it.
 - **Type:** Barlow Condensed 11px semibold uppercase at 0.26em tracking, densitometer gray, flipping to registration red on hover.
-- **Active state:** None — with three destinations, the current page is not marked. Below `lg` the nav collapses into a native `<details>` disclosure rather than a JS menu.
+- **Active state:** The current destination carries `aria-current="page"` and a 2px registration red rule under the label, plus a rotated red square in the mobile panel, so the state never reads through colour alone. Below `lg` the nav collapses into a native `<details>` disclosure rather than a JS menu.
 
 ### Signature: Product tile
-Product photography sits on a pure white ground (`#ffffff`) with `8px` of padding, squared, and no border. The white is the studio backdrop, not a surface — on the cart, in the drawer and on the product page, the same tile appears at three sizes.
+Product photography sits on a pure white ground (`#ffffff`) with `8px` of padding, squared, and no border. The white is the studio backdrop, not a surface: on the cart, in the drawer and on the product page, the same tile appears at three sizes.
 
-### Signature: Reviews tab and wall
-A fixed vertical tab at the right edge — registration red, paper text, `writing-mode: vertical-rl`, a 6px outer radius, flipping to ink on hover, opening a slide-over panel. At the foot of the cart, the wall: an `8%` band with a hairline on top, the star row in registration red at 0.24em tracking, and a 2-up/4-up grid of square customer photos that scale 1.05 under a red rule wipe on hover. Empty is a first-class state — no invented counts, no placeholder reviews.
+### Signature: Reviews tab and wall (planned, not built)
+Nothing in this section exists in the build yet. It ships only when there are real customer photos and written reviews to show, because a review count or a star row with no source behind it breaks the Don't above. The cart foot holds a plain `8%` band until then.
+
+Once built: a fixed vertical tab at the right edge, registration red, paper text, `writing-mode: vertical-rl`, a 6px outer radius, flipping to ink on hover, opening a slide-over panel. At the foot of the cart, the wall: an `8%` band with a hairline on top, the star row in registration red at 0.24em tracking, and a 2-up/4-up grid of square customer photos that scale 1.05 under a red rule wipe on hover. Empty is a first-class state: no invented counts, no placeholder reviews.
 
 ## Do's and Don'ts
 
@@ -246,14 +260,16 @@ A fixed vertical tab at the right edge — registration red, paper text, `writin
 - **Do** keep 0 radius on buttons, fields, chips and panels, and reserve `9999px` for the cart badge alone.
 - **Do** hold product photography on a pure white ground with nothing layered over it.
 - **Do** author around four breakpoints only (`sm 640`, `md 768`, `lg 1024`, `xl 1280`) and check every layout at 360px.
-- **Do** keep subdued and meta copy at densitometer gray or darker — it measures 4.98:1 on paper stock and has almost no headroom.
+- **Do** keep subdued and meta copy at densitometer gray or darker: it measures 4.98:1 on paper stock and has almost no headroom.
 - **Do** treat the empty state as a designed state: an honest zero with a way forward, never a fabricated number.
+- **Do** use `→` only on a button that leaves the page for the next step of the order flow (view a piece, shop the drop, select a print, file a report). A same-page anchor never carries one, so the arrow stays a real direction cue rather than decoration.
+- **Do** run the press-run band as a marquee: the taglines cross the fold the way a set sheet moves through the press, which is why the one loop on the site is there. It pauses on hover and focus, and it stands still under `prefers-reduced-motion`.
 
 ### Don't:
 - **Don't** introduce a second accent, a gradient, a glass panel or a glow. The press has two inks and the paper is the third colour.
-- **Don't** publish a number the brand can't stand behind — prices, stock counts, delivery promises or review totals. This is a product-level commitment, not just a visual one.
+- **Don't** publish a number the brand can't stand behind: prices, stock counts, delivery promises or review totals. This is a product-level commitment, not just a visual one.
 - **Don't** put a shadow on a bordered block, or add a border to a shadowed one.
 - **Don't** set a sentence in Anton or a paragraph in caps; case is part of the system.
-- **Don't** use `text-paper/45` or lighter on the ink ground — it measures 4.05:1 and fails AA.
+- **Don't** use `text-paper/45` or lighter on the ink ground: it measures 4.05:1 and fails AA.
 - **Don't** ship a control below a 44px touch target, and don't let a fixed element cover content at 360px.
-- **Don't** publish a red "sale"-style token name or a "browse the sale" line — nothing on this site is ever discounted, and the token is named `registration-red` precisely so nobody reintroduces the claim.
+- **Don't** publish a red "sale"-style token name or a "browse the sale" line: nothing on this site is ever discounted, and the token is named `registration-red` precisely so nobody reintroduces the claim.

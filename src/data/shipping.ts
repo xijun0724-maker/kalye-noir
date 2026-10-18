@@ -1,4 +1,4 @@
-// Delivery zones and windows — the single source behind the cart's estimate and
+// Delivery zones and windows: the single source behind the cart's estimate and
 // the checkout order terms.
 
 export interface ShippingZone {
@@ -61,14 +61,14 @@ export function calculateShippingFee(zoneId: string | undefined | null, itemCoun
 }
 
 export const deliveryLines = shippingZones.map(
-  (zone) => `* ${zone.days} Business days for ${zone.label.toUpperCase()} address`
+  (zone) => `${zone.label}: ${zone.days} business days`
 );
 
 export const orderTerms = {
   receipt:
-    'NOTE: Please check your item upon receipt. If you notice any issues, kindly report them to us immediately so we can assist you promptly.',
+    'Please check your item on receipt. If something is wrong, report it right away so we can sort it out.',
   preparation:
-    'Please allow our team 2 - 3 BUSINESS DAYS, weekends and holidays NOT included to verify and prepare the orders.',
-  deliveryIntro: '→ NOTE that delivery to your address (from date of pick-up) would be:',
-  payment: '* Please prepare exact amount for your payment. Your order will arrive soon.',
+    'Please allow 2 – 3 business days to verify and prepare your order. Weekends and holidays are not included.',
+  deliveryIntro: 'Estimated delivery to your address, counted from pick-up:',
+  payment: 'Please prepare the exact amount for your payment. Your order will arrive soon.',
 };

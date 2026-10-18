@@ -5,11 +5,11 @@ import { deliveryLines, orderTerms, courier } from '../data/shipping';
 import { contact } from '../config/site';
 
 const field =
-  'w-full border border-line bg-transparent px-4 py-3 text-sm transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration';
+  'w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm';
 ---
 
 <MainLayout
-  title="Checkout — KALYE NOIR Order Request"
+  title="Checkout: KALYE NOIR Order Request"
   description="Confirm your Kalye Noir order request: delivery address, province, payment preference and order notes. Transparent pricing and local courier dispatch."
 >
   <div class="wrap pt-7">
@@ -60,7 +60,7 @@ const field =
               name="phone"
               autocomplete="tel"
               required
-              pattern="^(09|\\+639)\\d{9}$"
+              pattern={'^(09|[+]639)[0-9]{9}$'}
               title="Philippine mobile format (e.g. 09171234567 or +639171234567)"
               placeholder="09XX XXX XXXX"
               class={field}
@@ -117,7 +117,7 @@ const field =
         <div class="pt-2">
           <p class="meta text-muted">Payment method</p>
           <div class="mt-2 grid gap-3 sm:grid-cols-2" data-payment-selector>
-            <label class="flex cursor-pointer items-center justify-between border border-line bg-paper p-4 transition-colors has-[:checked]:border-ink has-[:checked]:bg-white">
+            <label class="flex cursor-pointer items-center justify-between border border-line-strong bg-paper p-4 transition-colors has-[:checked]:border-ink has-[:checked]:bg-white">
               <div class="flex items-center gap-3">
                 <input type="radio" name="payment-type" value="cod" checked class="accent-registration" />
                 <div>
@@ -128,7 +128,7 @@ const field =
               <span class="font-condensed text-xs font-semibold text-muted">COD</span>
             </label>
 
-            <label class="flex cursor-pointer items-center justify-between border border-line bg-paper p-4 transition-colors has-[:checked]:border-ink has-[:checked]:bg-white">
+            <label class="flex cursor-pointer items-center justify-between border border-line-strong bg-paper p-4 transition-colors has-[:checked]:border-ink has-[:checked]:bg-white">
               <div class="flex items-center gap-3">
                 <input type="radio" name="payment-type" value="gcash" class="accent-registration" />
                 <div>
@@ -140,7 +140,6 @@ const field =
             </label>
           </div>
 
-          <!-- GCash / Maya QR Panel -->
           <div data-gcash-panel class="mt-3 hidden border border-line bg-paper p-5 sm:p-6 space-y-4">
             <div class="flex flex-col sm:flex-row items-center gap-6">
               <div class="relative flex h-36 w-36 shrink-0 items-center justify-center border-2 border-dashed border-ink bg-white p-2">
@@ -177,7 +176,7 @@ const field =
                   type="text"
                   name="payment-ref"
                   data-payment-ref
-                  pattern="\\d{13}"
+                  pattern="[0-9]{13}"
                   title="13-digit transaction reference number"
                   placeholder="13-digit Reference No."
                   class={field}
@@ -189,7 +188,7 @@ const field =
                   type="file"
                   name="payment-slip"
                   accept="image/*,.pdf"
-                  class="w-full border border-line bg-transparent px-3 py-2 text-xs transition-colors file:mr-3 file:border file:border-line file:bg-white file:px-2.5 file:py-1 file:font-condensed file:text-xs file:uppercase file:tracking-wider hover:file:bg-line/40 focus:border-registration focus:outline-none"
+                  class="w-full min-w-0 border border-line-strong bg-transparent px-3 py-2 text-xs transition-colors file:mr-3 file:border file:border-line file:bg-white file:px-2.5 file:py-1 file:font-condensed file:text-xs file:uppercase file:tracking-wider hover:file:bg-line/40 focus:border-registration focus:outline-none"
                 />
               </label>
             </div>
@@ -217,7 +216,7 @@ const field =
         <button type="submit" class="btn btn-primary w-full">Send Order Request</button>
       </form>
 
-      <aside class="h-fit border border-line p-6 lg:sticky lg:top-24">
+      <aside class="order-first h-fit border border-line p-6 lg:order-none lg:sticky lg:top-24">
         <h2 class="meta text-ink">Order slip calculation</h2>
         <div class="mt-4" data-checkout-items></div>
 
@@ -228,7 +227,7 @@ const field =
           </div>
           <div class="flex items-baseline justify-between">
             <span class="meta text-muted">Delivery</span>
-            <span class="font-condensed text-sm font-semibold text-ink" data-shipping-fee-display>—</span>
+            <span class="font-condensed text-sm font-semibold text-ink" data-shipping-fee-display>-</span>
           </div>
           <div class="flex items-baseline justify-between border-t border-dashed border-line pt-3">
             <span class="font-condensed text-xs font-bold uppercase tracking-wider text-ink">Total Payable</span>
@@ -247,7 +246,7 @@ const field =
         <p class="mt-4 text-xs leading-relaxed text-muted" data-payment-reassurance>
           Pay the exact amount directly to the courier upon delivery.
         </p>
-        <a href="/cart" class="meta mt-5 inline-block text-muted underline underline-offset-4 hover:text-registration">
+        <a href="/cart" class="tap meta mt-5 text-muted underline underline-offset-4 hover:text-registration">
           Edit cart
         </a>
       </aside>
@@ -340,12 +339,11 @@ const field =
     }
     windowEl.textContent = `${zone.label} · ${zone.days} business days`;
     if (windowInput) {
-      windowInput.value = `${courier} — ${zone.label} — ${zone.days} business days`;
+      windowInput.value = `${courier} · ${zone.label} · ${zone.days} business days`;
     }
     updateTotals();
   }
 
-  // Payment method switcher
   form?.querySelectorAll<HTMLInputElement>('input[name="payment-type"]').forEach((radio) => {
     radio.addEventListener('change', () => {
       const isGCash = radio.value === 'gcash';
@@ -387,7 +385,7 @@ const field =
               (i) => `
           <div class="flex items-start justify-between gap-4 border-b border-line py-3 last:border-0">
             <div class="min-w-0">
-              <p class="font-condensed text-[13px] font-semibold uppercase tracking-[0.12em]">${i.title}</p>
+              <p class="font-condensed text-[0.8125rem] font-semibold uppercase tracking-[0.12em]">${i.title}</p>
               <p class="meta mt-1 text-muted">${i.variant} · ₱${ITEM_PRICE}</p>
             </div>
             <span class="text-sm font-semibold text-ink">×${i.qty}</span>
@@ -398,7 +396,7 @@ const field =
              <span class="inline-block h-2 w-2 rotate-45 bg-registration mb-2"></span>
              <p class="font-condensed text-xs font-semibold uppercase tracking-wider text-ink">Your order slip is empty</p>
              <p class="meta text-xs text-muted mt-1">Staged prints will appear here.</p>
-             <a href="/products" class="btn btn-primary mt-4 inline-block text-xs px-4 py-2">Select a print →</a>
+             <a href="/products" class="btn btn-primary mt-4 min-h-11 text-xs px-4 py-2">Select a print →</a>
            </div>`;
       countEl.textContent = String(cartCount.get());
       refreshDelivery();
@@ -413,6 +411,8 @@ const field =
   }
 
   const errBox = form?.querySelector<HTMLElement>('[data-checkout-error]');
+  const submitBtn = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const submitLabel = submitBtn?.textContent ?? '';
 
   form?.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea').forEach((el) => {
     el.addEventListener('invalid', () => {
@@ -437,10 +437,18 @@ const field =
     const field = form.querySelector<HTMLInputElement>('input[name="cart-contents"]');
     if (field) field.value = cartSummary();
 
-    const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if (submitBtn) {
       submitBtn.textContent = 'Logging Request Slip...';
       submitBtn.classList.add('opacity-75', 'pointer-events-none');
+    }
+  });
+
+  // A back/forward cache restore can also restore the mid-submit button, which would
+  // then never be pressable again.
+  window.addEventListener('pageshow', () => {
+    if (submitBtn?.classList.contains('pointer-events-none')) {
+      submitBtn.textContent = submitLabel;
+      submitBtn.classList.remove('opacity-75', 'pointer-events-none');
     }
   });
 </script>

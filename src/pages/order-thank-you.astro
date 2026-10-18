@@ -2,7 +2,7 @@
 import MainLayout from '../layouts/MainLayout.astro';
 ---
 
-<MainLayout title="Request Received — KALYE NOIR">
+<MainLayout title="Request Received: KALYE NOIR">
   <section class="wrap flex flex-col items-center py-28 text-center">
     <div class="mb-6 flex h-16 w-16 items-center justify-center border border-dashed border-line">
       <span class="h-3 w-3 rotate-45 bg-registration" aria-hidden="true"></span>
@@ -17,6 +17,6 @@ import MainLayout from '../layouts/MainLayout.astro';
 
 <script>
   import { clearCart } from '../stores/cartStore';
-  // Only an order request empties the cart — an incident report must not.
+  // Only an order request empties the cart; an incident report must not.
   if (!new URLSearchParams(location.search).has('incident')) clearCart();
 </script>

@@ -8,7 +8,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
   <div class="wrap flex h-16 items-center justify-between gap-4">
     <a
       href="/"
-      class="font-display text-xl uppercase leading-none tracking-[0.18em]"
+      class="tap font-display text-xl uppercase leading-none tracking-[0.18em]"
       aria-label={`${site.name} home`}
     >
       {site.name}
@@ -25,7 +25,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
                 <a
                   href={item.href}
                   aria-current={isActive ? 'page' : undefined}
-                  class={`relative py-1 font-condensed text-[11px] font-semibold uppercase tracking-[0.26em] transition-colors ${
+                  class={`relative py-1 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.26em] transition-colors ${
                     isActive ? 'text-ink' : 'text-muted hover:text-registration'
                   }`}
                 >
@@ -41,11 +41,11 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
       </ul>
     </nav>
 
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-7">
       <a
         href="/contact"
         aria-label="Contact and order inquiries"
-        class="text-ink/80 transition-colors hover:text-registration"
+        class="relative text-ink/80 transition-colors before:absolute before:-inset-3 before:content-[''] hover:text-registration"
       >
         <svg viewBox="0 0 24 24" width="20" height="20">
           <path

@@ -2,7 +2,7 @@
   publish = "dist/"
   command = "npm run build"
 
-# Stable-path art is gone; only hashed build output needs a long TTL now.
+# Hashed filenames change on every build, so they can be cached forever.
 [[headers]]
   for = "/_astro/*"
   [headers.values]

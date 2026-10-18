@@ -1,7 +1,7 @@
 {
 	"name": "kalye-noir",
 	"version": "4.0.0",
-	"description": "KALYE NOIR — Manila streetwear storefront (Astro + Tailwind + nanostores).",
+	"description": "KALYE NOIR: Manila streetwear storefront (Astro + Tailwind + nanostores).",
 	"private": true,
 	"homepage": "https://kalyenoir.com",
 	"repository": {

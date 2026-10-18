@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		// Add type definitions for our Vite runtime.
 		"types": ["astro/client"],
 		// Astro ships its types as ESM subpath exports; bundler resolution is what Astro's own base config uses.
 		"moduleResolution": "bundler"

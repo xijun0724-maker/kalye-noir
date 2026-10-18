@@ -15,13 +15,13 @@
 
   <div class="border-t border-line px-5 py-5">
     <div class="mb-3 flex items-center justify-between text-muted">
-      <span class="flex items-center gap-1.5 font-condensed text-[11px] uppercase tracking-[0.2em] text-ink/75">
+      <span class="flex items-center gap-1.5 font-condensed text-[0.6875rem] uppercase tracking-[0.2em] text-ink/75">
         <svg viewBox="0 0 24 24" width="13" height="13" class="text-registration" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
         </svg>
         Saved to device
       </span>
-      <span class="font-condensed text-[11px] uppercase tracking-[0.2em] text-muted">Order Request Slip</span>
+      <span class="font-condensed text-[0.6875rem] uppercase tracking-[0.2em] text-muted">Order Request Slip</span>
     </div>
     <label class="label mb-2 block" for="drawer-order-note">Add order note</label>
     <textarea
@@ -29,7 +29,7 @@
       data-cart-note
       rows="2"
       placeholder="How can we help you?"
-      class="w-full border border-line bg-transparent px-3 py-2 text-sm transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration"
+      class="w-full border border-line-strong bg-transparent px-3 py-2 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
     ></textarea>
     <p class="meta mt-3 text-muted">Estimated delivery confirmed post-request</p>
     <a
@@ -99,7 +99,7 @@
           <div class="flex gap-4 border-b border-line py-4" data-sku="${i.sku}">
             <img src="${productArt[i.slug]?.src ?? ''}" alt="" width="72" height="90" loading="lazy" class="h-[90px] w-[72px] shrink-0 bg-white object-contain p-1.5" />
             <div class="flex min-w-0 flex-1 flex-col">
-              <p class="font-condensed text-[13px] font-semibold uppercase leading-snug tracking-[0.12em]">${i.title}</p>
+              <p class="font-condensed text-[0.8125rem] font-semibold uppercase leading-snug tracking-[0.12em]">${i.title}</p>
               <p class="font-condensed text-sm font-bold text-ink mt-1">₱${ITEM_PRICE}</p>
               <p class="meta mt-0.5 text-muted">${i.variant}</p>
               <div class="mt-auto flex items-center gap-4 pt-3">
@@ -108,7 +108,7 @@
                   <span class="flex w-10 items-center justify-center text-sm">${i.qty}</span>
                   <button type="button" data-step="1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Increase quantity"><span aria-hidden="true">+</span></button>
                 </div>
-                <button type="button" data-remove class="meta text-muted underline underline-offset-4 transition-colors hover:text-registration">Remove</button>
+                <button type="button" data-remove class="tap meta text-muted underline underline-offset-4 transition-colors hover:text-registration">Remove</button>
               </div>
             </div>
           </div>`
@@ -123,7 +123,7 @@
             </div>
             <p class="font-display text-xl uppercase tracking-wider text-ink">Your Slip Is Empty</p>
             <p class="mt-1 text-xs text-muted max-w-[220px]">Pick a piece from Drop 001. Sizing and delivery confirmed per request.</p>
-            <a href="/#drop" data-cart-close class="btn btn-primary mt-6 text-xs px-6 py-2.5">Explore Drop 001</a>
+            <a href="/#drop" data-cart-close class="btn btn-primary mt-6 min-h-11 text-xs px-6 py-2.5">Explore Drop 001</a>
           </div>`;
 
       const count = cartCount.get();
@@ -151,7 +151,7 @@
   /* The platform supplies the focus trap, the inert background and Escape; all
      this adds is the slide and the scrim. */
   .cart-dialog {
-    display: flex;
+    display: none;
     flex-direction: column;
     margin: 0 0 0 auto;
     width: 100%;
@@ -169,6 +169,7 @@
       overlay 0.3s allow-discrete;
   }
   .cart-dialog[open] {
+    display: flex;
     transform: none;
   }
   /* Open modal: the platform already makes the page inert, this stops it scrolling. */

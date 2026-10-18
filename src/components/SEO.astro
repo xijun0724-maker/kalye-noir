@@ -83,7 +83,6 @@ const schemaData = {
   />
 </noscript>
 
-<!-- OpenGraph / Facebook / Instagram -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content={canonical} />
 <meta property="og:title" content={title} />
@@ -91,12 +90,10 @@ const schemaData = {
 <meta property="og:image" content={ogImageUrl} />
 <meta property="og:site_name" content={site.name} />
 
-<!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:url" content={canonical} />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImageUrl} />
 
-<!-- Schema.org JSON-LD Structured Data -->
 <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />

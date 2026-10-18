@@ -12,7 +12,7 @@ const sizes = uniqueSizes(product);
 const first = product.variants[0];
 
 const pill =
-  'border border-line px-3 py-2 text-xs transition-colors hover:border-ink data-[selected=true]:border-ink data-[selected=true]:bg-ink data-[selected=true]:text-paper';
+  'min-h-11 min-w-11 border border-line-strong px-3 py-2 text-xs transition-colors hover:border-ink data-[selected=true]:border-ink data-[selected=true]:bg-ink data-[selected=true]:text-paper';
 ---
 
 <div
@@ -26,7 +26,7 @@ const pill =
       <button
         type="button"
         data-size-guide-open
-        class="font-condensed text-[11px] uppercase tracking-[0.2em] text-muted underline underline-offset-4 transition-colors hover:text-registration"
+        class="tap font-condensed text-[0.6875rem] uppercase tracking-[0.2em] text-muted underline underline-offset-4 transition-colors hover:text-registration"
       >
         Fit Guide (Inches / CM)
       </button>
@@ -80,7 +80,7 @@ const pill =
         <h2 class="font-display text-xl uppercase tracking-wider">Garment Measurements</h2>
         <p class="meta text-xs text-muted mt-0.5">Heavyweight boxy cut · S–2XL</p>
       </div>
-      <button type="button" data-size-dialog-close class="text-2xl leading-none -m-2 p-2 hover:text-registration" aria-label="Close size guide">×</button>
+      <button type="button" data-size-dialog-close class="-m-2 flex h-11 w-11 shrink-0 items-center justify-center text-2xl leading-none hover:text-registration" aria-label="Close size guide">×</button>
     </div>
     <div class="mt-4 overflow-x-auto">
       <table class="w-full text-left font-condensed text-xs uppercase tracking-wider">

@@ -6,7 +6,7 @@ import { ITEM_PRICE } from '../data/catalog';
 ---
 
 <MainLayout
-  title="Cart — KALYE NOIR Street Wear Manila"
+  title="Cart: KALYE NOIR Street Wear Manila"
   description="Review your Kalye Noir cart, add an order note, pick your province and estimate delivery before you send your order request."
 >
   <div class="wrap pt-7">
@@ -38,7 +38,7 @@ import { ITEM_PRICE } from '../data/catalog';
           data-order-note
           rows="5"
           placeholder="How can we help you?"
-          class="w-full border border-line bg-transparent px-4 py-3 text-sm transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration"
+          class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
         ></textarea>
       </div>
 
@@ -70,7 +70,7 @@ import { ITEM_PRICE } from '../data/catalog';
 
       <label class="block">
         <span class="meta mb-1.5 block text-muted">Province</span>
-        <ProvinceSelect class="w-full border border-line bg-transparent px-3 py-2.5 text-sm focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration" />
+        <ProvinceSelect class="w-full min-w-0 border border-line-strong bg-transparent px-3 py-2.5 text-base focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm" />
       </label>
 
       <p data-estimate-result class="meta mt-5 text-muted" aria-live="polite"></p>
@@ -115,7 +115,7 @@ import { ITEM_PRICE } from '../data/catalog';
       <div data-sku="${i.sku}" class="grid grid-cols-[6rem_1fr] items-start gap-5 border-b border-line py-6 sm:grid-cols-[6rem_1fr_auto]">
         <img src="${productArt[i.slug]?.src ?? ''}" alt="" width="96" height="120" loading="lazy" class="h-[120px] w-24 bg-white object-contain p-2" />
         <div class="min-w-0">
-          <p class="font-condensed text-[13px] font-semibold uppercase tracking-[0.12em]">${i.title}</p>
+          <p class="font-condensed text-[0.8125rem] font-semibold uppercase tracking-[0.12em]">${i.title}</p>
           <p class="font-condensed text-sm font-bold text-ink mt-1">₱${ITEM_PRICE}</p>
           <p class="meta mt-0.5 text-muted">${i.variant}</p>
         </div>
@@ -125,7 +125,7 @@ import { ITEM_PRICE } from '../data/catalog';
             <span class="flex w-12 items-center justify-center text-sm">${i.qty}</span>
             <button type="button" data-step="1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Increase quantity"><span aria-hidden="true">+</span></button>
           </div>
-          <button type="button" data-remove class="meta text-muted underline underline-offset-4 transition-colors hover:text-registration">Remove</button>
+          <button type="button" data-remove class="tap meta text-muted underline underline-offset-4 transition-colors hover:text-registration">Remove</button>
         </div>
       </div>`;
 
@@ -142,7 +142,7 @@ import { ITEM_PRICE } from '../data/catalog';
             </div>
             <p class="font-display text-2xl uppercase tracking-wider text-ink">Your Slip Is Empty</p>
             <p class="mt-2 text-xs text-muted max-w-xs">Pick a piece from Drop 001. Sizing and courier dispatch confirmed per request slip.</p>
-            <a href="/products" class="btn btn-primary mt-6 text-xs px-6 py-2.5">Explore Drop 001</a>
+            <a href="/products" class="btn btn-primary mt-6 min-h-11 text-xs px-6 py-2.5">Browse Drop 001</a>
           </div>`;
 
       const count = cartCount.get();

@@ -6,26 +6,26 @@ import posterKalyenoir from '../assets/images/design/kalyenoir-poster.jpg';
 import posterMedusa from '../assets/images/design/medusa-poster.jpg';
 import posterManila from '../assets/images/design/manila-poster.jpg';
 
-// The drop — one poster per print. Poster art lives in src/assets/images/design.
+// The drop: one poster per print.
 const drop = [
   {
     name: 'KALYENOIR',
     poster: posterKalyenoir,
-    alt: 'KalyeNoir poster — the wordmark stacked across a Manila street sign',
+    alt: 'KalyeNoir poster: the wordmark stacked across a Manila street sign',
     href: '/products/kalyenoir-tee',
     line: 'Real dreams, same sky',
   },
   {
     name: 'MEDUSA',
     poster: posterMedusa,
-    alt: 'Medusa poster — a hand-drawn gorgon with snakes for hair',
+    alt: 'Medusa poster: a hand-drawn gorgon with snakes for hair',
     href: '/products/medusa-tee',
     line: 'Not your myth',
   },
   {
     name: 'MANILA',
     poster: posterManila,
-    alt: 'Manila poster — a jeepney on a crowded Manila street',
+    alt: 'Manila poster: a jeepney on a crowded Manila street',
     href: '/products/manila-tee',
     line: 'The city never sleeps',
   },
@@ -35,7 +35,6 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
 ---
 
 <MainLayout title={site.title} description={site.description}>
-  <!-- ============ HERO ============ -->
   <section class="grain relative overflow-hidden bg-ink text-paper">
     <span class="absolute left-8 top-0 h-24 w-px bg-registration/70 sm:left-12"></span>
     <span class="absolute bottom-0 right-8 h-24 w-px bg-registration/70 sm:right-12"></span>
@@ -44,7 +43,7 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
       <figure class="reveal relative">
         <Image
           src={posterKalyenoir}
-          alt="Kalye Noir KALYENOIR poster — the wordmark stacked beside a Manila street sign"
+          alt="Kalye Noir KALYENOIR poster: the wordmark stacked beside a Manila street sign"
           widths={[400, 600, 800, 1000]}
           sizes="(min-width: 1024px) 48vw, 92vw"
           format="webp"
@@ -68,7 +67,7 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
 
         <p class="reveal reveal-3 mt-7 max-w-md text-paper/80">
           Three prints, heavyweight cotton, cut for the ones still out there. Late nights, early
-          dreams — the street is the studio.
+          dreams. The street is the studio.
         </p>
 
         <div class="reveal reveal-3 mt-9 flex flex-wrap gap-3">
@@ -77,7 +76,7 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
         </div>
 
         <div class="meta reveal reveal-3 mt-12 flex flex-wrap items-center gap-x-6 gap-y-3 text-paper/70">
-          <span>14.5995° N — 120.9842° E</span>
+          <span>14.5995° N, 120.9842° E</span>
           <svg viewBox="0 0 24 24" width="18" height="18" class="text-paper/60">
             <path
               fill="currentColor"
@@ -90,7 +89,6 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
     </div>
   </section>
 
-  <!-- ============ MARQUEE BANNER ============ -->
   <div class="overflow-hidden border-y border-ink bg-registration py-3">
     <div
       class="marquee flex w-max motion-reduce:animate-none hover:[animation-play-state:paused] focus-within:[animation-play-state:paused]"
@@ -110,7 +108,6 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
     </div>
   </div>
 
-  <!-- ============ THE DROP (ART SHOWCASE) ============ -->
   <section id="drop" class="wrap py-16 lg:py-24">
     <header class="flex flex-wrap items-end justify-between gap-6 border-b-2 border-ink pb-5">
       <div>
@@ -162,7 +159,6 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
     </ul>
   </section>
 
-  <!-- ============ HOW ORDERING WORKS ============ -->
   <section id="how-it-works" class="border-t border-line bg-line/20 py-16 lg:py-24">
     <div class="wrap">
       <header class="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-6">

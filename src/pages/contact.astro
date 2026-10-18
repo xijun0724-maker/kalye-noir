@@ -4,8 +4,8 @@ import { contact } from '../config/site';
 ---
 
 <MainLayout
-  title="Contact Us — KALYE NOIR Street Wear Manila"
-  description="Reach the Kalye Noir team for order, shipping, sizing or product concerns — mobile, email and the official Facebook page are all listed here."
+  title="Contact Us: KALYE NOIR Street Wear Manila"
+  description="Reach the Kalye Noir team for order, shipping, sizing or product concerns: mobile, email and the official Facebook page are all listed here."
 >
   <div class="wrap pt-7">
     <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
@@ -28,7 +28,7 @@ import { contact } from '../config/site';
         <p class="meta text-muted">Phone Inquiry</p>
         <p class="mt-2 text-sm font-semibold text-ink">Orders & Shipping Desk</p>
         <p class="mt-1 text-sm text-muted">
-          Mobile: <a href={`tel:${contact.mobile.replace(/\s+/g, '')}`} class="font-medium text-ink underline underline-offset-4 transition-colors hover:text-registration">{contact.mobile}</a>
+          Mobile: <a href={`tel:${contact.mobile.replace(/\s+/g, '')}`} class="tap [overflow-wrap:anywhere] font-medium text-ink underline underline-offset-4 transition-colors hover:text-registration">{contact.mobile}</a>
         </p>
       </div>
 
@@ -38,7 +38,7 @@ import { contact } from '../config/site';
         <p class="mt-1 text-sm">
           <a
             href={`mailto:${contact.email}`}
-            class="text-ink underline underline-offset-4 transition-colors hover:text-registration"
+            class="tap [overflow-wrap:anywhere] text-ink underline underline-offset-4 transition-colors hover:text-registration"
           >
             {contact.email}
           </a>
@@ -53,7 +53,7 @@ import { contact } from '../config/site';
             href={`https://${contact.facebook}`}
             target="_blank"
             rel="noopener noreferrer"
-            class="text-ink underline underline-offset-4 transition-colors hover:text-registration"
+            class="tap [overflow-wrap:anywhere] text-ink underline underline-offset-4 transition-colors hover:text-registration"
           >
             {contact.facebook}
           </a>

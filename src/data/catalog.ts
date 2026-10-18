@@ -44,7 +44,7 @@ export const products: Product[] = [
     title: 'MEDUSA Tee',
     alt: 'Kalye Noir MEDUSA tee, front and back',
     blurb:
-      'MEDUSA — “Not your myth.” Full-back illustration print, beauty in chaos, on heavyweight black cotton.',
+      'MEDUSA: "Not your myth." Full-back illustration print, beauty in chaos, on heavyweight black cotton.',
     price: ITEM_PRICE,
     variants: teeVariants('medusa-tee'),
   },

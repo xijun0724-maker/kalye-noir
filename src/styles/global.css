@@ -1,12 +1,15 @@
 @import 'tailwindcss';
 
-/* Theme carried over 1:1 from the old tailwind.config.mjs. */
 @theme {
   --color-ink: #111110;
   --color-paper: #f4ede2;
   --color-registration: #c8202a;
   --color-muted: #6d6459;
   --color-line: #e2d8c8;
+  /* For control boundaries. Decorative rules keep --color-line; anything a
+     person has to see in order to use it needs 3:1 against its surface, and
+     --color-line only reaches 1.2:1 on paper. */
+  --color-line-strong: #8d8073;
 
   --font-sans: Archivo, system-ui, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-display: Anton, Impact, system-ui, sans-serif;
@@ -21,6 +24,12 @@
   }
   body {
     @apply bg-paper text-ink antialiased;
+  }
+  html {
+    /* Keeps in-page anchors clear of the sticky header, which is 114px on
+       phones (logo row plus the Menu row). Without this the section heading
+       lands behind it. */
+    scroll-padding-top: 7.5rem;
   }
   img {
     @apply block max-w-full;
@@ -47,13 +56,28 @@
     @apply border-paper/40 bg-transparent text-paper hover:border-paper hover:bg-paper hover:text-ink;
   }
   .label {
-    @apply font-condensed text-[11px] font-medium uppercase tracking-[0.28em] text-muted;
+    @apply font-condensed text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-muted;
   }
   .display {
     @apply font-display uppercase leading-[0.88] tracking-tight;
   }
   .meta {
-    @apply font-condensed text-[11px] uppercase tracking-[0.28em];
+    @apply font-condensed text-[0.6875rem] uppercase tracking-[0.28em];
+  }
+  /* DESIGN.md's 44px touch target, for controls that would otherwise be as
+     tall as their own text. */
+  .tap {
+    @apply inline-flex min-h-11 items-center;
+  }
+  /* Breadcrumb links read as one line, so they get the strip too. The width
+     comes from an extending pseudo-element rather than padding, so the row's
+     min-content width does not grow. At 200% text the labels double and the
+     row wraps instead of pushing past the viewport. */
+  nav[aria-label='Breadcrumb'] {
+    @apply flex-wrap;
+  }
+  nav[aria-label='Breadcrumb'] a {
+    @apply relative inline-flex min-h-11 items-center before:absolute before:inset-y-0 before:-inset-x-2 before:content-[''];
   }
 }
 
@@ -69,7 +93,6 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* Poster barcode mark. */
   .barcode {
     background-image: repeating-linear-gradient(
       90deg,

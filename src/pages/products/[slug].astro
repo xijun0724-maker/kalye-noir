@@ -17,7 +17,7 @@ const suggestions = products.filter((p) => p.slug !== product.slug).slice(0, 4);
 
 <style>
   [data-zoom] {
-    /* Capped by the asset: 800×1000 is only ~1.33× dense at desktop width. */
+    /* Capped at 1.6: the tee art is ~400 px wide, so deeper zoom shows upscaling. */
     --zoom: 1.6;
   }
   [data-zoom] img {
@@ -34,7 +34,7 @@ const suggestions = products.filter((p) => p.slug !== product.slug).slice(0, 4);
   }
 </style>
 
-<MainLayout title={`${product.title} — KALYE NOIR`} description={product.blurb} image={productArt[product.slug].src}>
+<MainLayout title={`${product.title}: KALYE NOIR`} description={product.blurb} image={productArt[product.slug].src}>
   <div class="wrap pt-7">
     <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
       <a href="/" class="transition-colors hover:text-registration">Home</a>
@@ -101,9 +101,8 @@ const suggestions = products.filter((p) => p.slug !== product.slug).slice(0, 4);
 <script>
   import { zoomOrigin } from '../../lib/zoom';
 
-  // Origin follows the pointer so the back print can be read, instead of a fixed
-  // centre crop. Mouse and pen only: hover means nothing on touch, where the
-  // browser's own pinch-zoom already covers inspection.
+  // Origin follows the pointer so the back print can be read, not a fixed centre crop.
+  // Mouse and pen only: on touch the browser's own pinch-zoom already covers inspection.
   document.querySelectorAll<HTMLElement>('[data-zoom]').forEach((frame) => {
     const track = (event: PointerEvent) => {
       if (event.pointerType === 'touch') return;
