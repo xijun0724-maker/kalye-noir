@@ -9,7 +9,7 @@ const field =
 ---
 
 <MainLayout
-  title="Checkout: KALYE NOIR Order Request"
+  title="Checkout · KALYE NOIR Order Request"
   description="Confirm your Kalye Noir order request: delivery address, province, payment preference and order notes. Transparent pricing and local courier dispatch."
 >
   <div class="wrap pt-7">
@@ -414,24 +414,104 @@ const field =
   const submitBtn = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
   const submitLabel = submitBtn?.textContent ?? '';
 
+  function getErrorMessage(el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement): string {
+    if (el.validity.valueMissing) {
+      if (el.name === 'name') return 'Full name required';
+      if (el.name === 'email') return 'Email address required';
+      if (el.name === 'phone') return 'Contact number required';
+      if (el.name === 'street') return 'Street / barangay required';
+      if (el.name === 'province') return 'Select your province';
+      if (el.name === 'city') return 'City / municipality required';
+      if (el.name === 'zip') return 'Zip code required';
+      if (el.name === 'payment-ref') return '13-digit reference number required';
+      return 'This field is required';
+    }
+    if (el.validity.typeMismatch && el.type === 'email') {
+      return 'Valid email required (e.g. you@example.com)';
+    }
+    if (el.validity.patternMismatch) {
+      if (el.name === 'phone') {
+        return 'Philippine format required (e.g. 09171234567 or +639171234567)';
+      }
+      if (el.name === 'payment-ref') {
+        return '13-digit numeric transaction reference required';
+      }
+      return 'Please match the required format';
+    }
+    return el.validationMessage || 'Invalid input';
+  }
+
+  function showError(el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) {
+    el.classList.add('!border-registration', '!bg-registration/5');
+    el.setAttribute('aria-invalid', 'true');
+    const parent = el.closest('label') || el.parentElement;
+    if (!parent) return;
+
+    let err = parent.querySelector<HTMLElement>('[data-error-msg]');
+    const msg = getErrorMessage(el);
+    const errorId = `${el.name || 'field'}-error`;
+
+    if (!err) {
+      err = document.createElement('p');
+      err.setAttribute('data-error-msg', '');
+      err.id = errorId;
+      err.className = 'field-error mt-1 flex items-center gap-1 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-registration';
+      parent.appendChild(err);
+    }
+    err.innerHTML = `<span aria-hidden="true">[!]</span> ${msg}`;
+    el.setAttribute('aria-describedby', errorId);
+  }
+
+  function clearError(el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) {
+    el.classList.remove('!border-registration', '!bg-registration/5');
+    el.removeAttribute('aria-invalid');
+    const parent = el.closest('label') || el.parentElement;
+    const err = parent?.querySelector('[data-error-msg]');
+    if (err) {
+      err.remove();
+    }
+    el.removeAttribute('aria-describedby');
+  }
+
+  let firstInvalidEl: (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) | null = null;
+
   form?.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea').forEach((el) => {
-    el.addEventListener('invalid', () => {
-      el.classList.add('!border-registration', '!bg-registration/5');
+    el.addEventListener('invalid', (e) => {
+      e.preventDefault();
+      showError(el);
+      if (!firstInvalidEl) {
+        firstInvalidEl = el;
+      }
     });
     el.addEventListener('input', () => {
       if (el.validity.valid) {
-        el.classList.remove('!border-registration', '!bg-registration/5');
+        clearError(el);
+      }
+    });
+    el.addEventListener('change', () => {
+      if (el.validity.valid) {
+        clearError(el);
       }
     });
   });
 
   form?.addEventListener('submit', (e) => {
+    firstInvalidEl = null;
     if (!cartItems.get().length) {
       e.preventDefault();
       if (errBox) errBox.classList.remove('hidden');
       return;
     }
     if (errBox) errBox.classList.add('hidden');
+
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      setTimeout(() => {
+        firstInvalidEl?.focus();
+      }, 10);
+      return;
+    }
+
     orderNote.set(note?.value ?? '');
     refreshDelivery();
     const field = form.querySelector<HTMLInputElement>('input[name="cart-contents"]');

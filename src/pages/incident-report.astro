@@ -6,7 +6,7 @@ const field =
 ---
 
 <MainLayout
-  title="Incident Report: KALYE NOIR Order Claims"
+  title="Incident Report · KALYE NOIR Order Claims"
   description="Report a missing, damaged or incorrect item from your Kalye Noir order. Attach photos and your order slip so we can settle the claim quickly."
 >
   <div class="wrap pt-7">
@@ -132,14 +132,87 @@ const field =
 
 <script>
   const form = document.querySelector<HTMLFormElement>('form[name="incident-report"]');
+  let firstInvalidEl: (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) | null = null;
+
+  function getErrorMessage(el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement): string {
+    if (el.validity.valueMissing) {
+      if (el.name === 'first-name') return 'First name required';
+      if (el.name === 'last-name') return 'Last name required';
+      if (el.name === 'facebook-name') return 'Facebook profile name required';
+      if (el.name === 'date-today') return 'Current date required';
+      if (el.name === 'date-received') return 'Delivery receipt date required';
+      if (el.name === 'order-slip') return 'Order slip number required';
+      if (el.name === 'email') return 'Email address required';
+      if (el.name === 'contact-number') return 'Contact phone required';
+      if (el.name === 'reason') return 'Detailed reason required';
+      if (el.name === 'attachment') return 'Supporting photo/file required';
+      return 'This field is required';
+    }
+    if (el.validity.typeMismatch && el.type === 'email') {
+      return 'Valid email required (e.g. you@example.com)';
+    }
+    return el.validationMessage || 'Invalid input';
+  }
+
+  function showError(el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) {
+    el.classList.add('!border-registration', '!bg-registration/5');
+    el.setAttribute('aria-invalid', 'true');
+    const parent = el.closest('label') || el.parentElement;
+    if (!parent) return;
+
+    let err = parent.querySelector<HTMLElement>('[data-error-msg]');
+    const msg = getErrorMessage(el);
+    const errorId = `${el.name || 'field'}-error`;
+
+    if (!err) {
+      err = document.createElement('p');
+      err.setAttribute('data-error-msg', '');
+      err.id = errorId;
+      err.className = 'field-error mt-1 flex items-center gap-1 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-registration';
+      parent.appendChild(err);
+    }
+    err.innerHTML = `<span aria-hidden="true">[!]</span> ${msg}`;
+    el.setAttribute('aria-describedby', errorId);
+  }
+
+  function clearError(el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) {
+    el.classList.remove('!border-registration', '!bg-registration/5');
+    el.removeAttribute('aria-invalid');
+    const parent = el.closest('label') || el.parentElement;
+    const err = parent?.querySelector('[data-error-msg]');
+    if (err) {
+      err.remove();
+    }
+    el.removeAttribute('aria-describedby');
+  }
+
   form?.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea').forEach((el) => {
-    el.addEventListener('invalid', () => {
-      el.classList.add('!border-registration', '!bg-registration/5');
+    el.addEventListener('invalid', (e) => {
+      e.preventDefault();
+      showError(el);
+      if (!firstInvalidEl) {
+        firstInvalidEl = el;
+      }
     });
     el.addEventListener('input', () => {
       if (el.validity.valid) {
-        el.classList.remove('!border-registration', '!bg-registration/5');
+        clearError(el);
       }
     });
+    el.addEventListener('change', () => {
+      if (el.validity.valid) {
+        clearError(el);
+      }
+    });
+  });
+
+  form?.addEventListener('submit', (e) => {
+    firstInvalidEl = null;
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      setTimeout(() => {
+        firstInvalidEl?.focus();
+      }, 10);
+    }
   });
 </script>

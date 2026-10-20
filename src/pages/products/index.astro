@@ -5,7 +5,7 @@ import { products } from '../../data/catalog';
 ---
 
 <MainLayout
-  title="Kalye's Tee: KALYE NOIR Street Wear Manila"
+  title="Kalye's Tee · KALYE NOIR Street Wear Manila"
   description="Kalye's Tee: the Kalye Noir collection. KALYENOIR, MEDUSA and MANILA prints on heavyweight cotton."
 >
   <div class="wrap pt-7">
@@ -16,7 +16,14 @@ import { products } from '../../data/catalog';
     </nav>
   </div>
 
-  <div class="border-y border-line mt-8">
+  <header class="wrap pt-10 pb-4 text-center">
+    <h1 class="display reveal text-4xl sm:text-5xl lg:text-6xl text-ink">Kalye's Tee</h1>
+    <p class="meta mx-auto mt-3 max-w-lg text-muted">
+      Batch 001 Collection · Heavyweight custom screen-print tees · 14.5995° N, 120.9842° E
+    </p>
+  </header>
+
+  <div class="border-y border-line mt-6">
     <div class="wrap flex items-center justify-between gap-6 py-3">
       <p class="meta text-muted">
         {products.length} {products.length === 1 ? 'print' : 'prints'}
@@ -27,6 +34,5 @@ import { products } from '../../data/catalog';
     </div>
   </div>
 
-  <h1 class="sr-only">Kalye's Tee: all prints</h1>
   <ProductGrid products={products} />
 </MainLayout>

@@ -12,11 +12,18 @@ const { products } = Astro.props;
 <section class="wrap py-12">
   <ul data-product-grid class="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3">
     {
-      products.map((product: Product, index: number) => (
-        <li data-name={product.title} data-index={index}>
-          <ProductCard product={product} priority={index < 2} />
-        </li>
-      ))
+      products.map((product: Product, index: number) => {
+        const isOddLead = index === 0 && products.length % 2 !== 0;
+        return (
+          <li
+            data-name={product.title}
+            data-index={index}
+            class={isOddLead ? 'col-span-2 md:col-span-1' : 'col-span-1'}
+          >
+            <ProductCard product={product} priority={index < 2} />
+          </li>
+        );
+      })
     }
   </ul>
 </section>

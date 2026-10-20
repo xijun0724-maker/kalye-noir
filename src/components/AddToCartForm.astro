@@ -38,6 +38,7 @@ const pill =
             type="button"
             role="radio"
             aria-checked={size === first.size ? 'true' : 'false'}
+            data-selected={size === first.size ? 'true' : 'false'}
             data-value={size}
             class={pill}
             aria-label={`Size ${size}`}
@@ -134,17 +135,41 @@ const pill =
       btn.setAttribute('aria-checked', String(isSelected));
     });
 
+    const sizeButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-value]'));
+
+    function selectSize(opt: HTMLElement) {
+      sizeButtons.forEach((btn) => {
+        btn.dataset.selected = 'false';
+        btn.setAttribute('aria-checked', 'false');
+      });
+      opt.dataset.selected = 'true';
+      opt.setAttribute('aria-checked', 'true');
+      size = opt.dataset.value!;
+    }
+
+    sizeButtons.forEach((btn, idx) => {
+      btn.addEventListener('keydown', (e) => {
+        let nextIdx = -1;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          nextIdx = (idx + 1) % sizeButtons.length;
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          nextIdx = (idx - 1 + sizeButtons.length) % sizeButtons.length;
+        }
+        if (nextIdx >= 0) {
+          const nextBtn = sizeButtons[nextIdx];
+          nextBtn.focus();
+          selectSize(nextBtn);
+        }
+      });
+    });
+
     root.addEventListener('click', (e) => {
       const t = e.target as HTMLElement;
       const opt = t.closest<HTMLElement>('[data-value]');
       if (opt) {
-        root.querySelectorAll<HTMLElement>('[data-value]').forEach((btn) => {
-          btn.dataset.selected = 'false';
-          btn.setAttribute('aria-checked', 'false');
-        });
-        opt.dataset.selected = 'true';
-        opt.setAttribute('aria-checked', 'true');
-        size = opt.dataset.value!;
+        selectSize(opt);
         return;
       }
       const step = t.closest<HTMLElement>('[data-step]');
@@ -154,6 +179,7 @@ const pill =
       }
     });
 
+    let addResetTimeout: ReturnType<typeof setTimeout> | null = null;
     addBtn.addEventListener('click', () => {
       const v = findVariant(root.dataset.slug!, size);
       const p = getProduct(root.dataset.slug!);
@@ -165,6 +191,15 @@ const pill =
         variant: [v.color, v.size].filter(Boolean).join(' · '),
         qty,
       });
+
+      const originalText = 'Add to cart';
+      addBtn.textContent = 'Added ✓';
+      addBtn.classList.add('!bg-registration', '!border-registration');
+      if (addResetTimeout) clearTimeout(addResetTimeout);
+      addResetTimeout = setTimeout(() => {
+        addBtn.textContent = originalText;
+        addBtn.classList.remove('!bg-registration', '!border-registration');
+      }, 800);
     });
   }
 </script>
