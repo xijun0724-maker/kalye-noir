@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  Live site: <a href="https://kalyenoir.com">kalyenoir.com</a> &nbsp;·&nbsp; Manila streetwear storefront (Astro + Tailwind + nanostores).
+  Live site: <a href="https://kalyenoir.netlify.app">kalyenoir.netlify.app</a> &nbsp;·&nbsp; Manila streetwear storefront (Astro + Tailwind + nanostores).
 </p>
 
 <p align="center">
@@ -22,7 +22,7 @@
 
 ---
 
-**This repo** is the source for the live Kalye Noir storefront at [kalyenoir.com](https://kalyenoir.com): a small-batch Manila streetwear shop. It is the real store, not a generic template or theme.
+**This repo** is the source for the live Kalye Noir storefront at [kalyenoir.netlify.app](https://kalyenoir.netlify.app): a small-batch Manila streetwear shop. It is the real store, not a generic template or theme.
 
 ## The label
 

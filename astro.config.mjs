@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://kalyenoir.com',
+  site: 'https://kalyenoir.netlify.app',
   devToolbar: { enabled: false },
   integrations: [sitemap()],
   vite: { plugins: [tailwindcss()] },
