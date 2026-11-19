@@ -62,9 +62,14 @@ npm run build    # output in dist/
 npm run preview  # preview the build
 ```
 
-Deploys on Netlify via `netlify.toml` (`npm run build` → `dist/`). Set the `GMAIL_APP_PASSWORD` environment variable in the Netlify site settings to the app password for the Gmail account configured in `src/config/site.ts`. The order function sends a request only after both emails are accepted by Gmail; receipt uploads are optional and limited to 4 MB.
+Deploys on Netlify via `netlify.toml` (`npm run build` → `dist/`). The checkout function sends the store copy and the customer copy through [Resend](https://resend.com). Set these environment variables in the Netlify site settings (and in a local `.env` when running with the Netlify CLI):
 
-`npm run dev` runs the Astro site without Netlify Functions. For end-to-end checkout testing, run the site with the Netlify CLI and provide `GMAIL_APP_PASSWORD` through the local environment.
+- `RESEND_API_KEY` (required) — your Resend API key. The order function sends only after both emails are accepted by Resend; receipt uploads are optional and limited to 4 MB.
+- `RESEND_FROM` (optional) — the verified `From` address, e.g. `"KALYE NOIR" <orders@yourdomain.com>`. Defaults to the Resend sandbox domain `onboarding@resend.dev`.
+
+**To send real order emails your store needs a verified domain in Resend.** Without a verified domain, Resend only lets you send to the account owner's email address and to Resend's test inboxes — it will not deliver the store copy (`kalyenoirorders@gmail.com`) or your customers' emails. To fix that, verify a domain you control in the Resend dashboard (resend.com/domains), then set `RESEND_FROM` to an address at that domain. (The site's `kalyenoir.netlify.app` subdomain is a Netlify shared domain and cannot be verified in Resend — use a domain you own instead.)
+
+`npm run dev` runs the Astro site without Netlify Functions. For end-to-end checkout testing, run the site with the Netlify CLI and provide `RESEND_API_KEY` (and `RESEND_FROM` if you want a non-sandbox sender) through the local environment.
 
 ## In this repo
 

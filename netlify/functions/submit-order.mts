@@ -1,7 +1,7 @@
 import type { Config } from '@netlify/functions';
 import { Buffer } from 'node:buffer';
 import { randomUUID } from 'node:crypto';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { contact, site } from '../../src/config/site.ts';
 import {
 	formatOrderDetails,
@@ -125,21 +125,26 @@ export function createSubmitOrderHandler(sendOrderEmails: SendOrderEmails) {
 	};
 }
 
+// Resend returns a discriminated union { data, error: null } | { error, data: null }.
+// A send is successful only when both emails settle with data present and no error.
 async function sendOrderEmails(
 	order: OrderSubmission,
 	orderReference: string,
 ): Promise<void> {
-	const password = Netlify.env.get('GMAIL_APP_PASSWORD');
-	if (!password) {
+	const apiKey = Netlify.env.get('RESEND_API_KEY');
+	if (!apiKey) {
 		console.error(
-			'Order emails could not be sent because GMAIL_APP_PASSWORD is not configured.',
+			'Order emails could not be sent because RESEND_API_KEY is not configured.',
 		);
-		throw new Error('GMAIL_APP_PASSWORD is not configured.');
+		throw new Error('RESEND_API_KEY is not configured.');
 	}
+
+	const resend = new Resend(apiKey);
 
 	const details = formatOrderDetails(order, orderReference);
 	const firstName = order.customer.name.split(/\s+/)[0] || 'there';
-	const attachment = order.paymentSlip
+
+	const receiptAttachment = order.paymentSlip
 		? [
 				{
 					filename:
@@ -155,67 +160,88 @@ async function sendOrderEmails(
 				},
 			]
 		: undefined;
-	const transport = nodemailer.createTransport({
-		service: 'gmail',
-		auth: { user: contact.email, pass: password },
-		connectionTimeout: 10_000,
-		greetingTimeout: 10_000,
-		socketTimeout: 20_000,
-	});
-	const from = `"${site.name}" <${contact.email}>`;
+
+	// Resend sends from a verified domain. The default sandbox domain works for
+	// development; for production, verify a domain you own in the Resend dashboard
+	// (resend.com/domains) and set RESEND_FROM to an address at that domain.
+	// kalyenoir.netlify.app is a Netlify shared domain and cannot be verified in
+	// Resend, so use a domain you control instead.
+	const from =
+		Netlify.env.get('RESEND_FROM') ?? `KALYE NOIR <onboarding@resend.dev>`;
 
 	const customerPaymentNote =
 		order.paymentMethod === 'gcash'
 			? 'The studio will verify your GCash / Maya transfer reference before dispatch. This email is not a payment confirmation.'
 			: 'Cash on Delivery is payable to the courier when your order is delivered.';
 
+	const storeEmail: Parameters<typeof resend.emails.send>[0] = {
+		from,
+		to: contact.email,
+		replyTo: order.customer.email,
+		subject: `New order ${orderReference} · ${order.customer.name.replace(/[\r\n]/g, ' ')}`,
+		text: `${details}\n\nCustomer email: ${order.customer.email}`,
+		...(receiptAttachment ? { attachments: receiptAttachment } : {}),
+	};
+
+	const customerEmail: Parameters<typeof resend.emails.send>[0] = {
+		from,
+		to: order.customer.email,
+		replyTo: contact.email,
+		subject: `${site.name}: order request received · ${orderReference}`,
+		text: [
+			`Hi ${firstName},`,
+			'',
+			'We received your order request. Here is your order summary:',
+			'',
+			details,
+			'',
+			customerPaymentNote,
+			'',
+			'This confirms receipt of your request, not stock availability, payment, or dispatch.',
+			'',
+			`Questions? Reply to this email or text ${contact.mobile}.`,
+			'',
+			site.name,
+		].join('\n'),
+	};
+
+	type SendResult =
+		| { ok: true; id: string }
+		| { ok: false; error: unknown };
+
+	const sendOne = (
+		params: Parameters<typeof resend.emails.send>[0],
+	): Promise<SendResult> =>
+		(resend.emails.send(params) as unknown) as Promise<SendResult>;
+
 	try {
-		const results = await Promise.allSettled([
-			transport.sendMail({
-				from,
-				to: contact.email,
-				replyTo: order.customer.email,
-				subject: `New order ${orderReference} · ${order.customer.name.replace(/[\r\n]/g, ' ')}`,
-				text: `${details}\n\nCustomer email: ${order.customer.email}`,
-				attachments: attachment,
-			}),
-			transport.sendMail({
-				from,
-				to: order.customer.email,
-				replyTo: contact.email,
-				subject: `${site.name}: order request received · ${orderReference}`,
-				text: [
-					`Hi ${firstName},`,
-					'',
-					'We received your order request. Here is your order summary:',
-					'',
-					details,
-					'',
-					customerPaymentNote,
-					'',
-					'This confirms receipt of your request, not stock availability, payment, or dispatch.',
-					'',
-					`Questions? Reply to this email or text ${contact.mobile}.`,
-					'',
-					site.name,
-				].join('\n'),
-			}),
+		const [storeResult, customerResult] = await Promise.all([
+			sendOne(storeEmail),
+			sendOne(customerEmail),
 		]);
 
-		const failures = results.filter(result => result.status === 'rejected');
+		const failures = [storeResult, customerResult].filter(
+			(r): r is Extract<typeof r, { ok: false }> => !r.ok,
+		);
+
 		if (failures.length) {
 			console.error(
-				'Gmail did not accept both order emails.',
-				failures.map(failure =>
-					failure.status === 'rejected' && failure.reason instanceof Error
-						? getErrorCode(failure.reason)
-						: 'Unknown error',
+				'Resend did not accept both order emails.',
+				failures.map((f) =>
+					f.error instanceof Error ? getErrorCode(f.error) : f.error,
 				),
 			);
-			throw new Error('Gmail did not accept both order emails.');
+			throw new Error('Resend did not accept both order emails.');
 		}
-	} finally {
-		transport.close();
+	} catch (error) {
+		if (
+			error instanceof Error &&
+			error.message === 'Resend did not accept both order emails.'
+		) {
+			throw error;
+		}
+		console.error('Resend could not send the order emails.', getErrorCode(error));
+		throw new Error('Resend could not send the order emails.');
 	}
 }
 
