@@ -125,124 +125,96 @@ export function createSubmitOrderHandler(sendOrderEmails: SendOrderEmails) {
 	};
 }
 
-// Resend returns a discriminated union { data, error: null } | { error, data: null }.
-// A send is successful only when both emails settle with data present and no error.
 async function sendOrderEmails(
 	order: OrderSubmission,
 	orderReference: string,
 ): Promise<void> {
 	const apiKey = Netlify.env.get('RESEND_API_KEY');
-	if (!apiKey) {
-		console.error(
-			'Order emails could not be sent because RESEND_API_KEY is not configured.',
-		);
-		throw new Error('RESEND_API_KEY is not configured.');
+	const from = Netlify.env.get('RESEND_FROM')?.trim();
+	if (!apiKey || !from) {
+		throw new Error('Order email configuration is incomplete.');
 	}
 
-	const resend = new Resend(apiKey);
+	await createSendOrderEmails(new Resend(apiKey), from)(order, orderReference);
+}
 
-	const details = formatOrderDetails(order, orderReference);
-	const firstName = order.customer.name.split(/\s+/)[0] || 'there';
+export function createSendOrderEmails(
+	resend: Pick<Resend, 'emails'>,
+	from: string,
+): SendOrderEmails {
+	return async (order, orderReference) => {
+		const details = formatOrderDetails(order, orderReference);
+		const firstName = order.customer.name.split(/\s+/)[0] || 'there';
 
-	const receiptAttachment = order.paymentSlip
-		? [
-				{
-					filename:
-						order.paymentSlip.type === 'application/pdf'
-							? 'payment-receipt.pdf'
-							: order.paymentSlip.type === 'image/jpeg'
-								? 'payment-receipt.jpg'
-								: order.paymentSlip.type === 'image/png'
-									? 'payment-receipt.png'
-									: 'payment-receipt.webp',
-					content: Buffer.from(await order.paymentSlip.arrayBuffer()),
-					contentType: order.paymentSlip.type,
-				},
-			]
-		: undefined;
+		const receiptAttachment = order.paymentSlip
+			? [
+					{
+						filename:
+							order.paymentSlip.type === 'application/pdf'
+								? 'payment-receipt.pdf'
+								: order.paymentSlip.type === 'image/jpeg'
+									? 'payment-receipt.jpg'
+									: order.paymentSlip.type === 'image/png'
+										? 'payment-receipt.png'
+										: 'payment-receipt.webp',
+						content: Buffer.from(await order.paymentSlip.arrayBuffer()),
+						contentType: order.paymentSlip.type,
+					},
+				]
+			: undefined;
 
-	// Resend sends from a verified domain. The default sandbox domain works for
-	// development; for production, verify a domain you own in the Resend dashboard
-	// (resend.com/domains) and set RESEND_FROM to an address at that domain.
-	// kalyenoir.netlify.app is a Netlify shared domain and cannot be verified in
-	// Resend, so use a domain you control instead.
-	const from =
-		Netlify.env.get('RESEND_FROM') ?? `KALYE NOIR <onboarding@resend.dev>`;
+		const customerPaymentNote =
+			order.paymentMethod === 'gcash'
+				? 'The studio will verify your GCash / Maya transfer reference before dispatch. This email is not a payment confirmation.'
+				: 'Cash on Delivery is payable to the courier when your order is delivered.';
 
-	const customerPaymentNote =
-		order.paymentMethod === 'gcash'
-			? 'The studio will verify your GCash / Maya transfer reference before dispatch. This email is not a payment confirmation.'
-			: 'Cash on Delivery is payable to the courier when your order is delivered.';
+		const storeEmail: Parameters<typeof resend.emails.send>[0] = {
+			from,
+			to: contact.email,
+			replyTo: order.customer.email,
+			subject: `New order ${orderReference} · ${order.customer.name.replace(/[\r\n]/g, ' ')}`,
+			text: `${details}\n\nCustomer email: ${order.customer.email}`,
+			...(receiptAttachment ? { attachments: receiptAttachment } : {}),
+		};
 
-	const storeEmail: Parameters<typeof resend.emails.send>[0] = {
-		from,
-		to: contact.email,
-		replyTo: order.customer.email,
-		subject: `New order ${orderReference} · ${order.customer.name.replace(/[\r\n]/g, ' ')}`,
-		text: `${details}\n\nCustomer email: ${order.customer.email}`,
-		...(receiptAttachment ? { attachments: receiptAttachment } : {}),
-	};
+		const customerEmail: Parameters<typeof resend.emails.send>[0] = {
+			from,
+			to: order.customer.email,
+			replyTo: contact.email,
+			subject: `${site.name}: order request received · ${orderReference}`,
+			text: [
+				`Hi ${firstName},`,
+				'',
+				'We received your order request. Here is your order summary:',
+				'',
+				details,
+				'',
+				customerPaymentNote,
+				'',
+				'This confirms receipt of your request, not stock availability, payment, or dispatch.',
+				'',
+				`Questions? Reply to this email or text ${contact.mobile}.`,
+				'',
+				site.name,
+			].join('\n'),
+		};
 
-	const customerEmail: Parameters<typeof resend.emails.send>[0] = {
-		from,
-		to: order.customer.email,
-		replyTo: contact.email,
-		subject: `${site.name}: order request received · ${orderReference}`,
-		text: [
-			`Hi ${firstName},`,
-			'',
-			'We received your order request. Here is your order summary:',
-			'',
-			details,
-			'',
-			customerPaymentNote,
-			'',
-			'This confirms receipt of your request, not stock availability, payment, or dispatch.',
-			'',
-			`Questions? Reply to this email or text ${contact.mobile}.`,
-			'',
-			site.name,
-		].join('\n'),
-	};
-
-	type SendResult =
-		| { ok: true; id: string }
-		| { ok: false; error: unknown };
-
-	const sendOne = (
-		params: Parameters<typeof resend.emails.send>[0],
-	): Promise<SendResult> =>
-		(resend.emails.send(params) as unknown) as Promise<SendResult>;
-
-	try {
-		const [storeResult, customerResult] = await Promise.all([
-			sendOne(storeEmail),
-			sendOne(customerEmail),
+		const results = await Promise.allSettled([
+			resend.emails.send(storeEmail),
+			resend.emails.send(customerEmail),
 		]);
 
-		const failures = [storeResult, customerResult].filter(
-			(r): r is Extract<typeof r, { ok: false }> => !r.ok,
-		);
-
-		if (failures.length) {
-			console.error(
-				'Resend did not accept both order emails.',
-				failures.map((f) =>
-					f.error instanceof Error ? getErrorCode(f.error) : f.error,
-				),
-			);
+		if (
+			results.some(
+				result =>
+					result.status !== 'fulfilled' ||
+					result.value.error !== null ||
+					!result.value.data?.id,
+			)
+		) {
 			throw new Error('Resend did not accept both order emails.');
 		}
-	} catch (error) {
-		if (
-			error instanceof Error &&
-			error.message === 'Resend did not accept both order emails.'
-		) {
-			throw error;
-		}
-		console.error('Resend could not send the order emails.', getErrorCode(error));
-		throw new Error('Resend could not send the order emails.');
-	}
+	};
 }
 
 export const config: Config = {
@@ -255,6 +227,4 @@ export const config: Config = {
 	},
 };
 
-export default {
-	fetch: createSubmitOrderHandler(sendOrderEmails),
-};
+export default createSubmitOrderHandler(sendOrderEmails);
