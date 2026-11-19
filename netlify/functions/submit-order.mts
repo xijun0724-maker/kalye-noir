@@ -1,5 +1,4 @@
 import type { Config } from '@netlify/functions';
-import { Buffer } from 'node:buffer';
 import { randomUUID } from 'node:crypto';
 import { contact, site } from '../../src/config/site.ts';
 import {

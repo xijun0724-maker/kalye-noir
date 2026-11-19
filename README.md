@@ -65,21 +65,13 @@ npm run preview  # preview the build
 Deploys on Netlify via `netlify.toml` (`npm run build` → `dist/`). The checkout function sends the store copy and the customer copy through **Netlify**, using the site's own email service. Set these environment variables in the Netlify site settings (and in a local `.env` when running with the Netlify CLI):
 
 <<<<<<< HEAD
-- `NETLIFY_API_TOKEN` (required) — a Netlify personal access token with permission to send email through the site. The order function sends only after both emails are accepted by Netlify; receipt uploads are optional and limited to 4 MB.
-- `FROM_EMAIL` (optional) — the `From` address used in both emails, e.g. `"KALYE NOIR" <orders@kalyenoir.netlify.app>`. Defaults to the store address from the site config (`kalyenoirorders@gmail.com`).
-=======
 - `NETLIFY_API_TOKEN` (required) — a Netlify API token with write access to the site’s email send endpoint. The order function sends only after both emails are accepted by Netlify; receipt uploads are optional and limited to 4 MB.
 - `FROM_EMAIL` (optional) — the `From` address used for both emails. If omitted, the function defaults to `KALYE NOIR <<contact email from site config>>`.
-- `NETLIFY_SITE_URL` is not required for local Netlify CLI runs; the function derives the base URL from the request.
->>>>>>> a1bc0c9ec065917dd94ab97da4f1d2d2a3e1a00d
 
 **To send real order emails, your Netlify site must be configured to send email from addresses the platform accepts.** Without that, Netlify will not deliver messages to customer addresses outside the site's own sending domain. If email delivery is still not available in your target workspace, swap `sendOrderEmails` for your own mailer (for example, SMTP or a third-party transactional email service) by passing a custom handler to `createSubmitOrderHandler`.
 
 <<<<<<< HEAD
 `npm run dev` runs the Astro site without Netlify Functions. For end-to-end checkout testing, run the site with the Netlify CLI and provide `NETLIFY_API_TOKEN` (and `FROM_EMAIL` if you want a different sender) through the local environment.
-=======
-`npm run dev` runs the Astro site without Netlify Functions. For end-to-end checkout testing, run the site with the Netlify CLI and provide `NETLIFY_API_TOKEN` (and `FROM_EMAIL` if you want a different sender) through the local environment.
->>>>>>> a1bc0c9ec065917dd94ab97da4f1d2d2a3e1a00d
 
 ## In this repo
 

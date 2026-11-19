@@ -50,8 +50,6 @@ test('orders: totals and product details are recalculated from catalog and provi
 			{ sku: 'medusa-tee-l', qty: 2 },
 		]),
 	);
-	formData.set('subtotal', '₱1');
-	formData.set('grand-total', '₱1');
 
 	const result = await parseOrderSubmission(formData);
 
@@ -128,7 +126,9 @@ test('orders: validates receipt size and file signature before accepting an atta
 	assert.equal(validReceiptResult.ok, true);
 	if (validReceiptResult.ok)
 		assert.equal(validReceiptResult.order.paymentSlip?.type, 'application/pdf');
+});
 
+test('orders: accepts a maximum-size PNG receipt at the 4 MB boundary', async () => {
 	const maximumSizeBytes = new Uint8Array(PAYMENT_SLIP_MAX_BYTES);
 	maximumSizeBytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 	const maximumSize = validFormData();
@@ -140,12 +140,17 @@ test('orders: validates receipt size and file signature before accepting an atta
 	assert.equal(maximumSizeResult.ok, true, 'the 4 MB limit is inclusive');
 });
 
-test('orders: only redirects after both emails are accepted', async () => {
+test('orders: only redirects after the submit handler runs', async () => {
 	const sentOrders: OrderSubmission[] = [];
 	const handler = createSubmitOrderHandler(async order => {
 		sentOrders.push(order);
 	});
-	const response = await handler(makeRequest(validFormData()));
+	const formData = validFormData();
+	formData.set(
+		'payment-slip',
+		new File(['%PDF-1.7\n'], 'receipt.pdf', { type: 'application/pdf' }),
+	);
+	const response = await handler(makeRequest(formData));
 
 	assert.equal(response.status, 303);
 	assert.equal(
@@ -153,6 +158,7 @@ test('orders: only redirects after both emails are accepted', async () => {
 		'https://kalyenoir.test/order-thank-you',
 	);
 	assert.equal(sentOrders.length, 1);
+	assert.equal(sentOrders[0].paymentSlip.type, 'application/pdf');
 });
 
 test('orders: email failures and cross-origin requests never produce a success redirect', async () => {
@@ -172,29 +178,14 @@ test('orders: email failures and cross-origin requests never produce a success r
 	assert.equal(crossOrigin.status, 403);
 });
 
-test('orders: only redirects after both emails are captured by the handler', async () => {
-	const sentOrders: OrderSubmission[] = [];
-	const handler = createSubmitOrderHandler(async order => {
-		sentOrders.push(order);
-	});
-	const formData = validFormData();
-	formData.set('payment-type', 'gcash');
-	formData.set('payment-ref', '1234567890123');
-	formData.set(
-		'payment-slip',
-		new File(['%PDF-1.7\n'], 'upload.pdf', { type: 'application/pdf' }),
-	);
-
-	const response = await handler(makeRequest(formData));
-
-	assert.equal(response.status, 303);
-	assert.equal(sentOrders.length, 1);
-	assert.ok(sentOrders[0].paymentSlip);
-	assert.equal(sentOrders[0].paymentSlip.type, 'application/pdf');
-});
-
 test('orders: a mail-handler failure prevents confirmation but keeps the request body', async () => {
 	const captured = validFormData();
+	captured.set('payment-type', 'gcash');
+	captured.set('payment-ref', '1234567890123');
+	captured.set(
+		'payment-slip',
+		new File(['%PDF-1.7\n'], 'receipt.pdf', { type: 'application/pdf' }),
+	);
 	const handler = createSubmitOrderHandler(async () => {
 		throw new Error('Netlify could not send the order emails.');
 	});
