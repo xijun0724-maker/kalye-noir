@@ -37,13 +37,17 @@ skills-lock.json
 sandbox.config.json
 .stackblitzrc
 
-# Keep the project-scoped Impeccable Copilot integration in version control.
+# Keep the project-scoped Impeccable Copilot integration and CI in version control.
 !.github/
-.github/*
+!.github/workflows/
+!.github/workflows/*
 !.github/agents/
 !.github/agents/impeccable-*.agent.md
 !.github/skills/
 !.github/skills/impeccable/
+!.github/skills/impeccable/*
+!.github/skills/impeccable/reference/
+!.github/skills/impeccable/reference/*
 
 # --- personal / internal tooling (not part of the public website) ---
 # AI copilot skill configs, internal design audits, and Freebuff project ids
