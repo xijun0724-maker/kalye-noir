@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { product, priority = false } = Astro.props;
+const sourceWidth = productArt[product.slug].width;
 ---
 
 <a href={`/products/${product.slug}`} class="group block">
@@ -17,7 +18,7 @@ const { product, priority = false } = Astro.props;
     <Image
       src={productArt[product.slug]}
       alt={product.alt}
-      widths={[200, 300, 450, 600]}
+      widths={[200, 300, sourceWidth]}
       sizes="(min-width: 1024px) 30vw, 45vw"
       format="webp"
       loading={priority ? 'eager' : 'lazy'}

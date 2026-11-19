@@ -1,6 +1,7 @@
 {
 	"name": "kalye-noir",
 	"version": "4.0.0",
+	"type": "module",
 	"description": "KALYE NOIR: Manila streetwear storefront (Astro + Tailwind + nanostores).",
 	"private": true,
 	"homepage": "https://kalyenoir.com",
@@ -22,7 +23,7 @@
 		"@netlify/functions": "^6.1.1",
 		"@tailwindcss/vite": "^4.3.3",
 		"@types/nodemailer": "^8.0.2",
-		"astro": "^7.4.0",
+		"astro": "^7.4.13",
 		"prettier": "^3.9.10",
 		"prettier-plugin-astro": "^1.1.1",
 		"tailwindcss": "^4.3.3",
@@ -30,6 +31,7 @@
 	},
 	"dependencies": {
 		"@nanostores/persistent": "^1.3.5",
+		"impeccable": "^4.10.0",
 		"nanostores": "^1.5.5",
 		"nodemailer": "^7.0.13"
 	}

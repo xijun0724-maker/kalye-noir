@@ -69,28 +69,30 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
         </svg>
       </div>
     </summary>
-    <ul class="wrap flex flex-col gap-1 border-t border-line/40 pb-6 pt-2">
-      {
-        nav.map((item) => {
-          const itemPath = item.href.replace(/\/$/, '') || '/';
-          const isActive = currentPath === itemPath || (itemPath !== '/' && currentPath.startsWith(itemPath));
-          return (
-            <li>
-              <a
-                href={item.href}
-                aria-current={isActive ? 'page' : undefined}
-                class={`flex min-h-[44px] items-center justify-between py-2 font-condensed text-base font-semibold uppercase tracking-[0.2em] transition-colors ${
-                  isActive ? 'text-registration font-bold' : 'text-ink hover:text-registration'
-                }`}
-              >
-                <span>{item.title}</span>
-                {isActive && <span class="h-2 w-2 rotate-45 bg-registration" />}
-              </a>
-            </li>
-          );
-        })
-      }
-    </ul>
+    <nav aria-label="Mobile">
+      <ul class="wrap flex flex-col gap-1 border-t border-line/40 pb-6 pt-2">
+        {
+          nav.map((item) => {
+            const itemPath = item.href.replace(/\/$/, '') || '/';
+            const isActive = currentPath === itemPath || (itemPath !== '/' && currentPath.startsWith(itemPath));
+            return (
+              <li>
+                <a
+                  href={item.href}
+                  aria-current={isActive ? 'page' : undefined}
+                  class={`flex min-h-[44px] items-center justify-between py-2 font-condensed text-base font-semibold uppercase tracking-[0.2em] transition-colors ${
+                    isActive ? 'text-registration font-bold' : 'text-ink hover:text-registration'
+                  }`}
+                >
+                  <span>{item.title}</span>
+                  {isActive && <span class="h-2 w-2 rotate-45 bg-registration" />}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
   </details>
 </header>
 

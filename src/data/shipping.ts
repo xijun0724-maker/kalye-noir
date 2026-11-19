@@ -70,5 +70,6 @@ export const orderTerms = {
   preparation:
     'Please allow 2 – 3 business days to verify and prepare your order. Weekends and holidays are not included.',
   deliveryIntro: 'Estimated delivery to your address, counted from pick-up:',
-  payment: 'Please prepare the exact amount for your payment. Your order will arrive soon.',
+  payment:
+    'Choose Cash on Delivery or GCash / Maya manual transfer. The payment method and exact total are shown before you send your request.',
 };

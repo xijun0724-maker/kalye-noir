@@ -4,9 +4,10 @@ import ProductCard from './ProductCard.astro';
 
 interface Props {
   products: Product[];
+  priority?: boolean;
 }
 
-const { products } = Astro.props;
+const { products, priority = false } = Astro.props;
 ---
 
 <section class="wrap py-12">
@@ -20,7 +21,7 @@ const { products } = Astro.props;
             data-index={index}
             class={isOddLead ? 'col-span-2 md:col-span-1' : 'col-span-1'}
           >
-            <ProductCard product={product} priority={index < 2} />
+            <ProductCard product={product} priority={priority && index < 2} />
           </li>
         );
       })

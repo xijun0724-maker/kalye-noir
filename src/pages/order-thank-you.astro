@@ -7,9 +7,9 @@ import MainLayout from '../layouts/MainLayout.astro';
     <div class="mb-6 flex h-16 w-16 items-center justify-center border border-dashed border-line">
       <span class="h-3 w-3 rotate-45 bg-registration" aria-hidden="true"></span>
     </div>
-    <h1 class="display text-4xl sm:text-5xl lg:text-6xl">Slip Received</h1>
-    <p class="mt-6 max-w-md text-sm leading-relaxed text-muted">
-      Your request slip has been logged with the studio. A print confirmation and exact courier dispatch timing will reach your inbox shortly.
+    <h1 data-receipt-heading class="display text-4xl sm:text-5xl lg:text-6xl">Order request received</h1>
+    <p data-receipt-message class="mt-6 max-w-md text-sm leading-relaxed text-muted">
+      The studio received your request and an order summary was sent to the email address you entered. This confirms your request, not payment, stock, or dispatch. The studio will follow up with any next steps.
     </p>
     <a href="/products" class="btn btn-primary mt-8">Explore Batch 001</a>
   </section>
@@ -17,6 +17,17 @@ import MainLayout from '../layouts/MainLayout.astro';
 
 <script>
   import { clearCart } from '../stores/cartStore';
-  // Only an order request empties the cart; an incident report must not.
-  if (!new URLSearchParams(location.search).has('incident')) clearCart();
+
+  if (new URLSearchParams(location.search).has('incident')) {
+    const heading = document.querySelector<HTMLElement>('[data-receipt-heading]');
+    const message = document.querySelector<HTMLElement>('[data-receipt-message]');
+    if (heading) heading.textContent = 'Incident report received';
+    if (message) {
+      message.textContent =
+        'Your report was submitted. The support team will review the details and contact you if more information is needed.';
+    }
+    document.title = 'Incident Report Received · KALYE NOIR';
+  } else {
+    clearCart();
+  }
 </script>

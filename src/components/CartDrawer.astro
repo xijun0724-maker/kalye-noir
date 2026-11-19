@@ -1,6 +1,17 @@
 ---
 // Slide-out cart island. State lives in the nanostores cartStore; this component
 // only renders handlers + list markup and subscribes to the store.
+import { getImage } from 'astro:assets';
+import { productArt } from '../data/productArt';
+
+const thumbnails = Object.fromEntries(
+  await Promise.all(
+    Object.entries(productArt).map(async ([slug, image]) => {
+      const thumbnail = await getImage({ src: image, width: 128, format: 'webp', quality: 80 });
+      return [slug, thumbnail.src];
+    })
+  )
+);
 ---
 
 <dialog data-cart-panel class="cart-dialog shadow-2xl" aria-label="Shopping cart">
@@ -11,7 +22,11 @@
     </button>
   </div>
 
-  <div class="flex-1 overflow-y-auto px-5" data-cart-items></div>
+  <div
+    class="flex-1 overflow-y-auto px-5"
+    data-cart-items
+    data-thumbnail-sources={JSON.stringify(thumbnails)}
+  ></div>
 
   <div class="border-t border-line px-5 py-5">
     <div class="mb-3 flex items-center justify-between text-muted">
@@ -50,14 +65,57 @@
     stepQty,
     orderNote,
   } from '../stores/cartStore';
-  import { ITEM_PRICE } from '../data/catalog';
-  import { productArt } from '../data/productArt';
+  import { ITEM_PRICE, products } from '../data/catalog';
 
   const panel = document.querySelector<HTMLDialogElement>('[data-cart-panel]');
   if (panel) {
     const list = panel.querySelector<HTMLElement>('[data-cart-items]')!;
     const note = panel.querySelector<HTMLTextAreaElement>('[data-cart-note]');
     const checkout = panel.querySelector<HTMLAnchorElement>('[data-drawer-checkout]');
+    const rawThumbnails: unknown = JSON.parse(list.dataset.thumbnailSources ?? 'null');
+    if (typeof rawThumbnails !== 'object' || rawThumbnails === null || Array.isArray(rawThumbnails)) {
+      throw new Error('Cart thumbnail URLs are missing or invalid.');
+    }
+    const thumbnailSources = new Map<string, string>();
+    for (const [slug, source] of Object.entries(rawThumbnails)) {
+      if (typeof source !== 'string') throw new Error(`Cart thumbnail URL is invalid for ${slug}.`);
+      thumbnailSources.set(slug, source);
+    }
+    let focusIntent: { sku: string; action: string; index: number } | null = null;
+
+    const escapeHTML = (value: string) =>
+      value.replace(/[&<>"']/g, (character) => {
+        const entities: Record<string, string> = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;',
+        };
+        return entities[character] ?? character;
+      });
+
+    const getControl = (row: HTMLElement, action: string) => {
+      if (action === 'remove') return row.querySelector<HTMLElement>('[data-remove]');
+      return Array.from(row.querySelectorAll<HTMLElement>('[data-step]')).find(
+        (button) => button.dataset.step === action
+      ) ?? null;
+    };
+
+    function restoreFocus() {
+      if (!focusIntent) return;
+      const intent = focusIntent;
+      focusIntent = null;
+      const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-sku]'));
+      const row = rows.find((candidate) => candidate.dataset.sku === intent.sku);
+      let target = row ? getControl(row, intent.action) : null;
+      if (!target && rows.length) {
+        const fallbackRow = rows[Math.min(intent.index, rows.length - 1)];
+        target = getControl(fallbackRow, intent.action) ?? getControl(fallbackRow, 'remove');
+      }
+      if (!target) target = list.querySelector<HTMLElement>('[data-empty-cart-focus]');
+      target?.focus();
+    }
 
     const close = () => isCartOpen.set(false);
     panel.querySelector('[data-cart-close]')?.addEventListener('click', close);
@@ -73,11 +131,17 @@
       // A click on ::backdrop targets the dialog itself, never a child.
       if (t === panel) return close();
       const line = t.closest<HTMLElement>('[data-sku]');
-      if (!line) return;
+      const control = t.closest<HTMLElement>('[data-remove], [data-step]');
+      if (!line || !control) return;
       const sku = line.dataset.sku!;
-      if (t.closest('[data-remove]')) return removeFromCart(sku);
-      const step = t.closest<HTMLElement>('[data-step]');
-      if (step) stepQty(sku, Number(step.dataset.step));
+      const currentItems = cartItems.get();
+      focusIntent = {
+        sku,
+        action: control.hasAttribute('data-remove') ? 'remove' : control.dataset.step ?? '',
+        index: currentItems.findIndex((item) => item.sku === sku),
+      };
+      if (control.hasAttribute('data-remove')) return removeFromCart(sku);
+      stepQty(sku, Number(control.dataset.step));
     });
 
     if (note) {
@@ -95,23 +159,31 @@
       list.innerHTML = items.length
         ? items
             .map(
-              (i) => `
-          <div class="flex gap-4 border-b border-line py-4" data-sku="${i.sku}">
-            <img src="${productArt[i.slug]?.src ?? ''}" alt="" width="72" height="90" loading="lazy" class="h-[90px] w-[72px] shrink-0 bg-white object-contain p-1.5" />
+              (i) => {
+                const product = products.find((candidate) => candidate.slug === i.slug);
+                const title = product?.title ?? String(i.title ?? 'Unknown print');
+                const alt = product?.alt ?? title;
+                const variant = String(i.variant ?? '');
+                const sku = String(i.sku ?? '');
+                const image = thumbnailSources.get(String(i.slug)) ?? '';
+                return `
+          <div class="flex gap-4 border-b border-line py-4" data-sku="${escapeHTML(sku)}">
+            <img src="${escapeHTML(image)}" alt="${escapeHTML(alt)}" width="72" height="90" loading="lazy" decoding="async" class="h-[90px] w-[72px] shrink-0 bg-white object-contain p-1.5" />
             <div class="flex min-w-0 flex-1 flex-col">
-              <p class="font-condensed text-[0.8125rem] font-semibold uppercase leading-snug tracking-[0.12em]">${i.title}</p>
+              <p class="font-condensed text-[0.8125rem] font-semibold uppercase leading-snug tracking-[0.12em]">${escapeHTML(title)}</p>
               <p class="font-condensed text-sm font-bold text-ink mt-1">₱${ITEM_PRICE}</p>
-              <p class="meta mt-0.5 text-muted">${i.variant}</p>
+              <p class="meta mt-0.5 text-muted">${escapeHTML(variant)}</p>
               <div class="mt-auto flex items-center gap-4 pt-3">
                 <div class="flex items-stretch border border-line">
-                  <button type="button" data-step="-1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Decrease quantity"><span aria-hidden="true">−</span></button>
-                  <span class="flex w-10 items-center justify-center text-sm">${i.qty}</span>
-                  <button type="button" data-step="1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Increase quantity"><span aria-hidden="true">+</span></button>
+                  <button type="button" data-step="-1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Decrease quantity of ${escapeHTML(title)}, ${escapeHTML(variant)}"><span aria-hidden="true">−</span></button>
+                  <span class="flex w-10 items-center justify-center text-sm">${escapeHTML(String(i.qty))}</span>
+                  <button type="button" data-step="1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Increase quantity of ${escapeHTML(title)}, ${escapeHTML(variant)}"><span aria-hidden="true">+</span></button>
                 </div>
-                <button type="button" data-remove class="tap meta text-muted underline underline-offset-4 transition-colors hover:text-registration">Remove</button>
+                <button type="button" data-remove class="tap meta text-muted underline underline-offset-4 transition-colors hover:text-registration" aria-label="Remove ${escapeHTML(title)}, ${escapeHTML(variant)} from cart">Remove</button>
               </div>
             </div>
-          </div>`
+          </div>`;
+              }
             )
             .join('')
         : `<div class="flex flex-col items-center justify-center py-16 text-center">
@@ -123,7 +195,7 @@
             </div>
             <p class="font-display text-xl uppercase tracking-wider text-ink">Your Slip Is Empty</p>
             <p class="mt-1 text-xs text-muted max-w-[220px]">Pick a piece from Drop 001. Sizing and delivery confirmed per request.</p>
-            <a href="/#drop" data-cart-close class="btn btn-primary mt-6 min-h-11 text-xs px-6 py-2.5">Explore Drop 001</a>
+            <a href="/#drop" data-cart-close data-empty-cart-focus class="btn btn-primary mt-6 min-h-11 text-xs px-6 py-2.5">Explore Drop 001</a>
           </div>`;
 
       const count = cartCount.get();
@@ -135,6 +207,7 @@
         checkout.classList.toggle('opacity-40', count === 0);
         checkout.setAttribute('aria-disabled', String(count === 0));
       }
+      restoreFocus();
     }
 
     isCartOpen.subscribe((open) => {

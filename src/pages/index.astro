@@ -148,7 +148,7 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
       </h1>
 
       <div class="reveal reveal-2 mt-9 flex flex-wrap gap-3">
-        <a href="#drop" class="btn btn-invert">See the drop</a>
+        <a href="/products" class="btn btn-invert">Browse the collection</a>
         <a href="#how-it-works" class="btn btn-ghost">How ordering works</a>
       </div>
 
@@ -171,11 +171,14 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
     const count = document.querySelector<HTMLElement>('[data-banner-count]');
     const toggle = document.querySelector<HTMLElement>('[data-banner-toggle]');
     const next = document.querySelector<HTMLElement>('[data-banner-next]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     if (banner && track && count && toggle && next) {
       const slides = [...track.children];
       let index = 0;
       let timer: ReturnType<typeof setInterval> | undefined;
+      let userPaused = false;
+      let focusPaused = false;
 
       const show = (i: number) => {
         index = (i + slides.length) % slides.length;
@@ -186,26 +189,43 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
       const stop = () => clearInterval(timer);
       const start = () => {
         stop();
+        if (userPaused || focusPaused || reducedMotion.matches) return;
         timer = setInterval(() => show(index + 1), 5000);
       };
 
       if (slides.length > 1) {
-        toggle.hidden = false;
+        toggle.hidden = reducedMotion.matches;
         next.hidden = false;
 
         next.addEventListener('click', () => {
           show(index + 1);
-          if (!banner.classList.contains('banners-paused')) start();
+          start();
         });
 
         toggle.addEventListener('click', () => {
-          const paused = banner.classList.toggle('banners-paused');
-          if (paused) stop();
-          else start();
-          toggle.textContent = paused ? 'Play' : 'Pause';
-          toggle.setAttribute('aria-label', paused ? 'Play photo rotation' : 'Pause photo rotation');
+          userPaused = !userPaused;
+          banner.classList.toggle('banners-paused', userPaused);
+          toggle.textContent = userPaused ? 'Play' : 'Pause';
+          toggle.setAttribute('aria-label', userPaused ? 'Play photo rotation' : 'Pause photo rotation');
+          start();
         });
 
+        banner.addEventListener('focusin', () => {
+          focusPaused = true;
+          stop();
+        });
+        banner.addEventListener('focusout', (event) => {
+          const nextTarget =
+            event instanceof FocusEvent && event.relatedTarget instanceof Node ? event.relatedTarget : null;
+          if (!banner.contains(nextTarget)) {
+            focusPaused = false;
+            start();
+          }
+        });
+        reducedMotion.addEventListener('change', (event) => {
+          toggle.hidden = event.matches;
+          start();
+        });
         start();
       }
     }
@@ -238,9 +258,9 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
           <span class="meta text-registration font-semibold">Batch 001 Active · Manila Pressing</span>
         </div>
         <h2 class="display text-4xl sm:text-5xl">The drop</h2>
-        <p class="meta mt-1 text-muted">003 Prints · Custom Screen-Print Tees</p>
+        <p class="meta mt-1 text-muted">3 print designs · Heavyweight screen-print tees</p>
       </div>
-      <p class="meta text-muted">Heavyweight cotton · S–2XL</p>
+      <p class="meta text-muted">₱325 per tee · COD or GCash / Maya manual transfer</p>
     </header>
 
     <ul class="mt-12 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
@@ -279,6 +299,57 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
         ))
       }
     </ul>
+  </section>
+
+  <section id="how-it-works" class="border-t border-line bg-line/20 py-16 lg:py-24">
+    <div class="wrap">
+      <header class="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-6">
+        <div>
+          <h2 class="display text-3xl sm:text-4xl">How ordering works</h2>
+          <p class="meta mt-2 text-muted">Your request is emailed to the studio and summarized for you.</p>
+        </div>
+        <span class="meta text-xs text-muted">₱325 per tee · No charge when adding to cart</span>
+      </header>
+
+      <div class="mt-10 grid gap-8 md:grid-cols-3">
+        <div class="border-t-2 border-ink pt-6">
+          <span class="font-display text-4xl text-registration">01</span>
+          <h3 class="font-condensed text-base font-semibold uppercase tracking-[0.16em] text-ink mt-2">
+            Choose a print and size
+          </h3>
+          <p class="mt-2 text-sm text-ink/75 leading-relaxed">
+            Add the tee and size you want to your request slip. Adding a print does not collect payment.
+          </p>
+        </div>
+
+        <div class="border-t-2 border-ink pt-6">
+          <span class="font-display text-4xl text-registration">02</span>
+          <h3 class="font-condensed text-base font-semibold uppercase tracking-[0.16em] text-ink mt-2">
+            Choose how to pay
+          </h3>
+          <p class="mt-2 text-sm text-ink/75 leading-relaxed">
+            At checkout, choose cash on delivery or GCash / Maya manual transfer. Review your address and exact total before sending.
+          </p>
+        </div>
+
+        <div class="border-t-2 border-ink pt-6">
+          <span class="font-display text-4xl text-registration">03</span>
+          <h3 class="font-condensed text-base font-semibold uppercase tracking-[0.16em] text-ink mt-2">
+            Receive your order summary
+          </h3>
+          <p class="mt-2 text-sm text-ink/75 leading-relaxed">
+            After submission, the studio receives your request and an order summary is emailed to you. The studio confirms stock and next steps before dispatch.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-line/60 pt-8">
+        <p class="font-condensed text-xs uppercase tracking-[0.2em] text-ink/80">
+          Three Manila prints · S–2XL · ₱325 each
+        </p>
+        <a href="/products" class="btn btn-primary text-xs">Browse all prints →</a>
+      </div>
+    </div>
   </section>
 
   <section id="field-notes" class="bg-ink py-16 text-paper lg:py-24">
@@ -324,56 +395,4 @@ const marquee = ['Kalye Noir', ...taglines, 'Street wear · Manila', 'Order by r
     </div>
   </section>
 
-  <section id="how-it-works" class="border-t border-line bg-line/20 py-16 lg:py-24">
-    <div class="wrap">
-      <header class="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-6">
-        <div>
-          <h2 class="display text-3xl sm:text-4xl">How Ordering Works</h2>
-          <p class="meta mt-1 text-muted">Small-Batch Streetwear · Made in Manila</p>
-        </div>
-        <span class="meta text-xs text-muted">Order by Request Protocol</span>
-      </header>
-
-      <div class="mt-10 grid gap-8 md:grid-cols-3">
-        <div class="border-t-2 border-ink pt-6">
-          <span class="font-display text-4xl text-registration">01</span>
-          <h3 class="font-condensed text-base font-semibold uppercase tracking-[0.16em] text-ink mt-2">
-            Select Piece & Size
-          </h3>
-          <p class="mt-2 text-sm text-ink/75 leading-relaxed">
-            Choose your print and preferred size (S–2XL). Add to your order request slip without immediate charge.
-          </p>
-        </div>
-
-        <div class="border-t-2 border-ink pt-6">
-          <span class="font-display text-4xl text-registration">02</span>
-          <h3 class="font-condensed text-base font-semibold uppercase tracking-[0.16em] text-ink mt-2">
-            Send Request Slip
-          </h3>
-          <p class="mt-2 text-sm text-ink/75 leading-relaxed">
-            Submit your contact details and address at checkout. Your order queues straight into our workshop batch.
-          </p>
-        </div>
-
-        <div class="border-t-2 border-ink pt-6">
-          <span class="font-display text-4xl text-registration">03</span>
-          <h3 class="font-condensed text-base font-semibold uppercase tracking-[0.16em] text-ink mt-2">
-            Confirm & Dispatch
-          </h3>
-          <p class="mt-2 text-sm text-ink/75 leading-relaxed">
-            A real person confirms stock and provides shipping numbers via email or message before dispatching from Manila.
-          </p>
-        </div>
-      </div>
-
-      <div class="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-line/60 pt-8">
-        <p class="font-condensed text-xs uppercase tracking-[0.2em] text-ink/80">
-          Ready to order? Browse the 3 drop pieces above or check the full catalog.
-        </p>
-        <a href="/products" class="btn btn-primary text-xs">
-          Shop Now →
-        </a>
-      </div>
-    </div>
-  </section>
 </MainLayout>

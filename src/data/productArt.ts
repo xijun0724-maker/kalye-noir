@@ -5,8 +5,7 @@ import teeKalyenoir from '../assets/images/brand/tee-kalyenoir.png';
 import teeMedusa from '../assets/images/brand/tee-medusa.png';
 import teeManila from '../assets/images/brand/tee-manila.png';
 
-// Cart thumbnails use the full-size original (.src): client islands can't call
-// astro:assets at runtime. ponytail: ~80 KB per line; getImage() thumbs if the payload ever matters.
+// Cart components build small WebP derivatives; product detail pages use these full-size sources.
 export const productArt: Record<string, ImageMetadata> = {
   'kalyenoir-tee': teeKalyenoir,
   'medusa-tee': teeMedusa,

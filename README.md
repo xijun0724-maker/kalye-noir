@@ -11,12 +11,18 @@
 </p>
 
 <p align="center">
+  Live site: <a href="https://kalyenoir.com">kalyenoir.com</a> &nbsp;·&nbsp; Manila streetwear storefront (Astro + Tailwind + nanostores).
+</p>
+
+<p align="center">
   <img src="src/assets/images/brand/tee-kalyenoir.png" alt="Kalye Noir KALYENOIR tee" width="32%">
   <img src="src/assets/images/brand/tee-medusa.png" alt="Kalye Noir MEDUSA tee" width="32%">
   <img src="src/assets/images/brand/tee-manila.png" alt="Kalye Noir MANILA tee" width="32%">
 </p>
 
 ---
+
+**This repo** is the source for the live Kalye Noir storefront at [kalyenoir.com](https://kalyenoir.com): a small-batch Manila streetwear shop. It is the real store, not a generic template or theme.
 
 ## The label
 
@@ -34,18 +40,18 @@ Three heavyweight tees, black, S–2XL, chest mark with a full back print.
 
 ## How the shop works
 
-Straightforward and message-first, the way the label actually sells:
+Straightforward and message-first:
 
 1. **Browse** the collection and open a piece.
 2. **Pick a size** (S–2XL) and **add to cart**.
 3. **Review** in the slide-in cart or the full cart page.
-4. **Send the request** at checkout: cart contents, contact and sizing go through in one form.
+4. **Send the request** at checkout: the studio receives the order and an order summary is emailed to you.
 
-**Pricing is confirmed per order.** The site publishes no prices, stock levels or delivery claims: a real person replies with the numbers for your order.
+Each tee is **₱325**. Delivery is calculated from the selected province, with free delivery on orders of three or more tees. Choose Cash on Delivery or GCash / Maya manual transfer at checkout. The payment QR is unavailable; the checkout shows the merchant account details for manual transfer.
 
 ## Running it
 
-Astro, static build. No backend; the cart lives in `localStorage` and orders post through Netlify Forms.
+Astro static build. The cart lives in `localStorage`; a Netlify Function emails each order to the studio and sends the customer an order summary.
 
 ```sh
 npm install
@@ -56,7 +62,9 @@ npm run build    # output in dist/
 npm run preview  # preview the build
 ```
 
-Deploys on Netlify via `netlify.toml` (`npm run build` → `dist/`). Connect the repo and it ships on push; checkout submissions appear under **Site → Forms**.
+Deploys on Netlify via `netlify.toml` (`npm run build` → `dist/`). Set the `GMAIL_APP_PASSWORD` environment variable in the Netlify site settings to the app password for the Gmail account configured in `src/config/site.ts`. The order function sends a request only after both emails are accepted by Gmail; receipt uploads are optional and limited to 4 MB.
+
+`npm run dev` runs the Astro site without Netlify Functions. For end-to-end checkout testing, run the site with the Netlify CLI and provide `GMAIL_APP_PASSWORD` through the local environment.
 
 ## In this repo
 
@@ -70,6 +78,7 @@ src/
   pages/                           # home, catalogue, product, cart, checkout, contact
   stores/cartStore.ts              # localStorage cart (nanostores)
   lib/zoom.ts                      # PDP hover-zoom geometry
+netlify/functions/submit-order.mts # validate checkout and email the store + customer
 DESIGN.md                          # the design system
 ```
 

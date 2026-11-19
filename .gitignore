@@ -27,7 +27,6 @@ icon.d.ts
 
 # --- dev / tooling (not part of the published site) ---
 .agents/
-.github/
 .impeccable/
 .codex/
 .idx/
@@ -37,3 +36,18 @@ icon.d.ts
 skills-lock.json
 sandbox.config.json
 .stackblitzrc
+
+# Keep the project-scoped Impeccable Copilot integration in version control.
+!.github/
+.github/*
+!.github/agents/
+!.github/agents/impeccable-*.agent.md
+!.github/skills/
+!.github/skills/impeccable/
+
+# --- personal / internal tooling (not part of the public website) ---
+# AI copilot skill configs, internal design audits, and Freebuff project ids
+# are local working artifacts, not website content. Keep them off the public tree.
+.opencode/
+anti-slop/
+.freebuff/

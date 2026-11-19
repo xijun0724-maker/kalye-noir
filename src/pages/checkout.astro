@@ -29,19 +29,18 @@ const field =
       <form
         name="order"
         method="POST"
-        data-netlify="true"
         enctype="multipart/form-data"
-        action="/order-thank-you"
+        action="/.netlify/functions/submit-order"
         data-order-form
         class="grid gap-5"
       >
-        <input type="hidden" name="form-name" value="order" />
-        <input type="hidden" name="cart-contents" value="" />
-        <input type="hidden" name="delivery-window" value="" />
-        <input type="hidden" name="payment-method" value="cod" />
-        <input type="hidden" name="subtotal" value="" />
-        <input type="hidden" name="shipping-fee" value="" />
-        <input type="hidden" name="grand-total" value="" />
+        <input type="hidden" name="cart-items" value="" />
+        <div class="absolute h-px w-px overflow-hidden" aria-hidden="true">
+          <label>
+            Leave this field empty
+            <input type="text" name="website" tabindex="-1" autocomplete="off" />
+          </label>
+        </div>
 
         <p class="meta text-muted">Contact</p>
         <div class="grid gap-4 sm:grid-cols-2">
@@ -116,7 +115,8 @@ const field =
 
         <div class="pt-2">
           <p class="meta text-muted">Payment method</p>
-          <div class="mt-2 grid gap-3 sm:grid-cols-2" data-payment-selector>
+          <fieldset class="mt-2 grid gap-3 sm:grid-cols-2" data-payment-selector>
+            <legend class="sr-only">Choose a payment method</legend>
             <label class="flex cursor-pointer items-center justify-between border border-line-strong bg-paper p-4 transition-colors has-[:checked]:border-ink has-[:checked]:bg-white">
               <div class="flex items-center gap-3">
                 <input type="radio" name="payment-type" value="cod" checked class="accent-registration" />
@@ -130,41 +130,41 @@ const field =
 
             <label class="flex cursor-pointer items-center justify-between border border-line-strong bg-paper p-4 transition-colors has-[:checked]:border-ink has-[:checked]:bg-white">
               <div class="flex items-center gap-3">
-                <input type="radio" name="payment-type" value="gcash" class="accent-registration" />
+                <input
+                  type="radio"
+                  name="payment-type"
+                  value="gcash"
+                  aria-controls="manual-transfer-panel"
+                  class="accent-registration"
+                />
                 <div>
-                  <p class="font-condensed text-xs font-bold uppercase tracking-wider text-ink">GCash / Maya QR</p>
-                  <p class="meta text-muted mt-0.5">Instant transfer · Upload slip</p>
+                  <p class="font-condensed text-xs font-bold uppercase tracking-wider text-ink">GCash / Maya transfer</p>
+                  <p class="meta text-muted mt-0.5">Manual transfer · Optional receipt</p>
                 </div>
               </div>
-              <span class="font-condensed text-xs font-semibold text-registration">QR</span>
+              <span class="font-condensed text-xs font-semibold text-registration">MANUAL</span>
             </label>
-          </div>
+          </fieldset>
 
-          <div data-gcash-panel class="mt-3 hidden border border-line bg-paper p-5 sm:p-6 space-y-4">
+          <div
+            id="manual-transfer-panel"
+            data-gcash-panel
+            class="mt-3 hidden space-y-4 border border-line bg-paper p-5 sm:p-6"
+          >
             <div class="flex flex-col sm:flex-row items-center gap-6">
-              <div class="relative flex h-36 w-36 shrink-0 items-center justify-center border-2 border-dashed border-ink bg-white p-2">
-                <svg viewBox="0 0 100 100" class="h-full w-full text-ink">
-                  <rect x="6" y="6" width="26" height="26" fill="none" stroke="currentColor" stroke-width="4"/>
-                  <rect x="12" y="12" width="14" height="14" fill="currentColor"/>
-                  <rect x="68" y="6" width="26" height="26" fill="none" stroke="currentColor" stroke-width="4"/>
-                  <rect x="74" y="12" width="14" height="14" fill="currentColor"/>
-                  <rect x="6" y="68" width="26" height="26" fill="none" stroke="currentColor" stroke-width="4"/>
-                  <rect x="12" y="74" width="14" height="14" fill="currentColor"/>
-                  <rect x="42" y="10" width="16" height="16" fill="currentColor"/>
-                  <rect x="42" y="42" width="16" height="16" fill="currentColor"/>
-                  <rect x="68" y="42" width="14" height="14" fill="currentColor"/>
-                  <rect x="10" y="42" width="14" height="14" fill="currentColor"/>
-                  <rect x="42" y="72" width="16" height="16" fill="currentColor"/>
-                  <rect x="68" y="68" width="26" height="26" fill="currentColor"/>
-                </svg>
-                <span class="absolute -top-1.5 -right-1.5 h-3 w-3 rotate-45 bg-registration"></span>
+              <div class="max-w-sm text-center sm:text-left">
+                <span class="label">Manual transfer</span>
+                <h2 class="mt-1 font-display text-xl uppercase tracking-wider text-ink">QR payment unavailable</h2>
+                <p class="mt-2 text-xs leading-relaxed text-muted">
+                  No verified payment QR is available. If you choose GCash or Maya, transfer manually to the account below.
+                </p>
               </div>
               <div class="space-y-1.5 text-center sm:text-left">
-                <span class="label">Merchant Payment Account</span>
-                <p class="font-display text-xl uppercase tracking-wider text-ink">{contact.name || 'KALYE NOIR'}</p>
+                <span class="label">Merchant payment account</span>
+                <p class="font-display text-xl uppercase tracking-wider text-ink">{contact.name}</p>
                 <p class="font-condensed text-base font-bold tracking-widest text-ink">{contact.mobile}</p>
-                <p class="text-xs text-muted leading-relaxed">
-                  Scan QR via GCash or Maya app. Pay the exact grand total calculated on your order slip.
+                <p class="text-xs leading-relaxed text-muted">
+                  Transfer the exact total shown on this order slip. Enter your 13-digit reference below; a receipt upload is optional.
                 </p>
               </div>
             </div>
@@ -187,9 +187,14 @@ const field =
                 <input
                   type="file"
                   name="payment-slip"
-                  accept="image/*,.pdf"
+                  data-payment-slip
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  aria-describedby="payment-slip-help"
                   class="w-full min-w-0 border border-line-strong bg-transparent px-3 py-2 text-xs transition-colors file:mr-3 file:border file:border-line file:bg-white file:px-2.5 file:py-1 file:font-condensed file:text-xs file:uppercase file:tracking-wider hover:file:bg-line/40 focus:border-registration focus:outline-none"
                 />
+                <span id="payment-slip-help" class="meta text-muted">
+                  Optional. JPG, PNG, WebP, or PDF · 4 MB maximum.
+                </span>
               </label>
             </div>
           </div>
@@ -209,11 +214,23 @@ const field =
           <p class="border-t border-dashed border-muted/50 pt-4" data-terms-payment>{orderTerms.payment}</p>
         </div>
 
-        <div data-checkout-error class="hidden border-2 border-registration bg-paper px-4 py-3 text-center font-condensed text-xs font-semibold text-ink">
+        <div
+          data-checkout-error
+          class="hidden border-2 border-registration bg-paper px-4 py-3 text-center font-condensed text-xs font-semibold text-ink"
+          role="alert"
+          aria-live="assertive"
+          tabindex="-1"
+        >
           <span class="inline-block font-bold text-registration mr-1.5" aria-hidden="true">[!]</span>
-          Your request slip is empty. Please select a print before submitting.
+          {' '}
+          <span data-checkout-error-text>Your request slip is empty. Please select a print before submitting.</span>
         </div>
-        <button type="submit" class="btn btn-primary w-full">Send Order Request</button>
+        <button
+          type="submit"
+          class="btn btn-primary w-full disabled:cursor-wait disabled:opacity-70"
+        >
+          Send Order Request
+        </button>
       </form>
 
       <aside class="order-first h-fit border border-line p-6 lg:order-none lg:sticky lg:top-24">
@@ -258,13 +275,13 @@ const field =
   import {
     cartItems,
     cartCount,
-    cartSummary,
     orderNote,
     shippingZoneId,
     shippingProvince,
   } from '../stores/cartStore';
   import { zoneById, courier, calculateShippingFee, FREE_SHIPPING_THRESHOLD } from '../data/shipping';
-  import { ITEM_PRICE } from '../data/catalog';
+  import { ITEM_PRICE, products } from '../data/catalog';
+  import { PAYMENT_SLIP_MAX_BYTES } from '../lib/orderSubmission';
 
   const items = document.querySelector<HTMLElement>('[data-checkout-items]');
   const countEl = document.querySelector<HTMLElement>('[data-checkout-count]');
@@ -276,17 +293,27 @@ const field =
   const note = document.querySelector<HTMLTextAreaElement>('[data-order-note]');
   const windowEl = document.querySelector<HTMLElement>('[data-delivery-window]');
   const provinceSelect = form?.querySelector<HTMLSelectElement>('[data-province]');
-  const windowInput = form?.querySelector<HTMLInputElement>('input[name="delivery-window"]');
-  const subtotalInput = form?.querySelector<HTMLInputElement>('input[name="subtotal"]');
-  const shippingFeeInput = form?.querySelector<HTMLInputElement>('input[name="shipping-fee"]');
-  const grandTotalInput = form?.querySelector<HTMLInputElement>('input[name="grand-total"]');
-  const paymentMethodInput = form?.querySelector<HTMLInputElement>('input[name="payment-method"]');
   const gcashPanel = form?.querySelector<HTMLElement>('[data-gcash-panel]');
   const paymentRefInput = form?.querySelector<HTMLInputElement>('[data-payment-ref]');
+  const paymentSlipInput = form?.querySelector<HTMLInputElement>('[data-payment-slip]');
   const paymentReassurance = document.querySelector<HTMLElement>('[data-payment-reassurance]');
   const termsPayment = form?.querySelector<HTMLElement>('[data-terms-payment]');
+  const errorMessage = form?.querySelector<HTMLElement>('[data-checkout-error-text]');
+  let isSubmitting = false;
 
   let currentZoneId = shippingZoneId.get();
+
+  const escapeHTML = (value: string) =>
+    value.replace(/[&<>"']/g, (character) => {
+      const entities: Record<string, string> = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      };
+      return entities[character] ?? character;
+    });
 
   function updateTotals() {
     const count = cartCount.get();
@@ -304,16 +331,6 @@ const field =
           : `₱${shippingFee}`;
     }
     if (grandTotalEl) grandTotalEl.textContent = `₱${grandTotal.toLocaleString()}`;
-
-    if (subtotalInput) subtotalInput.value = `₱${subtotal}`;
-    if (shippingFeeInput) {
-      shippingFeeInput.value = hasProvince
-        ? count >= FREE_SHIPPING_THRESHOLD
-          ? 'FREE'
-          : `₱${shippingFee}`
-        : 'Pending';
-    }
-    if (grandTotalInput) grandTotalInput.value = `₱${grandTotal}`;
 
     if (shippingBadge) {
       if (!hasProvince) {
@@ -333,37 +350,36 @@ const field =
     currentZoneId = zone?.id ?? '';
     if (!zone) {
       windowEl.textContent = 'Select your province';
-      if (windowInput) windowInput.value = '';
       updateTotals();
       return;
     }
     windowEl.textContent = `${zone.label} · ${zone.days} business days`;
-    if (windowInput) {
-      windowInput.value = `${courier} · ${zone.label} · ${zone.days} business days`;
-    }
     updateTotals();
   }
 
+  function updatePaymentState(method: string) {
+    const isGCash = method === 'gcash';
+    if (gcashPanel) gcashPanel.classList.toggle('hidden', !isGCash);
+    if (paymentRefInput) paymentRefInput.required = isGCash;
+
+    if (paymentReassurance) {
+      paymentReassurance.textContent = isGCash
+        ? 'Transfer manually to the account shown above, then enter your 13-digit reference. Receipt upload is optional.'
+        : 'Pay the exact grand total directly to the courier upon delivery.';
+    }
+
+    if (termsPayment) {
+      termsPayment.textContent = isGCash
+        ? '* The studio will verify your GCash / Maya transfer before courier pick-up; this order email is not payment confirmation.'
+        : '* Please prepare exact cash for the courier upon parcel delivery.';
+    }
+  }
+
   form?.querySelectorAll<HTMLInputElement>('input[name="payment-type"]').forEach((radio) => {
-    radio.addEventListener('change', () => {
-      const isGCash = radio.value === 'gcash';
-      if (paymentMethodInput) paymentMethodInput.value = radio.value;
-      if (gcashPanel) gcashPanel.classList.toggle('hidden', !isGCash);
-      if (paymentRefInput) paymentRefInput.required = isGCash;
-
-      if (paymentReassurance) {
-        paymentReassurance.textContent = isGCash
-          ? 'Scan the studio QR code, pay the exact grand total, and enter your reference number above.'
-          : 'Pay the exact grand total directly to the courier upon delivery.';
-      }
-
-      if (termsPayment) {
-        termsPayment.textContent = isGCash
-          ? '* Payment is verified via your uploaded receipt slip and reference number before courier pick-up.'
-          : '* Please prepare exact cash for the courier upon parcel delivery.';
-      }
-    });
+    radio.addEventListener('change', () => updatePaymentState(radio.value));
   });
+  const selectedPayment = form?.querySelector<HTMLInputElement>('input[name="payment-type"]:checked');
+  if (selectedPayment) updatePaymentState(selectedPayment.value);
 
   if (provinceSelect) {
     if (shippingProvince.get()) provinceSelect.value = shippingProvince.get();
@@ -382,14 +398,20 @@ const field =
       items.innerHTML = cart.length
         ? cart
             .map(
-              (i) => `
+              (i) => {
+                const product = products.find((candidate) => candidate.slug === i.slug);
+                const variant = product?.variants.find((candidate) => candidate.sku === i.sku);
+                const title = product?.title ?? i.title;
+                const size = variant ? [variant.color, variant.size].filter(Boolean).join(' · ') : i.variant;
+                return `
           <div class="flex items-start justify-between gap-4 border-b border-line py-3 last:border-0">
             <div class="min-w-0">
-              <p class="font-condensed text-[0.8125rem] font-semibold uppercase tracking-[0.12em]">${i.title}</p>
-              <p class="meta mt-1 text-muted">${i.variant} · ₱${ITEM_PRICE}</p>
+              <p class="font-condensed text-[0.8125rem] font-semibold uppercase tracking-[0.12em]">${escapeHTML(title)}</p>
+              <p class="meta mt-1 text-muted">${escapeHTML(size)} · ₱${ITEM_PRICE}</p>
             </div>
             <span class="text-sm font-semibold text-ink">×${i.qty}</span>
           </div>`
+              }
             )
             .join('')
         : `<div class="py-6 text-center">
@@ -413,6 +435,13 @@ const field =
   const errBox = form?.querySelector<HTMLElement>('[data-checkout-error]');
   const submitBtn = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
   const submitLabel = submitBtn?.textContent ?? '';
+  const cartField = form?.querySelector<HTMLInputElement>('input[name="cart-items"]');
+
+  function showCheckoutError(message: string) {
+    if (errorMessage) errorMessage.textContent = message;
+    errBox?.classList.remove('hidden');
+    errBox?.focus();
+  }
 
   function getErrorMessage(el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement): string {
     if (el.validity.valueMissing) {
@@ -438,6 +467,7 @@ const field =
       }
       return 'Please match the required format';
     }
+    if (el.name === 'payment-slip' && el.validity.customError) return el.validationMessage;
     return el.validationMessage || 'Invalid input';
   }
 
@@ -458,8 +488,15 @@ const field =
       err.className = 'field-error mt-1 flex items-center gap-1 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-registration';
       parent.appendChild(err);
     }
-    err.innerHTML = `<span aria-hidden="true">[!]</span> ${msg}`;
-    el.setAttribute('aria-describedby', errorId);
+    const icon = document.createElement('span');
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = '[!]';
+    err.replaceChildren(icon, document.createTextNode(` ${msg}`));
+    const describedBy = el
+      .getAttribute('aria-describedby')
+      ?.split(/\s+/)
+      .filter((id) => id && id !== errorId) ?? [];
+    el.setAttribute('aria-describedby', [...describedBy, errorId].join(' '));
   }
 
   function clearError(el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) {
@@ -468,9 +505,13 @@ const field =
     const parent = el.closest('label') || el.parentElement;
     const err = parent?.querySelector('[data-error-msg]');
     if (err) {
+      const errorId = err.id;
       err.remove();
+      const describedBy =
+        el.getAttribute('aria-describedby')?.split(/\s+/).filter((id) => id && id !== errorId) ?? [];
+      if (describedBy.length) el.setAttribute('aria-describedby', describedBy.join(' '));
+      else el.removeAttribute('aria-describedby');
     }
-    el.removeAttribute('aria-describedby');
   }
 
   let firstInvalidEl: (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) | null = null;
@@ -495,17 +536,32 @@ const field =
     });
   });
 
-  form?.addEventListener('submit', (e) => {
+  paymentSlipInput?.addEventListener('change', () => {
+    const file = paymentSlipInput.files?.[0];
+    let message = '';
+    if (file?.size && file.size > PAYMENT_SLIP_MAX_BYTES) {
+      message = 'Receipt files must be 4 MB or smaller.';
+    } else if (
+      file?.size &&
+      !['image/jpeg', 'image/png', 'image/webp', 'application/pdf'].includes(file.type)
+    ) {
+      message = 'Choose a JPG, PNG, WebP, or PDF receipt.';
+    }
+    paymentSlipInput.setCustomValidity(message);
+    if (paymentSlipInput.validity.valid) clearError(paymentSlipInput);
+  });
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (isSubmitting) return;
     firstInvalidEl = null;
     if (!cartItems.get().length) {
-      e.preventDefault();
-      if (errBox) errBox.classList.remove('hidden');
+      showCheckoutError('Your order slip is empty. Add a print before submitting.');
       return;
     }
     if (errBox) errBox.classList.add('hidden');
 
     if (!form.checkValidity()) {
-      e.preventDefault();
       setTimeout(() => {
         firstInvalidEl?.focus();
       }, 10);
@@ -514,21 +570,58 @@ const field =
 
     orderNote.set(note?.value ?? '');
     refreshDelivery();
-    const field = form.querySelector<HTMLInputElement>('input[name="cart-contents"]');
-    if (field) field.value = cartSummary();
+    if (cartField) {
+      cartField.value = JSON.stringify(cartItems.get().map(({ sku, qty }) => ({ sku, qty })));
+    }
 
     if (submitBtn) {
-      submitBtn.textContent = 'Logging Request Slip...';
-      submitBtn.classList.add('opacity-75', 'pointer-events-none');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending order request…';
+      submitBtn.setAttribute('aria-busy', 'true');
     }
-  });
+    isSubmitting = true;
 
-  // A back/forward cache restore can also restore the mid-submit button, which would
-  // then never be pressable again.
-  window.addEventListener('pageshow', () => {
-    if (submitBtn?.classList.contains('pointer-events-none')) {
-      submitBtn.textContent = submitLabel;
-      submitBtn.classList.remove('opacity-75', 'pointer-events-none');
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        credentials: 'same-origin',
+        headers: { accept: 'application/json' },
+      });
+
+      if (response.ok && response.redirected) {
+        window.location.assign(response.url);
+        return;
+      }
+
+      const responseText = await response.text();
+      let message = `We could not confirm your order (error ${response.status}). Please try again; your details are still here.`;
+      try {
+        const payload: unknown = JSON.parse(responseText);
+        if (
+          typeof payload === 'object' &&
+          payload !== null &&
+          'message' in payload &&
+          typeof payload.message === 'string'
+        ) {
+          message = payload.message;
+        }
+      } catch {
+        console.error('Order service returned an unreadable error response.', response.status);
+      }
+      showCheckoutError(message);
+    } catch (error) {
+      console.error('Order request could not be sent.', error instanceof Error ? error.name : 'Unknown error');
+      showCheckoutError(
+        'We could not reach the order service. Your details are still here; check your connection and try again.'
+      );
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = submitLabel;
+        submitBtn.removeAttribute('aria-busy');
+      }
+      isSubmitting = false;
     }
   });
 </script>

@@ -38,6 +38,7 @@ const pill =
             type="button"
             role="radio"
             aria-checked={size === first.size ? 'true' : 'false'}
+            tabindex={size === first.size ? 0 : -1}
             data-selected={size === first.size ? 'true' : 'false'}
             data-value={size}
             class={pill}
@@ -75,10 +76,14 @@ const pill =
 
   <button type="button" data-add class="btn btn-primary w-full">Add to cart</button>
 
-  <dialog data-size-dialog class="cart-dialog max-w-lg p-6 bg-paper border border-line text-ink shadow-2xl backdrop:bg-ink/60">
+  <dialog
+    data-size-dialog
+    aria-labelledby="size-dialog-title"
+    class="cart-dialog max-w-lg p-6 bg-paper border border-line text-ink shadow-2xl backdrop:bg-ink/60"
+  >
     <div class="flex items-center justify-between border-b border-line pb-4">
       <div>
-        <h2 class="font-display text-xl uppercase tracking-wider">Garment Measurements</h2>
+        <h2 id="size-dialog-title" class="font-display text-xl uppercase tracking-wider">Garment Measurements</h2>
         <p class="meta text-xs text-muted mt-0.5">Heavyweight boxy cut · S–2XL</p>
       </div>
       <button type="button" data-size-dialog-close class="-m-2 flex h-11 w-11 shrink-0 items-center justify-center text-2xl leading-none hover:text-registration" aria-label="Close size guide">×</button>
@@ -141,9 +146,11 @@ const pill =
       sizeButtons.forEach((btn) => {
         btn.dataset.selected = 'false';
         btn.setAttribute('aria-checked', 'false');
+        btn.tabIndex = -1;
       });
       opt.dataset.selected = 'true';
       opt.setAttribute('aria-checked', 'true');
+      opt.tabIndex = 0;
       size = opt.dataset.value!;
     }
 

@@ -2,7 +2,8 @@
 	"compilerOptions": {
 		"types": ["astro/client"],
 		// Astro ships its types as ESM subpath exports; bundler resolution is what Astro's own base config uses.
-		"moduleResolution": "bundler"
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true
 	},
 	"exclude": ["dist", "test"]
 }
