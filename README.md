@@ -62,14 +62,14 @@ npm run build    # output in dist/
 npm run preview  # preview the build
 ```
 
-Deploys on Netlify via `netlify.toml` (`npm run build` → `dist/`). The checkout function sends the store copy and the customer copy through [Resend](https://resend.com). Set these environment variables in the Netlify site settings (and in a local `.env` when running with the Netlify CLI):
+Deploys on Netlify via `netlify.toml` (`npm run build` → `dist/`). The checkout function sends the store copy and the customer copy through **Netlify**, using the site's own email service. Set these environment variables in the Netlify site settings (and in a local `.env` when running with the Netlify CLI):
 
-- `RESEND_API_KEY` (required) — your Resend API key. The order function sends only after both emails are accepted by Resend; receipt uploads are optional and limited to 4 MB.
-- `RESEND_FROM` (optional) — the verified `From` address, e.g. `"KALYE NOIR" <orders@yourdomain.com>`. Defaults to the Resend sandbox domain `onboarding@resend.dev`.
+- `NETLIFY_API_TOKEN` (required) — a Netlify personal access token with permission to send email through the site. The order function sends only after both emails are accepted by Netlify; receipt uploads are optional and limited to 4 MB.
+- `FROM_EMAIL` (optional) — the `From` address used in both emails, e.g. `"KALYE NOIR" <orders@kalyenoir.netlify.app>`. Defaults to the store address from the site config (`kalyenoirorders@gmail.com`).
 
-**To send real order emails your store needs a verified domain in Resend.** Without a verified domain, Resend only lets you send to the account owner's email address and to Resend's test inboxes — it will not deliver the store copy (`kalyenoirorders@gmail.com`) or your customers' emails. To fix that, verify a domain you control in the Resend dashboard (resend.com/domains), then set `RESEND_FROM` to an address at that domain. (The site's `kalyenoir.netlify.app` subdomain is a Netlify shared domain and cannot be verified in Resend — use a domain you own instead.)
+**To send real order emails, your Netlify site must be configured to send email from addresses the platform accepts.** Without that, Netlify will not deliver messages to customer addresses outside the site's own sending domain. If email delivery is still not available in your target workspace, swap `sendOrderEmails` for your own mailer (for example, SMTP or a third-party transactional email service) by passing a custom handler to `createSubmitOrderHandler`.
 
-`npm run dev` runs the Astro site without Netlify Functions. For end-to-end checkout testing, run the site with the Netlify CLI and provide `RESEND_API_KEY` (and `RESEND_FROM` if you want a non-sandbox sender) through the local environment.
+`npm run dev` runs the Astro site without Netlify Functions. For end-to-end checkout testing, run the site with the Netlify CLI and provide `NETLIFY_API_TOKEN` (and `FROM_EMAIL` if you want a different sender) through the local environment.
 
 ## In this repo
 
@@ -83,8 +83,12 @@ src/
   pages/                           # home, catalogue, product, cart, checkout, contact
   stores/cartStore.ts              # localStorage cart (nanostores)
   lib/zoom.ts                      # PDP hover-zoom geometry
-netlify/functions/submit-order.mts # validate checkout and email the store + customer
+netlify/functions/submit-order.mts # validate checkout and email the store + customer via Netlify
 DESIGN.md                          # the design system
 ```
 
 All artwork belongs to Kalye Noir.
+
+## Email delivery note
+
+The checkout function no longer uses Resend. It sends the store copy and the customer copy through Netlify's email capability, authenticated with `NETLIFY_API_TOKEN`. If that path is not available in your workspace, replace the `sendOrderEmails` implementation by passing a different handler to `createSubmitOrderHandler` in `netlify/functions/submit-order.mts`.
