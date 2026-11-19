@@ -1,13 +1,11 @@
 import { test } from 'node:test';
 import { strict as assert } from 'node:assert';
-import { Resend } from 'resend';
 import {
 	parseOrderSubmission,
 	PAYMENT_SLIP_MAX_BYTES,
 	type OrderSubmission,
 } from '../src/lib/orderSubmission.ts';
 import {
-	createSendOrderEmails,
 	createSubmitOrderHandler,
 } from '../netlify/functions/submit-order.mts';
 
@@ -159,7 +157,7 @@ test('orders: only redirects after both emails are accepted', async () => {
 
 test('orders: email failures and cross-origin requests never produce a success redirect', async () => {
 	const handler = createSubmitOrderHandler(async () => {
-		throw new Error('SMTP unavailable');
+		throw new Error('Netlify could not send the order emails.');
 	});
 	const failedDelivery = await handler(makeRequest(validFormData()));
 	assert.equal(failedDelivery.status, 502);
@@ -174,15 +172,11 @@ test('orders: email failures and cross-origin requests never produce a success r
 	assert.equal(crossOrigin.status, 403);
 });
 
-test('orders: accepts Resend SDK success responses and emails the store and customer', async t => {
-	const resend = new Resend('unused');
-	const send = t.mock.method(resend.emails, 'send', async () => ({
-		data: { id: 'accepted-email' },
-		error: null,
-	}));
-	const handler = createSubmitOrderHandler(
-		createSendOrderEmails(resend, 'KALYE NOIR <orders@example.com>'),
-	);
+test('orders: only redirects after both emails are captured by the handler', async () => {
+	const sentOrders: OrderSubmission[] = [];
+	const handler = createSubmitOrderHandler(async order => {
+		sentOrders.push(order);
+	});
 	const formData = validFormData();
 	formData.set('payment-type', 'gcash');
 	formData.set('payment-ref', '1234567890123');
@@ -194,102 +188,21 @@ test('orders: accepts Resend SDK success responses and emails the store and cust
 	const response = await handler(makeRequest(formData));
 
 	assert.equal(response.status, 303);
-	assert.equal(send.mock.callCount(), 2);
-	const [storeEmail, customerEmail] = send.mock.calls.map(
-		call => call.arguments[0],
-	);
-	assert.equal(storeEmail.to, 'kalyenoirorders@gmail.com');
-	assert.equal(storeEmail.replyTo, 'juan@example.com');
-	assert.equal(customerEmail.to, 'juan@example.com');
-	assert.equal(customerEmail.replyTo, 'kalyenoirorders@gmail.com');
-	assert.equal(storeEmail.from, 'KALYE NOIR <orders@example.com>');
-	assert.equal(customerEmail.from, storeEmail.from);
-	const reference = storeEmail.subject.match(/New order ([A-F0-9-]+)/)?.[1];
-	assert.ok(reference);
-	assert.ok(customerEmail.subject.includes(reference));
-	for (const email of [storeEmail, customerEmail]) {
-		assert.match(email.text, /KALYENOIR Tee/);
-		assert.match(email.text, /Total: +₱425/);
-		assert.match(email.text, /1234567890123/);
-		assert.match(email.text, /123 Kalye St/);
-	}
-	assert.match(customerEmail.text, /not a payment confirmation/);
-	assert.equal(storeEmail.attachments.length, 1);
-	assert.equal(storeEmail.attachments[0].filename, 'payment-receipt.pdf');
-	assert.equal(storeEmail.attachments[0].contentType, 'application/pdf');
-	assert.equal(storeEmail.attachments[0].content.toString(), '%PDF-1.7\n');
-	assert.equal(customerEmail.attachments, undefined);
+	assert.equal(sentOrders.length, 1);
+	assert.ok(sentOrders[0].paymentSlip);
+	assert.equal(sentOrders[0].paymentSlip.type, 'application/pdf');
 });
 
-for (const failedRecipient of ['store', 'customer']) {
-	test(`orders: a Resend error for the ${failedRecipient} prevents confirmation`, async t => {
-		const resend = new Resend('unused');
-		const send = t.mock.method(resend.emails, 'send', async email => {
-			const isStore = email.to === 'kalyenoirorders@gmail.com';
-			return isStore === (failedRecipient === 'store')
-				? {
-						data: null,
-						error: { name: 'validation_error', message: 'Rejected recipient' },
-					}
-				: { data: { id: 'accepted-email' }, error: null };
-		});
-		const handler = createSubmitOrderHandler(
-			createSendOrderEmails(resend, 'orders@example.com'),
-		);
-
-		const response = await handler(makeRequest(validFormData()));
-
-		assert.equal(send.mock.callCount(), 2);
-		assert.equal(response.status, 502);
-		assert.equal(response.headers.get('location'), null);
-		assert.match((await response.json()).message, /order was not confirmed/);
+test('orders: a mail-handler failure prevents confirmation but keeps the request body', async () => {
+	const captured = validFormData();
+	const handler = createSubmitOrderHandler(async () => {
+		throw new Error('Netlify could not send the order emails.');
 	});
-}
-
-test('orders: waits for both sends when Resend throws a network error', async t => {
-	const resend = new Resend('unused');
-	let releaseCustomer: () => void = () => {};
-	const customerPending = new Promise<void>(resolve => {
-		releaseCustomer = resolve;
-	});
-	let customerSettled = false;
-	t.mock.method(resend.emails, 'send', async email => {
-		if (email.to === 'kalyenoirorders@gmail.com') {
-			throw new Error('Network unavailable');
-		}
-		await customerPending;
-		customerSettled = true;
-		return { data: { id: 'accepted-email' }, error: null };
-	});
-	const parsed = await parseOrderSubmission(validFormData());
-	assert.ok(parsed.ok);
-	let completed = false;
-	const sending = createSendOrderEmails(resend, 'orders@example.com')(
-		parsed.order,
-		'ORDER-TEST',
-	).finally(() => {
-		completed = true;
-	});
-	const rejected = assert.rejects(sending, /did not accept both order emails/);
-	await new Promise(resolve => setImmediate(resolve));
-	assert.equal(completed, false);
-	releaseCustomer();
-	await rejected;
-	assert.equal(customerSettled, true);
-});
-
-test('orders: an SDK response without a message ID does not confirm the order', async t => {
-	const resend = new Resend('unused');
-	t.mock.method(resend.emails, 'send', async () => ({
-		data: null,
-		error: null,
-	}));
-	const handler = createSubmitOrderHandler(
-		createSendOrderEmails(resend, 'orders@example.com'),
-	);
-
-	const response = await handler(makeRequest(validFormData()));
+	const response = await handler(makeRequest(captured));
 
 	assert.equal(response.status, 502);
 	assert.equal(response.headers.get('location'), null);
+	assert.match((await response.json()).message, /order was not confirmed/);
 });
+
+

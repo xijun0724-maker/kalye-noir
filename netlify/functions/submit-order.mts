@@ -128,30 +128,13 @@ async function sendOrderEmails(
 	order: OrderSubmission,
 	orderReference: string,
 ): Promise<void> {
-<<<<<<< HEAD
 	const from =
 		Netlify.env.get('FROM_EMAIL') ??
 			`KALYE NOIR <${contact.email}>`;
-=======
-	const apiKey = Netlify.env.get('RESEND_API_KEY');
-	const from = Netlify.env.get('RESEND_FROM')?.trim();
-	if (!apiKey || !from) {
-		throw new Error('Order email configuration is incomplete.');
-	}
 
-	await createSendOrderEmails(new Resend(apiKey), from)(order, orderReference);
-}
->>>>>>> a1bc0c9ec065917dd94ab97da4f1d2d2a3e1a00d
+	const details = formatOrderDetails(order, orderReference);
+	const firstName = order.customer.name.split(/\s+/)[0] || 'there';
 
-export function createSendOrderEmails(
-	resend: Pick<Resend, 'emails'>,
-	from: string,
-): SendOrderEmails {
-	return async (order, orderReference) => {
-		const details = formatOrderDetails(order, orderReference);
-		const firstName = order.customer.name.split(/\s+/)[0] || 'there';
-
-<<<<<<< HEAD
 	const customerPaymentNote =
 		order.paymentMethod === 'gcash'
 			? 'The studio will verify your GCash / Maya transfer reference before dispatch. This email is not a payment confirmation.'
@@ -254,77 +237,6 @@ export function createSendOrderEmails(
 		console.error('Netlify could not send the order emails.', getErrorCode(error));
 		throw new Error('Netlify could not send the order emails.');
 	}
-=======
-		const receiptAttachment = order.paymentSlip
-			? [
-					{
-						filename:
-							order.paymentSlip.type === 'application/pdf'
-								? 'payment-receipt.pdf'
-								: order.paymentSlip.type === 'image/jpeg'
-									? 'payment-receipt.jpg'
-									: order.paymentSlip.type === 'image/png'
-										? 'payment-receipt.png'
-										: 'payment-receipt.webp',
-						content: Buffer.from(await order.paymentSlip.arrayBuffer()),
-						contentType: order.paymentSlip.type,
-					},
-				]
-			: undefined;
-
-		const customerPaymentNote =
-			order.paymentMethod === 'gcash'
-				? 'The studio will verify your GCash / Maya transfer reference before dispatch. This email is not a payment confirmation.'
-				: 'Cash on Delivery is payable to the courier when your order is delivered.';
-
-		const storeEmail: Parameters<typeof resend.emails.send>[0] = {
-			from,
-			to: contact.email,
-			replyTo: order.customer.email,
-			subject: `New order ${orderReference} · ${order.customer.name.replace(/[\r\n]/g, ' ')}`,
-			text: `${details}\n\nCustomer email: ${order.customer.email}`,
-			...(receiptAttachment ? { attachments: receiptAttachment } : {}),
-		};
-
-		const customerEmail: Parameters<typeof resend.emails.send>[0] = {
-			from,
-			to: order.customer.email,
-			replyTo: contact.email,
-			subject: `${site.name}: order request received · ${orderReference}`,
-			text: [
-				`Hi ${firstName},`,
-				'',
-				'We received your order request. Here is your order summary:',
-				'',
-				details,
-				'',
-				customerPaymentNote,
-				'',
-				'This confirms receipt of your request, not stock availability, payment, or dispatch.',
-				'',
-				`Questions? Reply to this email or text ${contact.mobile}.`,
-				'',
-				site.name,
-			].join('\n'),
-		};
-
-		const results = await Promise.allSettled([
-			resend.emails.send(storeEmail),
-			resend.emails.send(customerEmail),
-		]);
-
-		if (
-			results.some(
-				result =>
-					result.status !== 'fulfilled' ||
-					result.value.error !== null ||
-					!result.value.data?.id,
-			)
-		) {
-			throw new Error('Resend did not accept both order emails.');
-		}
-	};
->>>>>>> a1bc0c9ec065917dd94ab97da4f1d2d2a3e1a00d
 }
 
 export const config: Config = {
