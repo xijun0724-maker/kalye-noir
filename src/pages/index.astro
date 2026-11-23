@@ -117,10 +117,8 @@ import drop12 from '../assets/images/gallery/drop-12.jpg';
 			</p>
 
 			<div class="grid grid-cols-2 lg:grid-cols-3 gap-x-6 sm:gap-x-8 gap-y-12 sm:gap-y-16 max-w-5xl mx-auto">
-				{products.map(product => {
-					const reviews = 0;
-					return (
-						<a href={`/products/${product.slug}`} class="group block text-center">
+				{products.map(product => (
+					<a href={`/products/${product.slug}`} class="group block text-center">
 							<div class="relative overflow-hidden bg-white p-4 border border-hairline">
 								<Image
 									src={productArt[product.slug]}
@@ -137,18 +135,15 @@ import drop12 from '../assets/images/gallery/drop-12.jpg';
 								<h3 class="font-title text-xs uppercase tracking-[0.18em] font-semibold text-ink transition-colors group-hover:text-accent">
 									{product.title}
 								</h3>
-								<div class="mt-1.5 flex items-center justify-center gap-1 text-xs text-ink" aria-label="5 out of 5 stars">
-									<span class="text-xs tracking-tight text-accent" aria-hidden="true">★★★★★</span>
-									<span class="text-xs text-navy/80">({reviews})</span>
-								</div>
-								<div class="mt-1.5 flex items-baseline justify-center gap-2 text-xs">
+								<p class="font-title text-[11px] uppercase tracking-[0.2em] text-accent font-semibold mt-1">
+									Limited Edition · 1st Edition
+								</p>
+								<div class="mt-1 flex items-baseline justify-center gap-2 text-xs font-title tracking-wider">
 									<span class="font-bold text-ink">₱{product.price}.00</span>
-									<span class="text-navy line-through">₱350.00</span>
 								</div>
 							</div>
 						</a>
-					);
-				})}
+					))}
 			</div>
 
 			<div class="mt-14 sm:mt-16">
@@ -302,25 +297,25 @@ import drop12 from '../assets/images/gallery/drop-12.jpg';
 		</div>
 	</section>
 
-	<!-- 8. Floating Surprise Sale Toast -->
+	<!-- 8. Floating Limited Edition Drop Toast -->
 	<aside
 		data-sale-toast
 		class="fixed bottom-6 right-6 z-30 max-w-sm bg-ink text-paper border border-plate p-5 shadow-panel transition-all duration-300"
-		aria-label="Limited time promotion"
+		aria-label="Limited edition collection alert"
 	>
 		<div class="flex items-start justify-between gap-4">
 			<div>
-				<p class="font-title text-sm font-bold uppercase tracking-[0.24em] text-paper">
-					Batch 001 Drop Sale
+				<p class="font-title text-sm font-bold uppercase tracking-[0.24em] text-accent">
+					Limited Edition · 1st Edition
 				</p>
 				<p class="font-sans text-xs text-paper/90 mt-1">
-					Up to 28% off core heavyweight prints. <a href="/products" class="font-semibold underline underline-offset-2 hover:text-accent">Order now before batch closes →</a>
+					Batch 001 small-batch heavyweight drop. <a href="/products" class="font-semibold underline underline-offset-2 hover:text-accent">Explore 1st Edition prints →</a>
 				</p>
 			</div>
 			<button
 				type="button"
 				data-toast-close
-				aria-label="Dismiss promotion"
+				aria-label="Dismiss alert"
 				class="text-paper/70 hover:text-paper text-lg leading-none cursor-pointer -mr-1 -mt-1 p-1"
 			>
 				✕

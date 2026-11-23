@@ -86,21 +86,21 @@ const thumbnails = Object.fromEntries(
 			</p>
 
 			<!-- Action Buttons -->
-			<div class="space-y-2.5 pt-1">
-				<a
-					href="/cart"
-					data-view-cart-btn
-					class="w-full bg-[#1b2a47] hover:bg-[#131f36] text-white text-xs font-title font-semibold uppercase tracking-[0.2em] py-3.5 transition-colors text-center block rounded-none shadow-xs"
-				>
-					VIEW CART
-				</a>
-
+			<div class="space-y-2 pt-2">
 				<a
 					href="/checkout"
 					data-checkout-btn
-					class="w-full bg-[#1b2a47] hover:bg-[#131f36] text-white text-xs font-title font-semibold uppercase tracking-[0.2em] py-3.5 transition-colors text-center block rounded-none shadow-xs"
+					class="w-full bg-ink hover:bg-accent text-paper text-xs font-title font-semibold uppercase tracking-[0.24em] py-4 transition-colors text-center block rounded-none shadow-panel"
 				>
 					CHECKOUT · <span data-drawer-total>₱0.00</span>
+				</a>
+
+				<a
+					href="/cart"
+					data-view-cart-btn
+					class="w-full text-navy hover:text-ink text-xs font-title uppercase tracking-[0.2em] py-2 transition-colors text-center block underline underline-offset-4"
+				>
+					View Full Cart →
 				</a>
 			</div>
 		</div>

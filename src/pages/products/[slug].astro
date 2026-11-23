@@ -247,26 +247,28 @@ const suggestions = products.filter(p => p.slug !== product.slug);
 				{product.title}
 			</h1>
 
-			<!-- Price Row: Single Line Bold Current Price + Strikethrough Original Price (Matches reference layout) -->
+			<!-- Price Row: Clean Transparent Pricing -->
 			<div class="mt-2.5 flex items-baseline gap-3">
-				<span data-price-display class="font-sans text-lg sm:text-xl font-normal text-ink tracking-wide">
+				<span data-price-display class="font-sans text-lg sm:text-xl font-bold text-ink tracking-wide">
 					₱ 253.00
 				</span>
-				<span class="font-sans text-xs sm:text-sm text-navy line-through">
-					₱ 350.00
+				<span class="text-xs text-navy font-title uppercase tracking-wider">
+					Batch 001 Capsule
 				</span>
 			</div>
 
-			<!-- Customer Reviews Rating Row (Matches reference layout: 5 stars + count) -->
-			<div class="mt-2.5 flex items-center">
+			<!-- Edition & Reviews Status Row -->
+			<div class="mt-2.5 flex items-center gap-3">
+				<span class="inline-flex items-center px-2.5 py-0.5 text-[11px] font-title font-semibold uppercase tracking-[0.2em] bg-ink text-paper">
+					Limited Edition · 1st Edition
+				</span>
 				<button
 					type="button"
 					data-reviews-open
-					class="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity"
+					class="text-xs text-navy underline underline-offset-2 hover:text-ink transition-colors cursor-pointer"
 					aria-label="View customer reviews"
 				>
-					<span class="text-amber-500 text-sm tracking-tight" aria-hidden="true">★★★★★</span>
-					<span class="text-xs text-ink/80 font-normal">(0)</span>
+					Reviews (0)
 				</button>
 			</div>
 
@@ -278,10 +280,10 @@ const suggestions = products.filter(p => p.slug !== product.slug);
 			<!-- Thin Divider Line (Matches reference) -->
 			<div class="border-t border-hairline my-6"></div>
 
-			<!-- Promotional Notice (Matches DESIGN.md registration-red accent) -->
+			<!-- Edition & Drop Notice (Streetwear release branding) -->
 			<p class="text-xs sm:text-sm tracking-wide">
-				<strong class="text-accent font-bold uppercase">SURPRISE SALE! UP TO 28% OFF</strong>
-				<strong class="text-ink font-bold"> —Order Now Before It's Gone</strong>
+				<strong class="text-accent font-bold uppercase">LIMITED EDITION · 1ST EDITION</strong>
+				<strong class="text-ink font-bold"> — Batch 001 Small-Batch Manila Release</strong>
 			</p>
 
 			<!-- Fabric & Specs Summary (Matches reference positioning below divider) -->

@@ -21,60 +21,26 @@ const sizeNames: Record<string, string> = {
 ---
 
 <div data-atc data-slug={product.slug} data-default-size={first.size} class="mt-4">
-	<!-- Size Selector (Matches reference layout) -->
+	<!-- Size Selector with Size Guide Trigger -->
 	<div>
-		<div class="mb-2">
-			<span class="text-xs text-ink font-normal">Size:</span>
-		</div>
-
-		<!-- Row 1: Extra Small (Out of Stock / Slashed), Small, Medium, Large -->
-		<div
-			class="grid grid-cols-4 gap-2 mb-2 max-w-sm"
-			role="radiogroup"
-			aria-label="Available garment sizes - Row 1"
-		>
-			<!-- Extra Small (Sold Out) -->
+		<div class="mb-2.5 flex items-center justify-between max-w-sm">
+			<span class="text-xs text-ink font-semibold uppercase tracking-wider">Select Size:</span>
 			<button
 				type="button"
-				disabled
-				aria-disabled="true"
-				class="relative min-h-[38px] px-2 py-1.5 text-xs text-navy/40 border border-plate/60 bg-white flex items-center justify-center cursor-not-allowed overflow-hidden rounded-none select-none"
-				title="Extra Small - Out of stock"
+				data-size-guide-open
+				class="text-[11px] font-title uppercase tracking-wider text-accent underline underline-offset-2 hover:text-ink cursor-pointer transition-colors"
 			>
-				<span class="z-10">Extra Small</span>
-				<svg class="absolute inset-0 w-full h-full stroke-plate" preserveAspectRatio="none" aria-hidden="true">
-					<line x1="0" y1="100%" x2="100%" y2="0" stroke="currentColor" stroke-width="1.2" />
-				</svg>
+				Size Guide →
 			</button>
-
-			<!-- Small, Medium, Large -->
-			{sizes.filter(sz => ['S', 'M', 'L'].includes(sz)).map(sz => {
-				const isSelected = sz === first.size;
-				const label = sizeNames[sz] || sz;
-				return (
-					<button
-						type="button"
-						role="radio"
-						aria-checked={isSelected ? 'true' : 'false'}
-						tabindex={isSelected ? 0 : -1}
-						data-selected={isSelected ? 'true' : 'false'}
-						data-value={sz}
-						class={`min-h-[38px] px-2 py-1.5 text-xs flex items-center justify-center transition-all cursor-pointer bg-white rounded-none ${
-							isSelected
-								? 'border border-ink text-ink font-semibold'
-								: 'border border-plate/80 text-ink/80 hover:border-ink font-normal'
-						}`}
-						aria-label={`Size ${label}`}
-					>
-						{label}
-					</button>
-				);
-			})}
 		</div>
 
-		<!-- Row 2: Extra Large, 2 Extra Large -->
-		<div class="grid grid-cols-4 gap-2 max-w-sm" role="radiogroup" aria-label="Available garment sizes - Row 2">
-			{sizes.filter(sz => ['XL', '2XL'].includes(sz)).map(sz => {
+		<!-- Available Batch 001 Sizes: S, M, L, XL, 2XL -->
+		<div
+			class="grid grid-cols-3 sm:grid-cols-5 gap-2 max-w-sm"
+			role="radiogroup"
+			aria-label="Available garment sizes"
+		>
+			{sizes.map(sz => {
 				const isSelected = sz === first.size;
 				const label = sizeNames[sz] || sz;
 				return (
@@ -85,21 +51,22 @@ const sizeNames: Record<string, string> = {
 						tabindex={isSelected ? 0 : -1}
 						data-selected={isSelected ? 'true' : 'false'}
 						data-value={sz}
-						class={`min-h-[38px] px-2 py-1.5 text-xs flex items-center justify-center transition-all cursor-pointer bg-white rounded-none ${
+						class={`min-h-[40px] px-2 py-1.5 text-xs flex flex-col items-center justify-center transition-all cursor-pointer bg-white rounded-none ${
 							isSelected
-								? 'border border-ink text-ink font-semibold'
+								? 'border-2 border-ink text-ink font-bold shadow-xs'
 								: 'border border-plate/80 text-ink/80 hover:border-ink font-normal'
 						}`}
 						aria-label={`Size ${label}`}
 					>
-						{label}
+						<span>{sz}</span>
+						<span class="text-[10px] text-navy/70 leading-none mt-0.5">{label}</span>
 					</button>
 				);
 			})}
 		</div>
 	</div>
 
-	<!-- Quantity Stepper (Matches reference box) -->
+	<!-- Quantity Stepper -->
 	<div class="mt-4">
 		<div class="flex items-center justify-between border border-plate/80 w-28 h-10 px-3 bg-white text-ink text-sm rounded-none">
 			<button
@@ -127,11 +94,11 @@ const sizeNames: Record<string, string> = {
 		</div>
 	</div>
 
-	<!-- ADD TO CART Button (Matches reference solid navy button) -->
+	<!-- ADD TO CART Button (Matches DESIGN.md ink-black with registration-red hover) -->
 	<button
 		type="button"
 		data-add
-		class="w-full bg-[#1e2d4f] hover:bg-[#16223b] text-white text-xs font-title font-semibold uppercase tracking-[0.22em] py-3.5 transition-colors text-center cursor-pointer mt-5 rounded-none shadow-xs"
+		class="w-full bg-ink hover:bg-accent text-paper text-xs font-title font-semibold uppercase tracking-[0.24em] py-4 transition-colors text-center cursor-pointer mt-5 rounded-none shadow-panel"
 	>
 		ADD TO CART
 	</button>
