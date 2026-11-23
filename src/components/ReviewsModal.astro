@@ -13,10 +13,10 @@
 	</span>
 </button>
 
-<!-- Reviews Modal Dialog (Matches DESIGN.md square 0px, paper-stock bg, plate border) -->
+<!-- Reviews Modal Dialog (Centered in viewport, paper-stock bg, plate border) -->
 <dialog
 	data-reviews-dialog
-	class="w-full max-w-5xl rounded-none border border-plate bg-paper text-ink shadow-panel p-6 sm:p-8 overflow-y-auto max-h-[92vh] backdrop:bg-ink/60"
+	class="fixed inset-0 m-auto w-[94vw] max-w-4xl max-h-[88vh] rounded-none border border-plate bg-paper text-ink shadow-panel p-6 sm:p-8 overflow-y-auto backdrop:bg-ink/60"
 	aria-labelledby="reviews-modal-title"
 >
 	<!-- Top Bar with Close Button on Left -->
@@ -50,13 +50,17 @@
 			</svg>
 		</div>
 
-		<div class="flex items-center gap-2">
+		<div class="relative flex items-center gap-2">
 			<button
 				type="button"
-				class="flex h-9 w-9 items-center justify-center rounded-none border border-plate hover:bg-putty text-navy hover:text-ink cursor-pointer transition-colors"
-				aria-label="Filter reviews"
+				data-reviews-sort-btn
+				class="flex h-9 items-center gap-2 px-3 rounded-none border border-plate hover:bg-putty text-navy hover:text-ink cursor-pointer transition-colors font-title text-xs uppercase tracking-wider"
+				aria-label="Sort reviews"
+				aria-haspopup="true"
+				aria-expanded="false"
 			>
-				<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+				<span data-reviews-sort-label class="text-[11px] font-semibold text-ink">Date (Newest)</span>
+				<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0">
 					<line x1="4" y1="21" x2="4" y2="14"></line>
 					<line x1="4" y1="10" x2="4" y2="3"></line>
 					<line x1="12" y1="21" x2="12" y2="12"></line>
@@ -68,6 +72,54 @@
 					<line x1="17" y1="16" x2="23" y2="16"></line>
 				</svg>
 			</button>
+
+			<!-- Sort Menu Dropdown -->
+			<div
+				data-reviews-sort-menu
+				class="hidden absolute right-0 top-full mt-1.5 z-30 w-52 border border-plate bg-white text-ink shadow-panel py-1 text-xs font-sans rounded-none"
+				role="menu"
+			>
+				<div class="px-3 py-1.5 text-[10px] font-title uppercase tracking-widest text-navy/70 border-b border-hairline/60">
+					Sort Reviews By
+				</div>
+				<button
+					type="button"
+					role="menuitem"
+					data-sort-value="date-desc"
+					class="w-full text-left px-3 py-2 text-xs hover:bg-paper flex items-center justify-between cursor-pointer transition-colors font-medium text-ink"
+				>
+					<span>Date: Newest First</span>
+					<span data-sort-check="date-desc" class="text-accent font-bold">✓</span>
+				</button>
+				<button
+					type="button"
+					role="menuitem"
+					data-sort-value="date-asc"
+					class="w-full text-left px-3 py-2 text-xs hover:bg-paper flex items-center justify-between cursor-pointer transition-colors font-medium text-ink"
+				>
+					<span>Date: Oldest First</span>
+					<span data-sort-check="date-asc" class="hidden text-accent font-bold">✓</span>
+				</button>
+				<div class="border-t border-hairline/60 my-1"></div>
+				<button
+					type="button"
+					role="menuitem"
+					data-sort-value="stars-desc"
+					class="w-full text-left px-3 py-2 text-xs hover:bg-paper flex items-center justify-between cursor-pointer transition-colors font-medium text-ink"
+				>
+					<span>Stars: Highest (5★ → 1★)</span>
+					<span data-sort-check="stars-desc" class="hidden text-accent font-bold">✓</span>
+				</button>
+				<button
+					type="button"
+					role="menuitem"
+					data-sort-value="stars-asc"
+					class="w-full text-left px-3 py-2 text-xs hover:bg-paper flex items-center justify-between cursor-pointer transition-colors font-medium text-ink"
+				>
+					<span>Stars: Lowest (1★ → 5★)</span>
+					<span data-sort-check="stars-asc" class="hidden text-accent font-bold">✓</span>
+				</button>
+			</div>
 		</div>
 	</div>
 
@@ -190,8 +242,8 @@
 		</div>
 	</div>
 
-	<!-- Reviews Cards Container (Centered flex layout for single and multi-card displays) -->
-	<div data-reviews-grid class="hidden mt-8 flex flex-wrap justify-center gap-6">
+	<!-- Reviews Cards Grid (Starts from left side in responsive columns) -->
+	<div data-reviews-grid class="hidden mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 		<!-- Populated via JavaScript from localStorage -->
 	</div>
 
@@ -210,7 +262,10 @@
 		content: string;
 		product: string;
 		photoUrl?: string;
+		createdAt?: number;
 	}
+
+	type SortKey = 'date-desc' | 'date-asc' | 'stars-desc' | 'stars-asc';
 
 	const STORAGE_KEY = 'kalye_noir_reviews';
 
@@ -230,8 +285,22 @@
 	const photoPreview = form?.querySelector<HTMLElement>('[data-photo-preview]');
 	const photoImg = photoPreview?.querySelector<HTMLImageElement>('img');
 
+	// Sort Elements
+	const sortBtn = dialog?.querySelector<HTMLButtonElement>('[data-reviews-sort-btn]');
+	const sortMenu = dialog?.querySelector<HTMLElement>('[data-reviews-sort-menu]');
+	const sortLabel = dialog?.querySelector<HTMLElement>('[data-reviews-sort-label]');
+	const sortItems = dialog?.querySelectorAll<HTMLButtonElement>('[data-sort-value]');
+
 	let selectedRating = 5;
 	let photoBase64 = '';
+	let currentSort: SortKey = 'date-desc';
+
+	const sortLabels: Record<SortKey, string> = {
+		'date-desc': 'Date (Newest)',
+		'date-asc': 'Date (Oldest)',
+		'stars-desc': 'Stars (5★ First)',
+		'stars-asc': 'Stars (1★ First)',
+	};
 
 	// Load stored reviews (default is empty array: 0 reviews first)
 	function getReviews(): ReviewItem[] {
@@ -251,8 +320,32 @@
 		}
 	}
 
+	function sortReviewsList(items: ReviewItem[], sortKey: SortKey): ReviewItem[] {
+		const arr = [...items];
+		switch (sortKey) {
+			case 'date-asc':
+				return arr.sort((a, b) => {
+					const tA = a.createdAt || new Date(a.date).getTime() || Number(a.id.replace(/\D/g, '')) || 0;
+					const tB = b.createdAt || new Date(b.date).getTime() || Number(b.id.replace(/\D/g, '')) || 0;
+					return tA - tB;
+				});
+			case 'stars-desc':
+				return arr.sort((a, b) => b.rating - a.rating);
+			case 'stars-asc':
+				return arr.sort((a, b) => a.rating - b.rating);
+			case 'date-desc':
+			default:
+				return arr.sort((a, b) => {
+					const tA = a.createdAt || new Date(a.date).getTime() || Number(a.id.replace(/\D/g, '')) || 0;
+					const tB = b.createdAt || new Date(b.date).getTime() || Number(b.id.replace(/\D/g, '')) || 0;
+					return tB - tA;
+				});
+		}
+	}
+
 	function renderReviews() {
-		const reviews = getReviews();
+		const allReviews = getReviews();
+		const reviews = sortReviewsList(allReviews, currentSort);
 		const count = reviews.length;
 
 		if (countText) {
@@ -278,14 +371,14 @@
 								</div>`;
 
 						return `
-							<article class="flex flex-col border border-plate bg-white overflow-hidden shadow-xs rounded-none w-full max-w-[280px] text-center">
+							<article class="flex flex-col border border-plate bg-white overflow-hidden shadow-xs rounded-none w-full text-left">
 								${photoBlock}
-								<div class="p-4 flex flex-col items-center text-center flex-1">
+								<div class="p-4 flex flex-col flex-1 text-left items-start">
 									<h4 class="font-title text-sm font-semibold uppercase tracking-wider text-ink">${item.author}</h4>
 									<p class="text-[11px] text-navy mt-0.5">${item.date}</p>
 									<p class="text-xs text-accent tracking-tighter mt-1" aria-label="${item.rating} out of 5 stars">${stars}</p>
-									${item.content ? `<p class="font-sans text-xs text-ink/90 mt-2 flex-1 leading-relaxed">${item.content}</p>` : ''}
-									<p class="font-title text-[10px] uppercase tracking-wider text-navy mt-3 pt-2 border-t border-hairline/60 w-full text-center">
+									${item.content ? `<p class="font-sans text-xs text-ink/90 mt-2 flex-1 leading-relaxed text-left">${item.content}</p>` : ''}
+									<p class="font-title text-[10px] uppercase tracking-wider text-navy mt-3 pt-2 border-t border-hairline/60 w-full text-left">
 										${item.product}
 									</p>
 								</div>
@@ -312,6 +405,39 @@
 	dialog?.addEventListener('click', e => {
 		if (e.target === dialog) {
 			dialog.close();
+		}
+	});
+
+	// Sort Interaction
+	sortBtn?.addEventListener('click', e => {
+		e.stopPropagation();
+		const isHidden = sortMenu?.classList.contains('hidden');
+		sortMenu?.classList.toggle('hidden', !isHidden);
+		sortBtn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+	});
+
+	sortItems?.forEach(item => {
+		item.addEventListener('click', e => {
+			e.stopPropagation();
+			const val = item.getAttribute('data-sort-value') as SortKey;
+			if (val && sortLabels[val]) {
+				currentSort = val;
+				if (sortLabel) sortLabel.textContent = sortLabels[val];
+				dialog?.querySelectorAll('[data-sort-check]').forEach(chk => {
+					const chkKey = chk.getAttribute('data-sort-check');
+					chk.classList.toggle('hidden', chkKey !== val);
+				});
+				renderReviews();
+				sortMenu?.classList.add('hidden');
+				sortBtn?.setAttribute('aria-expanded', 'false');
+			}
+		});
+	});
+
+	document.addEventListener('click', e => {
+		if (sortMenu && !sortMenu.contains(e.target as Node) && e.target !== sortBtn) {
+			sortMenu.classList.add('hidden');
+			sortBtn?.setAttribute('aria-expanded', 'false');
 		}
 	});
 
@@ -384,6 +510,7 @@
 			content,
 			product,
 			photoUrl: photoBase64 || undefined,
+			createdAt: Date.now(),
 		};
 
 		const existing = getReviews();
