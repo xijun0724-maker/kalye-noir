@@ -108,7 +108,7 @@ This guide walks you through setting up and running the official **Kalye Noir Di
    You will see:
    ```
    🤖 Kalye Noir Discord Bot online as: Kalye Noir Bot#0000
-   🌐 Bot HTTP endpoint listening at http://localhost:4323
+   🌐 Bot HTTP endpoint listening at http://localhost:PORT
       • GET  /health
       • POST /api/order
    ```
@@ -120,10 +120,10 @@ This guide walks you through setting up and running the official **Kalye Noir Di
 In your main Kalye Noir website `.env` (or environment variables):
 ```env
 # Point to your running Discord Bot HTTP endpoint
-PUBLIC_DISCORD_BOT_SERVER_URL=http://localhost:4323/api/order
+PUBLIC_DISCORD_BOT_SERVER_URL=https://your-bot-server-url.example.com/api/order
 
 # OR alternatively, use a direct Discord Webhook URL:
-# PUBLIC_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/XXXX/YYYY
+PUBLIC_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your_webhook_id/your_webhook_token
 ```
 
 Whenever a customer completes checkout on the website, the order is automatically dispatched to your Discord bot and posted in `#kalye-orders` with interactive buttons!
