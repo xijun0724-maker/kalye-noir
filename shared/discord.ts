@@ -89,6 +89,7 @@ export function buildDiscordOrderPayload(
 
 /**
  * Sends order notification to Discord via Webhook or Bot API.
+ * Falls through gracefully from Bot Server -> Webhook -> Bot API.
  */
 export async function sendDiscordNotification(
 	order: OrderSubmission,
@@ -96,36 +97,54 @@ export async function sendDiscordNotification(
 	config: DiscordConfig,
 ): Promise<{ ok: boolean; error?: string }> {
 	const payload = buildDiscordOrderPayload(order, orderReference);
+	let lastError: string | undefined;
 
-	// Case 1: Bot Server HTTP API provided (with interactive button support)
+	// Check if we are running in an HTTPS browser environment
+	const isHttpsBrowser =
+		typeof window !== 'undefined' &&
+		typeof window.location !== 'undefined' &&
+		window.location.protocol === 'https:';
+
+	// Case 1: Bot Server HTTP API provided
+	// Skip if running in HTTPS browser and server URL is insecure HTTP to prevent Mixed Content block
 	if (config.botServerUrl) {
-		try {
-			const res = await fetch(config.botServerUrl, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					reference: orderReference,
-					createdAt: new Date().toISOString(),
-					customer: order.customer,
-					lines: order.lines,
-					subtotal: order.subtotal,
-					shippingFee: order.shippingFee,
-					grandTotal: order.grandTotal,
-					paymentMethod: order.paymentMethod,
-					paymentReference: order.paymentReference,
-					deliveryWindow: order.deliveryWindow,
-				}),
-			});
-			if (!res.ok) {
+		const isInsecureHttp = config.botServerUrl.startsWith('http://');
+		if (isHttpsBrowser && isInsecureHttp) {
+			console.warn('[KALYE NOIR] Skipping insecure http: bot server URL on https: page to prevent browser Mixed Content block.');
+		} else {
+			try {
+				const controller = new AbortController();
+				const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+				const res = await fetch(config.botServerUrl, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					signal: controller.signal,
+					body: JSON.stringify({
+						reference: orderReference,
+						createdAt: new Date().toISOString(),
+						customer: order.customer,
+						lines: order.lines,
+						subtotal: order.subtotal,
+						shippingFee: order.shippingFee,
+						grandTotal: order.grandTotal,
+						paymentMethod: order.paymentMethod,
+						paymentReference: order.paymentReference,
+						deliveryWindow: order.deliveryWindow,
+					}),
+				});
+				clearTimeout(timeoutId);
+
+				if (res.ok) {
+					return { ok: true };
+				}
 				const text = await res.text();
-				return { ok: false, error: `Bot Server HTTP ${res.status}: ${text}` };
+				lastError = `Bot Server HTTP ${res.status}: ${text}`;
+				console.warn('[KALYE NOIR]', lastError);
+			} catch (err) {
+				lastError = err instanceof Error ? err.message : 'Bot Server connection error';
+				console.warn('[KALYE NOIR] Bot Server unreachable, falling back:', lastError);
 			}
-			return { ok: true };
-		} catch (err) {
-			return {
-				ok: false,
-				error: err instanceof Error ? err.message : 'Bot Server connection error',
-			};
 		}
 	}
 
@@ -141,32 +160,32 @@ export async function sendDiscordNotification(
 					method: 'POST',
 					body: formData,
 				});
-				if (!res.ok) {
-					const text = await res.text();
-					return { ok: false, error: `Discord Webhook HTTP ${res.status}: ${text}` };
+				if (res.ok) {
+					return { ok: true };
 				}
-				return { ok: true };
+				const text = await res.text();
+				lastError = `Discord Webhook HTTP ${res.status}: ${text}`;
+				console.warn('[KALYE NOIR]', lastError);
 			} else {
 				const res = await fetch(config.webhookUrl, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify(payload),
 				});
-				if (!res.ok) {
-					const text = await res.text();
-					return { ok: false, error: `Discord Webhook HTTP ${res.status}: ${text}` };
+				if (res.ok) {
+					return { ok: true };
 				}
-				return { ok: true };
+				const text = await res.text();
+				lastError = `Discord Webhook HTTP ${res.status}: ${text}`;
+				console.warn('[KALYE NOIR]', lastError);
 			}
 		} catch (err) {
-			return {
-				ok: false,
-				error: err instanceof Error ? err.message : 'Discord Webhook connection error',
-			};
+			lastError = err instanceof Error ? err.message : 'Discord Webhook connection error';
+			console.warn('[KALYE NOIR] Discord Webhook unreachable, falling back:', lastError);
 		}
 	}
 
-	// Case 2: Discord Bot Token + Channel ID provided
+	// Case 3: Discord Bot Token + Channel ID provided (direct to Discord REST API v10)
 	if (config.botToken && config.channelId) {
 		try {
 			const endpoint = `https://discord.com/api/v10/channels/${config.channelId}/messages`;
@@ -184,11 +203,12 @@ export async function sendDiscordNotification(
 					headers: { Authorization: authHeader },
 					body: formData,
 				});
-				if (!res.ok) {
-					const text = await res.text();
-					return { ok: false, error: `Discord Bot API HTTP ${res.status}: ${text}` };
+				if (res.ok) {
+					return { ok: true };
 				}
-				return { ok: true };
+				const text = await res.text();
+				lastError = `Discord Bot API HTTP ${res.status}: ${text}`;
+				console.warn('[KALYE NOIR]', lastError);
 			} else {
 				const res = await fetch(endpoint, {
 					method: 'POST',
@@ -198,18 +218,22 @@ export async function sendDiscordNotification(
 					},
 					body: JSON.stringify(payload),
 				});
-				if (!res.ok) {
-					const text = await res.text();
-					return { ok: false, error: `Discord Bot API HTTP ${res.status}: ${text}` };
+				if (res.ok) {
+					return { ok: true };
 				}
-				return { ok: true };
+				const text = await res.text();
+				lastError = `Discord Bot API HTTP ${res.status}: ${text}`;
+				console.warn('[KALYE NOIR]', lastError);
 			}
 		} catch (err) {
-			return {
-				ok: false,
-				error: err instanceof Error ? err.message : 'Discord Bot connection error',
-			};
+			lastError = err instanceof Error ? err.message : 'Discord Bot connection error';
+			console.warn('[KALYE NOIR] Discord Bot API error:', lastError);
 		}
+	}
+
+	// If at least one transport attempted and failed, return that error
+	if (lastError) {
+		return { ok: false, error: lastError };
 	}
 
 	// No Discord configuration provided yet

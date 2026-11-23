@@ -62,9 +62,10 @@ export async function submitOrder(formData: FormData): Promise<SubmitOrderRespon
 
 			if (res.ok) {
 				if (res.redirected) {
-					const paramRef = new URL(res.url).searchParams.get('ref');
+					const paramRef = new URL(res.url).searchParams.get('ref') || orderReference;
+					recordLocalOrder(order, paramRef);
 					clearCart();
-					return { ok: true, orderReference: paramRef || orderReference };
+					return { ok: true, orderReference: paramRef };
 				}
 				const text = await res.text();
 				let serverRef = orderReference;
@@ -72,6 +73,7 @@ export async function submitOrder(formData: FormData): Promise<SubmitOrderRespon
 					const data = JSON.parse(text);
 					if (data.orderReference) serverRef = data.orderReference;
 				} catch {}
+				recordLocalOrder(order, serverRef);
 				clearCart();
 				return { ok: true, orderReference: serverRef };
 			}

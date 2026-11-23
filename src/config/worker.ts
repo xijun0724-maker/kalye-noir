@@ -6,7 +6,7 @@ const isConfiguredWorkerUrl =
 	!rawSubmitUrl.includes('<subdomain>');
 
 export const worker = {
-	submitOrderUrl: isConfiguredWorkerUrl ? rawSubmitUrl.trim() : '',
+	submitOrderUrl: isConfiguredWorkerUrl ? rawSubmitUrl.trim() : '/api/submit-order',
 	discordWebhookUrl: (import.meta.env.PUBLIC_DISCORD_WEBHOOK_URL ?? '').trim(),
 	discordBotServerUrl: (import.meta.env.PUBLIC_DISCORD_BOT_SERVER_URL ?? import.meta.env.DISCORD_BOT_SERVER_URL ?? '').trim(),
 } as const;
