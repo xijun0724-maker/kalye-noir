@@ -24,6 +24,11 @@
 			"types": "./catalog.ts",
 			"import": "./catalog.ts",
 			"default": "./catalog.ts"
+		},
+		"./discord": {
+			"types": "./discord.ts",
+			"import": "./discord.ts",
+			"default": "./discord.ts"
 		}
 	}
 }

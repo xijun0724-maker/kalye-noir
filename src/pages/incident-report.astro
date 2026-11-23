@@ -2,7 +2,7 @@
 import MainLayout from '../layouts/MainLayout.astro';
 
 const field =
-	'w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm';
+	'w-full min-w-0 rounded-none border border-plate bg-transparent px-4 py-3 text-base transition-colors placeholder:text-navy focus:border-ink sm:text-sm';
 ---
 
 <MainLayout
@@ -11,26 +11,26 @@ const field =
 >
 	<div class="wrap pt-7">
 		<nav
-			class="meta flex items-center gap-2 text-muted"
+			class="meta flex items-center gap-2 text-navy"
 			aria-label="Breadcrumb"
 		>
-			<a href="/" class="transition-colors hover:text-registration">
+			<a href="/" class="transition-colors hover:text-navy">
 				Home
 			</a>
 			<span aria-hidden="true">/</span>
-			<a href="/contact" class="transition-colors hover:text-registration">
+			<a href="/contact" class="transition-colors hover:text-navy">
 				Contact Us
 			</a>
 			<span aria-hidden="true">/</span>
-			<span class="text-ink">Incident Report</span>
+			<span class="text-ink">Incident report</span>
 		</nav>
 	</div>
 
 	<section class="wrap py-12">
 		<h1 class="display reveal text-center text-4xl sm:text-5xl">
-			Incident Report
+			Incident report
 		</h1>
-		<p class="meta mx-auto mt-4 max-w-xl text-center text-muted">
+		<p class="meta mx-auto mt-4 max-w-xl text-center text-navy">
 			Official claim slip for missing, damaged, or incorrect items.
 		</p>
 
@@ -40,13 +40,13 @@ const field =
 			data-netlify="true"
 			enctype="multipart/form-data"
 			action="/contact?incident=1"
-			class="mx-auto mt-12 grid max-w-3xl gap-5 border border-line p-6 sm:p-9"
+			class="mx-auto mt-12 grid max-w-3xl gap-5 rounded-lg border border-hairline bg-paper p-6 sm:p-9 shadow-xs"
 		>
 			<input type="hidden" name="form-name" value="incident-report" />
 
 			<div class="grid gap-4 sm:grid-cols-2">
 				<label class="grid gap-1.5">
-					<span class="label">First Name*</span>
+					<span class="label">First name*</span>
 					<input
 						type="text"
 						name="first-name"
@@ -56,7 +56,7 @@ const field =
 					/>
 				</label>
 				<label class="grid gap-1.5">
-					<span class="label">Last Name*</span>
+					<span class="label">Last name*</span>
 					<input
 						type="text"
 						name="last-name"
@@ -68,13 +68,13 @@ const field =
 			</div>
 
 			<label class="grid gap-1.5">
-				<span class="label">Facebook Name*</span>
+				<span class="label">Facebook name*</span>
 				<input type="text" name="facebook-name" required class={field} />
 			</label>
 
 			<div class="grid gap-4 sm:grid-cols-2">
 				<label class="grid gap-1.5">
-					<span class="label">Date Today*</span>
+					<span class="label">Date today*</span>
 					<input type="date" name="date-today" required class={field} />
 				</label>
 				<label class="grid gap-1.5">
@@ -84,12 +84,12 @@ const field =
 			</div>
 
 			<label class="grid gap-1.5">
-				<span class="label">Invoice / Order Slip Number*</span>
+				<span class="label">Invoice or order slip number*</span>
 				<input type="text" name="order-slip" required class={field} />
 			</label>
 
 			<label class="grid gap-1.5">
-				<span class="label">Email Address*</span>
+				<span class="label">Email address*</span>
 				<input
 					type="email"
 					name="email"
@@ -100,7 +100,7 @@ const field =
 			</label>
 
 			<label class="grid max-w-xs gap-1.5">
-				<span class="label">Contact Number*</span>
+				<span class="label">Contact number*</span>
 				<input
 					type="tel"
 					name="contact-number"
@@ -112,10 +112,10 @@ const field =
 			</label>
 
 			<div class="mt-2">
-				<p id="reason-label" class="text-sm font-semibold">
-					Reason For Complaint / Return
+				<p id="reason-label" class="text-sm font-bold">
+					Reason for complaint or return
 				</p>
-				<p class="mt-2 text-xs leading-relaxed text-muted">
+				<p class="mt-2 text-sm leading-relaxed text-ink/70">
 					(To simplify and speed up your concern, describe in detail the nature
 					of complaint.)*
 				</p>
@@ -128,9 +128,9 @@ const field =
 				></textarea>
 			</div>
 
-			<div class="max-w-sm space-y-3 border-y border-dashed border-muted/50 py-5 text-xs leading-relaxed text-muted">
+			<div class="max-w-sm space-y-3 border-y border-dashed border-hairline py-5 text-sm leading-relaxed text-ink/70">
 				<p>
-					NOTE: Change of color and/or size is allowed but subject to applicable
+					Note: change of color and/or size is allowed but subject to applicable
 					shipping fees shouldered by the Buyer. We may replace your item with
 					the condition that the item is in its original packaging with tag,
 					unworn, and unused.
@@ -139,7 +139,7 @@ const field =
 					Please attach photos to support your claims. (Acceptable file type:
 					JPEG, JPG, PNG, GIF & PDF; up to 10mb file size)
 				</p>
-				<p class="font-semibold text-ink">
+				<p class="font-bold text-ink">
 					Our team will ask you to send via email an unboxing video for claims
 					of missing or damaged item/s
 				</p>
@@ -153,7 +153,7 @@ const field =
 					required
 					multiple
 					accept=".jpg,.jpeg,.png,.gif,.pdf"
-					class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-sm transition-colors file:mr-4 file:border file:border-line file:bg-transparent file:px-3 file:py-1.5 file:text-xs file:uppercase file:tracking-[0.18em] hover:file:bg-line/40 focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration"
+					class="w-full min-w-0 rounded-md border border-plate bg-paper px-4 py-3 text-sm transition-colors file:mr-4 file:rounded-full file:border file:border-hairline file:bg-paper file:px-3 file:py-1.5 file:text-sm hover:file:bg-hairline/40 focus:border-ink"
 				/>
 			</label>
 
@@ -196,7 +196,7 @@ const field =
 	function showError(
 		el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
 	) {
-		el.classList.add('!border-registration', '!bg-registration/5');
+		el.classList.add('!border-2', '!border-ink', '!bg-accent/25');
 		el.setAttribute('aria-invalid', 'true');
 		const parent = el.closest('label') || el.parentElement;
 		if (!parent) return;
@@ -210,17 +210,17 @@ const field =
 			err.setAttribute('data-error-msg', '');
 			err.id = errorId;
 			err.className =
-				'field-error mt-1 flex items-center gap-1 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-registration';
+				'field-error mt-1 flex items-center gap-1.5 text-sm font-bold text-ink';
 			parent.appendChild(err);
 		}
-		err.innerHTML = `<span aria-hidden="true">[!]</span> ${msg}`;
+		err.innerHTML = `<span aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" class="shrink-0" aria-hidden="true"><path fill="currentColor" d="M12 2 1 21h22L12 2zm0 5.6 7.4 12.4H4.6L12 7.6zM11 10h2v5h-2zm0 6h2v2h-2z"/></svg></span> ${msg}`;
 		el.setAttribute('aria-describedby', errorId);
 	}
 
 	function clearError(
 		el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
 	) {
-		el.classList.remove('!border-registration', '!bg-registration/5');
+		el.classList.remove('!border-2', '!border-ink', '!bg-accent/25');
 		el.removeAttribute('aria-invalid');
 		const parent = el.closest('label') || el.parentElement;
 		const err = parent?.querySelector('[data-error-msg]');

@@ -1,442 +1,346 @@
 ---
 import { Image } from 'astro:assets';
 import MainLayout from '../layouts/MainLayout.astro';
-import { site, taglines } from '../config/site';
+import { site } from '../config/site';
+import { products } from '../data/catalog';
+import { productArt } from '../data/productArt';
+
 import homeBannerOne from '../assets/images/brand/home-banner-1.jpg';
 import homeBannerTwo from '../assets/images/brand/home-banner-2.jpg';
-import posterKalyenoir from '../assets/images/design/kalyenoir-poster.jpg';
-import posterMedusa from '../assets/images/design/medusa-poster.jpg';
-import posterManila from '../assets/images/design/manila-poster.jpg';
-import gallery01 from '../assets/images/gallery/drop-01.jpg';
-import gallery02 from '../assets/images/gallery/drop-02.jpg';
-import gallery03 from '../assets/images/gallery/drop-03.jpg';
-import gallery04 from '../assets/images/gallery/drop-04.jpg';
-import gallery05 from '../assets/images/gallery/drop-05.jpg';
-import gallery06 from '../assets/images/gallery/drop-06.jpg';
-import gallery07 from '../assets/images/gallery/drop-07.jpg';
-import gallery08 from '../assets/images/gallery/drop-08.jpg';
-import gallery09 from '../assets/images/gallery/drop-09.jpg';
-import gallery10 from '../assets/images/gallery/drop-10.jpg';
-import gallery11 from '../assets/images/gallery/drop-11.jpg';
-import gallery12 from '../assets/images/gallery/drop-12.jpg';
 
-// The drop: one poster per print.
-const drop = [
-	{
-		name: 'KALYENOIR',
-		poster: posterKalyenoir,
-		alt: 'KalyeNoir poster: the wordmark stacked across a Manila street sign',
-		href: '/products/kalyenoir-tee',
-		line: 'Real dreams, same sky',
-	},
-	{
-		name: 'MEDUSA',
-		poster: posterMedusa,
-		alt: 'Medusa poster: a hand-drawn gorgon with snakes for hair',
-		href: '/products/medusa-tee',
-		line: 'Not your myth',
-	},
-	{
-		name: 'MANILA',
-		poster: posterManila,
-		alt: 'Manila poster: a jeepney on a crowded Manila street',
-		href: '/products/manila-tee',
-		line: 'The city never sleeps',
-	},
-];
+import drop01 from '../assets/images/gallery/drop-01.jpg';
+import drop02 from '../assets/images/gallery/drop-02.jpg';
+import drop03 from '../assets/images/gallery/drop-03.jpg';
+import drop05 from '../assets/images/gallery/drop-05.jpg';
+import drop06 from '../assets/images/gallery/drop-06.jpg';
+import drop07 from '../assets/images/gallery/drop-07.jpg';
+import drop08 from '../assets/images/gallery/drop-08.jpg';
+import drop09 from '../assets/images/gallery/drop-09.jpg';
+import drop10 from '../assets/images/gallery/drop-10.jpg';
+import drop12 from '../assets/images/gallery/drop-12.jpg';
 
-const gallery = [
-	{ src: gallery01, alt: 'Crew seated on stone steps in Kalye Noir tees' },
-	{
-		src: gallery02,
-		alt: 'Back prints of Kalye Noir tees against a stone archway',
-	},
-	{ src: gallery03, alt: 'Crew walking a stone path in Kalye Noir tees' },
-	{ src: gallery04, alt: 'MEDUSA back print on a brick path' },
-	{ src: gallery05, alt: 'Crew on the steps below a stone wall' },
-	{ src: gallery06, alt: 'KALYENOIR tee on a Manila street beside a blue car' },
-	{ src: gallery07, alt: 'Crew resting on the steps beneath a tree' },
-	{ src: gallery08, alt: 'Crew on the steps against a bright sky' },
-	{ src: gallery09, alt: 'Crew grouped on the stone steps' },
-	{ src: gallery10, alt: 'Crew throwing peace signs on the steps' },
-	{ src: gallery11, alt: 'Crew laughing on the stone steps' },
-	{ src: gallery12, alt: 'Crew by a gate on a Manila street' },
-];
-
-const marquee = [
-	'Kalye Noir',
-	...taglines,
-	'Street wear · Manila',
-	'Order by request',
-];
 ---
 
 <MainLayout title={site.title} description={site.description}>
-	<section data-banner class="grain relative overflow-hidden bg-ink text-paper">
-		<span class="absolute bottom-0 left-8 h-24 w-px bg-registration/70 sm:left-12"></span>
-		<span class="absolute bottom-0 right-8 h-24 w-px bg-registration/70 sm:right-12"></span>
+	<!-- 1. Hero Section (Matches Laureti Page 1 with Title on Top and CTA at Bottom) -->
+	<section class="relative h-[88vh] min-h-[600px] w-full overflow-hidden bg-paper">
+		<Image
+			src={homeBannerOne}
+			alt="Kalye Noir crew wearing tees on a Manila street"
+			widths={[640, 1024, 1440, 1920]}
+			sizes="100vw"
+			format="webp"
+			priority
+			class="h-full w-full object-cover object-center"
+		/>
+		<!-- Subtle top and bottom vignettes so the middle of the image stays 100% visible -->
+		<div class="absolute inset-0 bg-gradient-to-b from-ink/65 via-transparent via-50% to-ink/70 pointer-events-none"></div>
 
-		<div
-			class="relative overflow-hidden"
-			role="group"
-			aria-roledescription="carousel"
-			aria-label="Kalye Noir crew photos"
-		>
-			<div
-				data-banner-track
-				class="flex transition-transform duration-700 ease-in-out motion-reduce:transition-none"
-			>
-				<div
-					class="w-full shrink-0"
-					role="group"
-					aria-roledescription="slide"
-					aria-label="Photo 1 of 2"
+		<!-- Container with Title on Top and Shop Now Button at Bottom -->
+		<div class="absolute inset-0 flex flex-col justify-between items-center text-center px-4 py-8 sm:py-12 z-10 pointer-events-none">
+			<!-- KALYE NOIR on top with on-brand tagline -->
+			<div class="pointer-events-auto pt-2 sm:pt-4">
+				<h1 class="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-normal tracking-[-0.025em] text-white uppercase drop-shadow-md">
+					{site.name}
+				</h1>
+				<p class="font-title text-xs sm:text-sm uppercase tracking-[0.28em] text-paper/90 drop-shadow-md mt-2">
+					Nasa Kalye Pangarap
+				</p>
+			</div>
+
+			<!-- SHOP NOW at the bottom -->
+			<div class="pointer-events-auto pb-4 sm:pb-6">
+				<a
+					href="/products"
+					class="btn btn-primary px-9 py-4 font-title text-xs sm:text-sm font-semibold uppercase tracking-[0.24em] cursor-pointer shadow-panel hover:bg-accent transition-colors"
 				>
-					<Image
-						src={homeBannerOne}
-						alt="Five people wearing Kalye Noir tees standing in front of a jeepney on a Manila street"
-						widths={[480, 768, 1024, 1280]}
-						sizes="100vw"
-						format="webp"
-						fetchpriority="high"
-						loading="eager"
-						class="h-[360px] w-full object-cover sm:h-[460px] lg:h-[560px]"
-					/>
-				</div>
-				<div
-					class="w-full shrink-0"
-					role="group"
-					aria-roledescription="slide"
-					aria-label="Photo 2 of 2"
-				>
-					<Image
-						src={homeBannerTwo}
-						alt="The Kalye Noir crew crossing a Manila street in their tees, seen from behind"
-						widths={[480, 768, 1024, 1206]}
-						sizes="100vw"
-						format="webp"
-						loading="lazy"
-						decoding="async"
-						class="h-[360px] w-full object-cover sm:h-[460px] lg:h-[560px]"
-					/>
-				</div>
-			</div>
-		</div>
-
-		<div class="wrap pb-14 pt-5 lg:pb-20 lg:pt-6">
-			<div class="meta flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-paper/75">
-				<span>The crew, Manila</span>
-				<span class="flex flex-wrap items-center gap-x-4 gap-y-1">
-					<span data-banner-count>01 / 02</span>
-					<button
-						type="button"
-						data-banner-toggle
-						hidden
-						aria-label="Pause photo rotation"
-						class="tap text-paper/75 underline decoration-paper/40 underline-offset-4 transition-colors hover:text-paper hover:decoration-paper"
-					>
-						Pause
-					</button>
-					<button
-						type="button"
-						data-banner-next
-						hidden
-						aria-label="Next photo"
-						class="tap text-paper/75 underline decoration-paper/40 underline-offset-4 transition-colors hover:text-paper hover:decoration-paper"
-					>
-						Next
-					</button>
-					<span>Est. 2026</span>
-					<span class="barcode h-3.5 w-16 text-paper/70"></span>
-				</span>
-			</div>
-
-			<h1 class="display reveal mt-8 text-5xl sm:text-6xl lg:text-7xl xl:text-8xl">
-				Nasa kalye
-				<br />
-				nangangarap
-			</h1>
-
-			<div class="reveal reveal-2 mt-9 flex flex-wrap gap-3">
-				<a href="/products" class="btn btn-invert">
-					Browse the collection
+					Shop Batch 001
 				</a>
-				<a href="#how-it-works" class="btn btn-ghost">
-					How ordering works
-				</a>
-			</div>
-
-			<div class="meta reveal reveal-3 mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-paper/70">
-				<span>14.5995° N, 120.9842° E</span>
-				<svg viewBox="0 0 24 24" width="18" height="18" class="text-paper/60">
-					<path
-						fill="currentColor"
-						d="M16.36 14c.08-.66.14-1.32.14-2c0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2m-5.15 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56M14.34 14H9.66c-.1-.66-.16-1.32-.16-2c0-.68.06-1.35.16-2h4.68c.09.65.16 1.32.16 2c0 .68-.07 1.34-.16 2M12 19.96c-.83-1.2-1.5-2.53-1.91-3.96h3.82c-.41 1.43-1.08 2.76-1.91 3.96M8 8H5.08A7.923 7.923 0 0 1 9.4 4.44C8.8 5.55 8.35 6.75 8 8m-2.92 8H8c.35 1.25.8 2.45 1.4 3.56A8.008 8.008 0 0 1 5.08 16m-.82-2C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2c0 .68.06 1.34.14 2M12 4.03c.83 1.2 1.5 2.54 1.91 3.97h-3.82c.41-1.43 1.08-2.77 1.91-3.97M18.92 8h-2.95a15.65 15.65 0 0 0-1.38-3.56c1.84.63 3.37 1.9 4.33 3.56M12 2C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2"
-					/>
-				</svg>
-				<span>Heavyweight cotton · S–2XL</span>
 			</div>
 		</div>
 	</section>
 
-	<script>
-		const banner = document.querySelector('[data-banner]');
-		const track = document.querySelector<HTMLElement>('[data-banner-track]');
-		const count = document.querySelector<HTMLElement>('[data-banner-count]');
-		const toggle = document.querySelector<HTMLElement>('[data-banner-toggle]');
-		const next = document.querySelector<HTMLElement>('[data-banner-next]');
-		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-		if (banner && track && count && toggle && next) {
-			const slides = [...track.children];
-			let index = 0;
-			let timer: ReturnType<typeof setInterval> | undefined;
-			let userPaused = false;
-			let focusPaused = false;
-
-			const show = (i: number) => {
-				index = (i + slides.length) % slides.length;
-				track.style.transform = `translateX(-${index * 100}%)`;
-				count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
-			};
-
-			const stop = () => clearInterval(timer);
-			const start = () => {
-				stop();
-				if (userPaused || focusPaused || reducedMotion.matches) return;
-				timer = setInterval(() => show(index + 1), 5000);
-			};
-
-			if (slides.length > 1) {
-				toggle.hidden = reducedMotion.matches;
-				next.hidden = false;
-
-				next.addEventListener('click', () => {
-					show(index + 1);
-					start();
-				});
-
-				toggle.addEventListener('click', () => {
-					userPaused = !userPaused;
-					banner.classList.toggle('banners-paused', userPaused);
-					toggle.textContent = userPaused ? 'Play' : 'Pause';
-					toggle.setAttribute(
-						'aria-label',
-						userPaused ? 'Play photo rotation' : 'Pause photo rotation',
-					);
-					start();
-				});
-
-				banner.addEventListener('focusin', () => {
-					focusPaused = true;
-					stop();
-				});
-				banner.addEventListener('focusout', event => {
-					const nextTarget =
-						event instanceof FocusEvent && event.relatedTarget instanceof Node
-							? event.relatedTarget
-							: null;
-					if (!banner.contains(nextTarget)) {
-						focusPaused = false;
-						start();
-					}
-				});
-				reducedMotion.addEventListener('change', event => {
-					toggle.hidden = event.matches;
-					start();
-				});
-				start();
-			}
-		}
-	</script>
-
-	<div class="overflow-hidden border-y border-ink bg-registration py-3">
-		<div class="marquee flex w-max motion-reduce:animate-none hover:[animation-play-state:paused] focus-within:[animation-play-state:paused]">
-			{[0, 1].map(copyIndex => (
-				<div
-					class="flex shrink-0"
-					aria-hidden={copyIndex > 0 ? 'true' : undefined}
-				>
-					{marquee.map(item => (
-						<span class="meta mx-7 flex items-center gap-7 whitespace-nowrap font-semibold text-paper">
-							{item}
-							<span class="inline-block h-1.5 w-1.5 rotate-45 bg-paper/70" />
-						</span>
-					))}
-				</div>
-			))}
+	<!-- 2. Craftsmanship Image & National Statement Bar (Matches Laureti Page 2 & 3) -->
+	<section class="w-full bg-paper">
+		<div class="relative w-full h-[55vh] min-h-[380px] overflow-hidden">
+			<Image
+				src={drop02}
+				alt="Kalye Noir artisan and screen-print craftsmanship in Manila"
+				widths={[640, 1024, 1440, 1920]}
+				sizes="100vw"
+				format="webp"
+				loading="lazy"
+				class="h-full w-full object-cover object-center filter grayscale contrast-110"
+			/>
 		</div>
-	</div>
-
-	<section id="drop" class="wrap py-16 lg:py-24">
-		<header class="flex flex-wrap items-end justify-between gap-6 border-b-2 border-ink pb-5">
-			<div>
-				<div class="flex items-center gap-2 mb-2">
-					<span
-						class="inline-block h-1.5 w-1.5 rotate-45 bg-registration"
-						aria-hidden="true"
-					></span>
-					<span class="meta text-registration font-semibold">
-						Batch 001 Active · Manila Pressing
-					</span>
-				</div>
-				<h2 class="display text-4xl sm:text-5xl">The drop</h2>
-				<p class="meta mt-1 text-muted">
-					3 print designs · Heavyweight screen-print tees
-				</p>
-			</div>
-			<p class="meta text-muted">
-				S–L ₱253 · XL–2XL ₱265 · COD or GCash / Maya
+		<!-- Ink Black Statement Strip with Control Lines -->
+		<div class="w-full bg-ink py-5 px-4 text-center border-y border-plate">
+			<p class="font-sans text-sm sm:text-base text-paper/95 tracking-wide">
+				Manila never sleeps. Small-batch 240 GSM tees cut, sewn, and hand-pulled by <strong class="font-bold text-paper">Filipino makers</strong>.
 			</p>
-		</header>
-
-		<ul class="mt-12 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-			{drop.map((print, i) => (
-				<li class={i === 1 ? 'lg:mt-12' : ''}>
-					<a href={print.href} class="group block">
-						<div class="relative overflow-hidden bg-ink">
-							<Image
-								src={print.poster}
-								alt={print.alt}
-								widths={[300, 450, 600]}
-								sizes="(min-width: 1024px) 30vw, 92vw"
-								format="webp"
-								loading="lazy"
-								decoding="async"
-								class="aspect-[3/4] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-							/>
-							<span class="absolute left-0 top-0 h-1 w-0 bg-registration transition-all duration-500 group-hover:w-full" />
-							<span class="meta absolute right-3 top-3 text-paper/70">
-								{String(i + 1).padStart(3, '0')}
-							</span>
-						</div>
-
-						<div class="mt-4 flex items-baseline justify-between gap-4">
-							<h3 class="display text-2xl transition-colors duration-200 group-hover:text-registration">
-								{print.name}
-							</h3>
-							<span class="meta text-xs text-muted transition-colors group-hover:text-registration">
-								View Tee →
-							</span>
-						</div>
-						<p class="meta mt-1 text-muted">
-							{print.line} · S–L ₱253 · XL–2XL ₱265
-						</p>
-					</a>
-				</li>
-			))}
-		</ul>
-	</section>
-
-	<section
-		id="how-it-works"
-		class="border-t border-line bg-line/20 py-16 lg:py-24"
-	>
-		<div class="wrap">
-			<header class="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-6">
-				<div>
-					<h2 class="display text-3xl sm:text-4xl">How ordering works</h2>
-					<p class="meta mt-2 text-muted">
-						Your request is emailed to the studio and summarized for you.
-					</p>
-				</div>
-				<span class="meta text-xs text-muted">
-					S–L ₱253 · XL–2XL ₱265 · No charge when adding to cart
-				</span>
-			</header>
-
-			<div class="mt-10 grid gap-8 md:grid-cols-3">
-				<div class="border-t-2 border-ink pt-6">
-					<span class="font-display text-4xl text-registration">01</span>
-					<h3 class="font-condensed text-base font-semibold uppercase tracking-[0.16em] text-ink mt-2">
-						Choose a print and size
-					</h3>
-					<p class="mt-2 text-sm text-ink/75 leading-relaxed">
-						Add the tee and size you want to your request slip. Adding a print
-						does not collect payment.
-					</p>
-				</div>
-
-				<div class="border-t-2 border-ink pt-6">
-					<span class="font-display text-4xl text-registration">02</span>
-					<h3 class="font-condensed text-base font-semibold uppercase tracking-[0.16em] text-ink mt-2">
-						Choose how to pay
-					</h3>
-					<p class="mt-2 text-sm text-ink/75 leading-relaxed">
-						At checkout, choose cash on delivery or GCash / Maya transfer.
-						Review your address and exact total before sending.
-					</p>
-				</div>
-
-				<div class="border-t-2 border-ink pt-6">
-					<span class="font-display text-4xl text-registration">03</span>
-					<h3 class="font-condensed text-base font-semibold uppercase tracking-[0.16em] text-ink mt-2">
-						Receive your order summary
-					</h3>
-					<p class="mt-2 text-sm text-ink/75 leading-relaxed">
-						After submission, the studio receives your request and an order
-						summary is emailed to you. The studio confirms stock and next steps
-						before dispatch.
-					</p>
-				</div>
-			</div>
-
-			<div class="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-line/60 pt-8">
-				<p class="font-condensed text-xs uppercase tracking-[0.2em] text-ink/80">
-					Three Manila prints · S–L ₱253 · XL–2XL ₱265
-				</p>
-				<a href="/products" class="btn btn-primary text-xs">
-					Browse all prints →
-				</a>
-			</div>
 		</div>
 	</section>
 
-	<section id="field-notes" class="bg-ink py-16 text-paper lg:py-24">
-		<div class="wrap">
-			<header class="flex flex-wrap items-end justify-between gap-6 border-b border-paper/20 pb-5">
-				<div>
-					<div class="mb-2 flex items-center gap-2">
-						<span
-							class="inline-block h-1.5 w-1.5 rotate-45 bg-registration"
-							aria-hidden="true"
-						></span>
-						<span class="meta font-semibold text-paper/70">
-							Batch 001 · Manila
-						</span>
-					</div>
-					<h2 class="display text-4xl sm:text-5xl">Field notes</h2>
-					<p class="meta mt-1 text-paper/70">
-						Twelve frames from the drop shoot
-					</p>
-				</div>
-				<p class="meta text-paper/70">Off the press, onto the street</p>
-			</header>
+	<!-- 3. Category Feature Banner: KALYE TEES (Matches Laureti Page 3 with Title on Top and Tagline at Bottom) -->
+	<section class="relative w-full h-[80vh] min-h-[560px] sm:h-[88vh] sm:min-h-[640px] overflow-hidden bg-paper">
+		<Image
+			src={homeBannerTwo}
+			alt="Kalye Noir street collection in Manila"
+			widths={[640, 1024, 1440, 1920]}
+			sizes="100vw"
+			format="webp"
+			loading="lazy"
+			class="h-full w-full object-cover object-[center_35%]"
+		/>
+		<!-- Subtle gradient overlays at top and bottom so the models in the center stay 100% visible -->
+		<div class="absolute inset-0 bg-gradient-to-b from-ink/75 via-transparent via-40% to-ink/70 pointer-events-none"></div>
 
-			<ul class="mt-8 columns-2 gap-2 [&>li]:mb-2 [&>li]:break-inside-avoid md:columns-3 lg:columns-4">
-				{gallery.map((photo, i) => (
-					<li>
-						<figure class="group">
-							<div class="relative overflow-hidden bg-paper/5">
+		<!-- Container with ONLY text: Nasa Kalye and Pangarap at the top so image is 100% visible -->
+		<div class="absolute inset-0 flex flex-col justify-start items-center text-center pt-8 sm:pt-14 px-4 z-10 pointer-events-none">
+			<h2 class="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal tracking-[-0.025em] text-white uppercase drop-shadow-lg">
+				Nasa Kalye <span class="text-accent">Pangarap</span>
+			</h2>
+		</div>
+	</section>
+
+	<!-- 4. Best Selling Product Grid (Matches Laureti Page 3, 4, 5) -->
+	<section class="w-full bg-paper py-16 sm:py-20">
+		<div class="wrap text-center">
+			<p class="font-title text-xs uppercase tracking-[0.28em] text-accent font-semibold mb-2">
+				Heavyweight 240 GSM Cotton
+			</p>
+			<h2 class="font-display text-3xl sm:text-4xl md:text-5xl uppercase tracking-[-0.025em] text-ink mb-3 sm:mb-4">
+				The Core Prints
+			</h2>
+			<p class="font-sans text-xs sm:text-sm text-navy max-w-md mx-auto mb-12 sm:mb-16">
+				Three small-batch silkscreen prints, hand-cured for lasting grit. Black cotton only.
+			</p>
+
+			<div class="grid grid-cols-2 lg:grid-cols-3 gap-x-6 sm:gap-x-8 gap-y-12 sm:gap-y-16 max-w-5xl mx-auto">
+				{products.map(product => {
+					const reviews = 0;
+					return (
+						<a href={`/products/${product.slug}`} class="group block text-center">
+							<div class="relative overflow-hidden bg-white p-4 border border-hairline">
 								<Image
-									src={photo.src}
-									alt={photo.alt}
-									widths={[320, 480, 640, 960]}
-									sizes="(min-width: 1024px) 24vw, (min-width: 768px) 32vw, 46vw"
+									src={productArt[product.slug]}
+									alt={product.alt}
+									widths={[240, 360, 480]}
+									sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 48vw"
 									format="webp"
 									loading="lazy"
-									decoding="async"
-									class="w-full transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+									class="aspect-[4/5] w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04]"
 								/>
-								<span class="absolute left-0 top-0 h-1 w-0 bg-registration transition-all duration-500 group-hover:w-full" />
 							</div>
-							<figcaption class="meta mt-1.5 text-paper/70">
-								{String(i + 1).padStart(2, '0')}
-							</figcaption>
-						</figure>
-					</li>
-				))}
-			</ul>
+
+							<div class="pt-4 text-center">
+								<h3 class="font-title text-xs uppercase tracking-[0.18em] font-semibold text-ink transition-colors group-hover:text-accent">
+									{product.title}
+								</h3>
+								<div class="mt-1.5 flex items-center justify-center gap-1 text-xs text-ink" aria-label="5 out of 5 stars">
+									<span class="text-xs tracking-tight text-accent" aria-hidden="true">★★★★★</span>
+									<span class="text-xs text-navy/80">({reviews})</span>
+								</div>
+								<div class="mt-1.5 flex items-baseline justify-center gap-2 text-xs">
+									<span class="font-bold text-ink">₱{product.price}.00</span>
+									<span class="text-navy line-through">₱350.00</span>
+								</div>
+							</div>
+						</a>
+					);
+				})}
+			</div>
+
+			<div class="mt-14 sm:mt-16">
+				<a
+					href="/products"
+					class="btn btn-primary px-10 py-3.5 font-title text-xs font-semibold uppercase tracking-[0.24em] cursor-pointer"
+				>
+					View All
+				</a>
+			</div>
 		</div>
 	</section>
+
+	<!-- 5. 4-Photo Maker / Community Collage: "You make this possible." (Matches Laureti Page 7) -->
+	<section class="relative w-full bg-ink">
+		<div class="grid grid-cols-2 md:grid-cols-4 w-full h-[60vh] min-h-[400px]">
+			<div class="relative h-full overflow-hidden">
+				<Image
+					src={drop07}
+					alt="Kalye Noir community maker 1"
+					widths={[360, 640]}
+					sizes="25vw"
+					format="webp"
+					loading="lazy"
+					class="h-full w-full object-cover"
+				/>
+			</div>
+			<div class="relative h-full overflow-hidden">
+				<Image
+					src={drop08}
+					alt="Kalye Noir community maker 2"
+					widths={[360, 640]}
+					sizes="25vw"
+					format="webp"
+					loading="lazy"
+					class="h-full w-full object-cover"
+				/>
+			</div>
+			<div class="relative h-full overflow-hidden">
+				<Image
+					src={drop09}
+					alt="Kalye Noir community maker 3"
+					widths={[360, 640]}
+					sizes="25vw"
+					format="webp"
+					loading="lazy"
+					class="h-full w-full object-cover"
+				/>
+			</div>
+			<div class="relative h-full overflow-hidden">
+				<Image
+					src={drop10}
+					alt="Kalye Noir community maker 4"
+					widths={[360, 640]}
+					sizes="25vw"
+					format="webp"
+					loading="lazy"
+					class="h-full w-full object-cover"
+				/>
+			</div>
+		</div>
+		<div class="absolute inset-0 bg-ink/35 pointer-events-none"></div>
+		<div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+			<h2 class="font-display text-4xl sm:text-5xl md:text-6xl font-normal text-white uppercase tracking-[-0.025em] drop-shadow-lg">
+				Real Streets. <span class="text-accent">Real Stories.</span>
+			</h2>
+			<p class="font-title text-xs sm:text-sm uppercase tracking-[0.24em] text-paper/90 mt-3 drop-shadow-md">
+				Beauty in Chaos · Feared by Many · Worn in Manila
+			</p>
+		</div>
+	</section>
+
+	<!-- 6. Purpose / Story Section: "Not Your Myth" -->
+	<section class="relative w-full h-[55vh] min-h-[380px] overflow-hidden bg-paper">
+		<Image
+			src={drop05}
+			alt="Kalye Noir purpose and streetwear culture"
+			widths={[640, 1024, 1440, 1920]}
+			sizes="100vw"
+			format="webp"
+			loading="lazy"
+			class="h-full w-full object-cover object-center"
+		/>
+		<div class="absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/40 to-transparent pointer-events-none"></div>
+		<div class="absolute inset-0 flex flex-col items-start justify-center wrap px-6 sm:px-12">
+			<h2 class="font-display text-4xl sm:text-5xl md:text-6xl text-white font-normal uppercase tracking-[-0.025em] drop-shadow-md">
+				Not Your <span class="text-accent font-bold">Myth.</span>
+			</h2>
+			<p class="font-title text-xs sm:text-sm uppercase tracking-[0.22em] text-paper/90 mt-3 drop-shadow-sm max-w-lg">
+				Small-batch silkscreen prints rooted in Manila grit and mythos.
+			</p>
+		</div>
+	</section>
+
+	<!-- 7. 4-Photo Strip with Nationwide Banner Quote -->
+	<section class="relative w-full bg-ink">
+		<div class="grid grid-cols-2 md:grid-cols-4 w-full h-[38vh] min-h-[260px]">
+			<div class="relative h-full overflow-hidden">
+				<Image
+					src={drop01}
+					alt="Kalye Noir street scene 1"
+					widths={[320, 600]}
+					sizes="25vw"
+					format="webp"
+					loading="lazy"
+					class="h-full w-full object-cover"
+				/>
+			</div>
+			<div class="relative h-full overflow-hidden">
+				<Image
+					src={drop03}
+					alt="Kalye Noir street scene 2"
+					widths={[320, 600]}
+					sizes="25vw"
+					format="webp"
+					loading="lazy"
+					class="h-full w-full object-cover"
+				/>
+			</div>
+			<div class="relative h-full overflow-hidden">
+				<Image
+					src={drop06}
+					alt="Kalye Noir street scene 3"
+					widths={[320, 600]}
+					sizes="25vw"
+					format="webp"
+					loading="lazy"
+					class="h-full w-full object-cover"
+				/>
+			</div>
+			<div class="relative h-full overflow-hidden">
+				<Image
+					src={drop12}
+					alt="Kalye Noir street scene 4"
+					widths={[320, 600]}
+					sizes="25vw"
+					format="webp"
+					loading="lazy"
+					class="h-full w-full object-cover"
+				/>
+			</div>
+		</div>
+		<div class="absolute inset-0 bg-ink/25 pointer-events-none"></div>
+		<div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+			<p class="font-display text-2xl sm:text-3xl md:text-4xl font-normal uppercase tracking-[-0.015em] text-white drop-shadow-lg">
+				Late Nights. Early Dreams. <span class="text-accent">Kalye Noir.</span>
+			</p>
+			<p class="font-title text-xs sm:text-sm uppercase tracking-[0.24em] text-paper/85 mt-2 drop-shadow-md">
+				100% Combed Heavyweight Cotton · Est. 2026
+			</p>
+		</div>
+	</section>
+
+	<!-- 8. Floating Surprise Sale Toast -->
+	<aside
+		data-sale-toast
+		class="fixed bottom-6 right-6 z-30 max-w-sm bg-ink text-paper border border-plate p-5 shadow-panel transition-all duration-300"
+		aria-label="Limited time promotion"
+	>
+		<div class="flex items-start justify-between gap-4">
+			<div>
+				<p class="font-title text-sm font-bold uppercase tracking-[0.24em] text-paper">
+					Batch 001 Drop Sale
+				</p>
+				<p class="font-sans text-xs text-paper/90 mt-1">
+					Up to 28% off core heavyweight prints. <a href="/products" class="font-semibold underline underline-offset-2 hover:text-accent">Order now before batch closes →</a>
+				</p>
+			</div>
+			<button
+				type="button"
+				data-toast-close
+				aria-label="Dismiss promotion"
+				class="text-paper/70 hover:text-paper text-lg leading-none cursor-pointer -mr-1 -mt-1 p-1"
+			>
+				✕
+			</button>
+		</div>
+	</aside>
 </MainLayout>
+
+<script>
+	// Surprise Sale Toast dismiss logic
+	const toast = document.querySelector<HTMLElement>('[data-sale-toast]');
+	const closeBtn = document.querySelector<HTMLButtonElement>('[data-toast-close]');
+
+	closeBtn?.addEventListener('click', () => {
+		if (toast) {
+			toast.style.opacity = '0';
+			toast.style.transform = 'translateY(16px)';
+			setTimeout(() => {
+				toast.style.display = 'none';
+			}, 300);
+		}
+	});
+</script>

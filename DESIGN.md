@@ -45,30 +45,14 @@ spacing:
   xl: '40px'
   section: '56px'
 components:
-  button-primary:
-    {
-      backgroundColor: '{colors.ink-black}',
-      textColor: '{colors.paper-stock}',
-      rounded: '{rounded.square}',
-    }
-  field:
-    {
-      backgroundColor: 'transparent',
-      textColor: '{colors.ink-black}',
-      rounded: '{rounded.square}',
-    }
-  brand-tab:
-    {
-      backgroundColor: '{colors.registration-red}',
-      textColor: '{colors.paper-stock}',
-      rounded: '{rounded.tab-edge}',
-    }
+  button-primary: { backgroundColor: '{colors.ink-black}', textColor: '{colors.paper-stock}', rounded: '{rounded.square}' }
+  field: { backgroundColor: 'transparent', textColor: '{colors.ink-black}', rounded: '{rounded.square}' }
+  brand-tab: { backgroundColor: '{colors.registration-red}', textColor: '{colors.paper-stock}', rounded: '{rounded.tab-edge}' }
 ---
 
 # Design System: Kalye Noir
 
 <!-- impeccable:design-map -->
-
 Name: Kalye Noir
 Colors: registration-red #c8202a, paper-stock #f4ede2, ink-black #111110, densitometer-gray #6d6459, plate-line #e2d8c8, control-line #8d8073
 Fonts: Anton (display, headline); Barlow Condensed (title, label); Archivo (body)

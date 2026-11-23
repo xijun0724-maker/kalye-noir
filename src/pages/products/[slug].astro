@@ -7,6 +7,17 @@ import ProductGrid from '../../components/ProductGrid.astro';
 import { products } from '../../data/catalog';
 import { courier } from '../../data/shipping';
 
+import drop01 from '../../assets/images/gallery/drop-01.jpg';
+import drop02 from '../../assets/images/gallery/drop-02.jpg';
+import drop03 from '../../assets/images/gallery/drop-03.jpg';
+import drop05 from '../../assets/images/gallery/drop-05.jpg';
+import drop06 from '../../assets/images/gallery/drop-06.jpg';
+import drop07 from '../../assets/images/gallery/drop-07.jpg';
+import drop08 from '../../assets/images/gallery/drop-08.jpg';
+import drop09 from '../../assets/images/gallery/drop-09.jpg';
+import drop10 from '../../assets/images/gallery/drop-10.jpg';
+import homeBannerOne from '../../assets/images/brand/home-banner-1.jpg';
+
 export function getStaticPaths() {
 	return products.map(product => ({
 		params: { slug: product.slug },
@@ -15,13 +26,12 @@ export function getStaticPaths() {
 }
 
 const { product } = Astro.props;
-const suggestions = products.filter(p => p.slug !== product.slug).slice(0, 4);
-const sourceWidth = productArt[product.slug].width;
+const suggestions = products.filter(p => p.slug !== product.slug);
+
 ---
 
 <style>
 	[data-zoom] {
-		/* Capped at 1.6: the tee art is ~400 px wide, so deeper zoom shows upscaling. */
 		--zoom: 1.6;
 	}
 	[data-zoom] img {
@@ -43,16 +53,17 @@ const sourceWidth = productArt[product.slug].width;
 	description={product.blurb}
 	image={productArt[product.slug].src}
 >
+	<!-- Breadcrumb -->
 	<div class="wrap pt-7">
 		<nav
-			class="meta flex items-center gap-2 text-muted"
+			class="meta flex items-center gap-2 text-navy"
 			aria-label="Breadcrumb"
 		>
-			<a href="/" class="transition-colors hover:text-registration">
+			<a href="/" class="transition-colors hover:text-navy">
 				Home
 			</a>
 			<span aria-hidden="true">/</span>
-			<a href="/products" class="transition-colors hover:text-registration">
+			<a href="/products" class="transition-colors hover:text-navy">
 				Kalye's Tee
 			</a>
 			<span aria-hidden="true">/</span>
@@ -60,80 +71,551 @@ const sourceWidth = productArt[product.slug].width;
 		</nav>
 	</div>
 
-	<section class="wrap grid gap-10 py-10 md:grid-cols-2 lg:gap-14">
-		<div class="relative overflow-hidden bg-white p-4" data-zoom>
-			<Image
-				src={productArt[product.slug]}
-				alt={product.alt}
-				widths={[200, 300, sourceWidth]}
-				sizes="(min-width: 768px) 45vw, 92vw"
-				format="webp"
-				fetchpriority="high"
-				loading="eager"
-				class="aspect-[4/5] w-full object-contain"
-			/>
+	<!-- 1. Hero Product Showcase (Matches Laureti Page 1: Vertical Thumbnails on Left + Buy Box on Right) -->
+	<section class="wrap grid gap-8 py-8 md:grid-cols-2 lg:gap-12">
+		<!-- Left Column: Gallery (Vertical Thumbnails on Desktop + Main Large Image) -->
+		<div class="flex flex-col-reverse sm:flex-row gap-3.5 items-start">
+			<!-- Vertical Thumbnails Column (Matches Laureti Page 1) -->
+			<div class="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto w-full sm:w-20 shrink-0 py-1" data-thumbnails>
+				<button
+					type="button"
+					class="border-2 border-ink p-1 bg-white cursor-pointer transition-all aspect-square w-16 sm:w-full shrink-0"
+					data-thumb="0"
+					data-src={productArt[product.slug].src}
+					data-alt={`${product.title} flatlay front & back`}
+					aria-label="View product artwork"
+				>
+					<Image
+						src={productArt[product.slug]}
+						alt="Product flatlay"
+						width={80}
+						height={80}
+						format="webp"
+						class="h-full w-full object-contain"
+					/>
+				</button>
+
+				<button
+					type="button"
+					class="border border-plate hover:border-ink p-1 bg-white cursor-pointer transition-all aspect-square w-16 sm:w-full shrink-0"
+					data-thumb="1"
+					data-src={drop01.src}
+					data-alt="On-model street fit in Manila"
+					aria-label="View on-model street fit"
+				>
+					<Image
+						src={drop01}
+						alt="On-model street fit"
+						width={80}
+						height={80}
+						format="webp"
+						class="h-full w-full object-cover"
+					/>
+				</button>
+
+				<button
+					type="button"
+					class="border border-plate hover:border-ink p-1 bg-white cursor-pointer transition-all aspect-square w-16 sm:w-full shrink-0"
+					data-thumb="2"
+					data-src={drop09.src}
+					data-alt="Streetwear portrait in Manila"
+					aria-label="View streetwear portrait"
+				>
+					<Image
+						src={drop09}
+						alt="Streetwear portrait"
+						width={80}
+						height={80}
+						format="webp"
+						class="h-full w-full object-cover"
+					/>
+				</button>
+
+				<button
+					type="button"
+					class="border border-plate hover:border-ink p-1 bg-white cursor-pointer transition-all aspect-square w-16 sm:w-full shrink-0"
+					data-thumb="3"
+					data-src={drop03.src}
+					data-alt="High-density silkscreen print detail"
+					aria-label="View screen print detail"
+				>
+					<Image
+						src={drop03}
+						alt="Screen print detail"
+						width={80}
+						height={80}
+						format="webp"
+						class="h-full w-full object-cover"
+					/>
+				</button>
+
+				<button
+					type="button"
+					class="border border-plate hover:border-ink p-1 bg-white cursor-pointer transition-all aspect-square w-16 sm:w-full shrink-0"
+					data-thumb="4"
+					data-src={drop07.src}
+					data-alt="Hand-pulling silkscreen print ink"
+					aria-label="View screenprinting craftsmanship"
+				>
+					<Image
+						src={drop07}
+						alt="Screenprinting craftsmanship"
+						width={80}
+						height={80}
+						format="webp"
+						class="h-full w-full object-cover"
+					/>
+				</button>
+
+				<button
+					type="button"
+					class="border border-plate hover:border-ink p-1 bg-white cursor-pointer transition-all aspect-square w-16 sm:w-full shrink-0"
+					data-thumb="5"
+					data-src={drop06.src}
+					data-alt="Artisan maker sewing craftsmanship"
+					aria-label="View maker craftsmanship"
+				>
+					<Image
+						src={drop06}
+						alt="Maker craftsmanship"
+						width={80}
+						height={80}
+						format="webp"
+						class="h-full w-full object-cover"
+					/>
+				</button>
+
+				<button
+					type="button"
+					class="border border-plate hover:border-ink p-1 bg-white cursor-pointer transition-all aspect-square w-16 sm:w-full shrink-0"
+					data-thumb="6"
+					data-src={drop05.src}
+					data-alt="Workshop garments in production"
+					aria-label="View workshop garments"
+				>
+					<Image
+						src={drop05}
+						alt="Workshop garments"
+						width={80}
+						height={80}
+						format="webp"
+						class="h-full w-full object-cover"
+					/>
+				</button>
+
+				<button
+					type="button"
+					class="border border-plate hover:border-ink p-1 bg-white cursor-pointer transition-all aspect-square w-16 sm:w-full shrink-0"
+					data-thumb="7"
+					data-src={drop10.src}
+					data-alt="Packaged folded garment"
+					aria-label="View packaged garment"
+				>
+					<Image
+						src={drop10}
+						alt="Packaged garment"
+						width={80}
+						height={80}
+						format="webp"
+						class="h-full w-full object-cover"
+					/>
+				</button>
+			</div>
+
+			<!-- Main Product Image Frame (Matches Laureti Page 1) -->
+			<div class="relative overflow-hidden bg-white p-6 shadow-xs border border-hairline flex-1 w-full" data-zoom>
+				<img
+					id="main-product-img"
+					src={productArt[product.slug].src}
+					alt={product.alt}
+					class="aspect-[4/5] w-full object-contain transition-opacity duration-200"
+					loading="eager"
+					fetchpriority="high"
+				/>
+			</div>
 		</div>
 
-		<div class="md:pt-4">
-			<h1 class="display text-4xl sm:text-5xl">{product.title}</h1>
-			<p class="mt-5 max-w-prose leading-relaxed text-muted">{product.blurb}</p>
-
-			<p class="mt-5 font-condensed text-xl font-bold tracking-wider text-ink">
-				₱253 for S–L · ₱265 for XL–2XL
+		<!-- Right Column: Buy Box -->
+		<div class="md:pt-1">
+			<!-- Brand Subhead (Matches reference layout) -->
+			<p class="font-title text-xs uppercase tracking-[0.24em] text-navy font-medium mb-1.5">
+				KALYE NOIR
 			</p>
 
-			<div class="mt-8">
+			<!-- Product Title: Clean Uppercase Sans/Title Font (Matches reference layout) -->
+			<h1 class="font-title text-xl sm:text-2xl uppercase tracking-[0.14em] text-ink font-normal leading-snug">
+				{product.title}
+			</h1>
+
+			<!-- Price Row: Single Line Bold Current Price + Strikethrough Original Price (Matches reference layout) -->
+			<div class="mt-2.5 flex items-baseline gap-3">
+				<span data-price-display class="font-sans text-lg sm:text-xl font-normal text-ink tracking-wide">
+					₱ 253.00
+				</span>
+				<span class="font-sans text-xs sm:text-sm text-navy line-through">
+					₱ 350.00
+				</span>
+			</div>
+
+			<!-- Customer Reviews Rating Row (Matches reference layout: 5 stars + count) -->
+			<div class="mt-2.5 flex items-center">
+				<button
+					type="button"
+					data-reviews-open
+					class="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity"
+					aria-label="View customer reviews"
+				>
+					<span class="text-amber-500 text-sm tracking-tight" aria-hidden="true">★★★★★</span>
+					<span class="text-xs text-ink/80 font-normal">(0)</span>
+				</button>
+			</div>
+
+			<!-- Add To Cart Form (Size boxes, Quantity, Add to Cart button) -->
+			<div class="mt-4">
 				<AddToCartForm product={product} />
 			</div>
 
-			<ul class="mt-8 space-y-3 border-t border-line pt-6 text-xs text-muted">
-				<li class="flex items-center gap-2.5">
-					<span
-						class="h-1.5 w-1.5 rotate-45 bg-registration flex-shrink-0"
-						aria-hidden="true"
-					></span>
-					<span>
-						Courier dispatch via {courier} · estimate calculated in cart
-					</span>
-				</li>
-				<li class="flex items-center gap-2.5">
-					<span
-						class="h-1.5 w-1.5 rotate-45 bg-registration flex-shrink-0"
-						aria-hidden="true"
-					></span>
-					<span>
-						Allow 2–3 business days for order review and preparation; transit
-						estimates begin at pickup
-					</span>
-				</li>
-				<li class="flex items-center gap-2.5">
-					<span
-						class="h-1.5 w-1.5 rotate-45 bg-registration flex-shrink-0"
-						aria-hidden="true"
-					></span>
-					<span>7-day return guarantee on unworn, tagged pressings</span>
-				</li>
-			</ul>
+			<!-- Thin Divider Line (Matches reference) -->
+			<div class="border-t border-hairline my-6"></div>
+
+			<!-- Promotional Notice (Matches DESIGN.md registration-red accent) -->
+			<p class="text-xs sm:text-sm tracking-wide">
+				<strong class="text-accent font-bold uppercase">SURPRISE SALE! UP TO 28% OFF</strong>
+				<strong class="text-ink font-bold"> —Order Now Before It's Gone</strong>
+			</p>
+
+			<!-- Fabric & Specs Summary (Matches reference positioning below divider) -->
+			<p class="mt-3 text-xs sm:text-sm text-ink/80 leading-relaxed max-w-prose">
+				{product.blurb} Heavyweight 240 GSM premium combed cotton with high-density silkscreen print, cured for wash durability. Relaxed streetwear silhouette tailored for all-day Manila comfort.
+			</p>
+
+			<!-- Laureti Trust Mini Badges -->
+			<div class="mt-8 grid grid-cols-2 gap-3 border-y border-hairline py-4 text-xs font-medium text-navy">
+				<div class="flex items-center gap-2">
+					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="text-accent shrink-0">
+						<polyline points="20 6 9 17 4 12"></polyline>
+					</svg>
+					<span>Cash on Delivery Available</span>
+				</div>
+				<div class="flex items-center gap-2">
+					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="text-accent shrink-0">
+						<polyline points="20 6 9 17 4 12"></polyline>
+					</svg>
+					<span>Free Shipping Over ₱1,500</span>
+				</div>
+				<div class="flex items-center gap-2">
+					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="text-accent shrink-0">
+						<polyline points="20 6 9 17 4 12"></polyline>
+					</svg>
+					<span>7-Day Return &amp; Exchange</span>
+				</div>
+				<div class="flex items-center gap-2">
+					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="text-accent shrink-0">
+						<polyline points="20 6 9 17 4 12"></polyline>
+					</svg>
+					<span>100% Combed Heavyweight Cotton</span>
+				</div>
+			</div>
+
+			<!-- Laureti Accordion Details -->
+			<div class="mt-4 divide-y divide-hairline text-sm">
+				<details class="group py-3" open>
+					<summary class="flex cursor-pointer items-center justify-between font-bold text-ink hover:text-navy">
+						<span>Fabric &amp; Garment Specifications</span>
+						<span class="transition-transform group-open:rotate-180">▾</span>
+					</summary>
+					<div class="mt-2 space-y-2 text-ink/75 leading-relaxed">
+						<p>• 100% Premium Combed Cotton, 240 GSM heavyweight weave.</p>
+						<p>• Relaxed boxy streetwear silhouette with drop shoulders.</p>
+						<p>• High-density silkscreen back print cured for high wash durability.</p>
+						<p>• Double-needle stitching on hems and 1-inch ribbed collar.</p>
+					</div>
+				</details>
+
+				<details class="group py-3">
+					<summary class="flex cursor-pointer items-center justify-between font-bold text-ink hover:text-navy">
+						<span>Shipping, Transit Times &amp; COD</span>
+						<span class="transition-transform group-open:rotate-180">▾</span>
+					</summary>
+					<div class="mt-2 space-y-2 text-ink/75 leading-relaxed">
+						<p>• <strong>Metro Manila:</strong> 1–3 business days via {courier}.</p>
+						<p>• <strong>Luzon:</strong> 5–7 business days.</p>
+						<p>• <strong>Visayas &amp; Mindanao:</strong> 10–12 business days.</p>
+						<p>• Cash on Delivery (COD) and GCash / Maya QR payments accepted.</p>
+					</div>
+				</details>
+
+				<details class="group py-3">
+					<summary class="flex cursor-pointer items-center justify-between font-bold text-ink hover:text-navy">
+						<span>7-Day Claims &amp; Exchange Policy</span>
+						<span class="transition-transform group-open:rotate-180">▾</span>
+					</summary>
+					<div class="mt-2 space-y-2 text-ink/75 leading-relaxed">
+						<p>We inspect every garment before dispatch. If you received a damaged, incorrect, or defective item, file a claims ticket within 7 days of receiving your package.</p>
+						<a href="/incident-report" class="inline-block font-bold text-ink underline underline-offset-4 hover:text-navy mt-1">
+							File an Incident Report / Claim Ticket →
+						</a>
+					</div>
+				</details>
+			</div>
 		</div>
 	</section>
 
+	<!-- 2. Editorial Story Block & Sizing Disclaimer (Matches Laureti Page 2) -->
+	<section class="border-t border-hairline bg-paper py-14 sm:py-20">
+		<div class="wrap grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+			<!-- Left: Editorial Photo Story from Home -->
+			<div class="space-y-8">
+				<!-- Image 1: Craftsmanship in Workshop -->
+				<div class="relative overflow-hidden border border-hairline bg-white shadow-xs group">
+					<Image
+						src={drop02}
+						alt="Kalye Noir artisan craftsmanship in Manila"
+						widths={[400, 600, 900]}
+						sizes="(min-width: 1024px) 50vw, 92vw"
+						format="webp"
+						class="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105"
+					/>
+					<div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent flex flex-col justify-end p-6 text-white">
+						<h3 class="font-display text-2xl sm:text-3xl uppercase tracking-wide">
+							Where street grit meets craft and purpose.
+						</h3>
+						<p class="font-title text-xs uppercase tracking-[0.2em] text-white/90 mt-2">
+							Comfortable · 240 GSM Heavyweight Cotton · Gawang Maynila
+						</p>
+					</div>
+				</div>
+
+				<!-- Image 2: On-Street Filipino Model Wearing Tee -->
+				<div class="relative overflow-hidden border border-hairline bg-white shadow-xs group">
+					<Image
+						src={drop08}
+						alt="Model wearing Kalye Noir streetwear on a Manila street"
+						widths={[400, 600, 900]}
+						sizes="(min-width: 1024px) 50vw, 92vw"
+						format="webp"
+						class="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105"
+					/>
+					<div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent flex flex-col justify-end p-6 text-white">
+						<h3 class="font-display text-2xl sm:text-3xl uppercase tracking-wide">
+							Every Kalye Noir print supports our local sewists.
+						</h3>
+						<p class="font-title text-xs uppercase tracking-[0.2em] text-white/90 mt-2">
+							Proudly Cut, Sewn &amp; Printed in Metro Manila
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Right: Sizing Spec, Disclaimer & Return Policy (Matches Laureti Page 2) -->
+			<div class="bg-white border border-plate p-6 sm:p-8 space-y-6">
+				<div>
+					<h3 class="font-display text-xl sm:text-2xl uppercase tracking-wide text-ink">
+						Size Guide &amp; Fit Specifications
+					</h3>
+					<p class="font-title text-xs uppercase tracking-[0.2em] text-navy mt-1">
+						Heavyweight Boxy Silhouette · Unisex Sizing
+					</p>
+				</div>
+
+				<div class="overflow-x-auto">
+					<table class="w-full text-left text-xs text-ink font-sans">
+						<thead>
+							<tr class="border-b border-hairline font-title uppercase tracking-wider text-navy">
+								<th class="py-2.5 pr-4">Size</th>
+								<th class="py-2.5 px-3">Chest Width</th>
+								<th class="py-2.5 px-3">Body Length</th>
+								<th class="py-2.5 px-3">Sleeve</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-hairline">
+							<tr>
+								<td class="py-2.5 pr-4 font-bold">Small</td>
+								<td class="py-2.5 px-3">20.5 in / 52 cm</td>
+								<td class="py-2.5 px-3">27.5 in / 70 cm</td>
+								<td class="py-2.5 px-3">8.5 in / 21 cm</td>
+							</tr>
+							<tr>
+								<td class="py-2.5 pr-4 font-bold">Medium</td>
+								<td class="py-2.5 px-3">21.5 in / 55 cm</td>
+								<td class="py-2.5 px-3">28.5 in / 72 cm</td>
+								<td class="py-2.5 px-3">9.0 in / 23 cm</td>
+							</tr>
+							<tr>
+								<td class="py-2.5 pr-4 font-bold">Large</td>
+								<td class="py-2.5 px-3">22.5 in / 57 cm</td>
+								<td class="py-2.5 px-3">29.5 in / 75 cm</td>
+								<td class="py-2.5 px-3">9.5 in / 24 cm</td>
+							</tr>
+							<tr>
+								<td class="py-2.5 pr-4 font-bold">Extra Large</td>
+								<td class="py-2.5 px-3">23.5 in / 60 cm</td>
+								<td class="py-2.5 px-3">30.5 in / 77 cm</td>
+								<td class="py-2.5 px-3">10.0 in / 25 cm</td>
+							</tr>
+							<tr>
+								<td class="py-2.5 pr-4 font-bold">2 Extra Large</td>
+								<td class="py-2.5 px-3">24.5 in / 62 cm</td>
+								<td class="py-2.5 px-3">31.5 in / 80 cm</td>
+								<td class="py-2.5 px-3">10.5 in / 26 cm</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="border-t border-hairline pt-5 space-y-3">
+					<h4 class="font-title text-xs font-bold uppercase tracking-[0.24em] text-accent">
+						***SIZE &amp; COLOR DISCLAIMER***
+					</h4>
+					<p class="text-xs text-navy leading-relaxed">
+						Sizes of Kalye Noir tees are approximate ONLY, measured as the overall size laying down flat.
+					</p>
+					<p class="text-xs text-navy leading-relaxed">
+						There may be a slight difference between different batches due to the nature of 100% heavyweight cotton fabric. Fabric may shrink or expand slightly (3–5%) during the washing and drying process.
+					</p>
+					<ul class="text-xs text-ink/80 space-y-1 pt-1">
+						<li>• <strong>Size Tolerance:</strong> (+/-) 0.5 inch on length and width.</li>
+						<li>• <strong>Shrinkage Tolerance:</strong> 3–5% on length and width.</li>
+						<li>• <strong>Color Tolerance:</strong> 5% shade difference may vary based on studio lighting.</li>
+					</ul>
+				</div>
+
+				<div class="border-t border-hairline pt-5 space-y-3">
+					<h4 class="font-title text-xs font-bold uppercase tracking-[0.24em] text-ink">
+						RETURN &amp; EXCHANGE POLICY
+					</h4>
+					<p class="text-xs text-navy leading-relaxed">
+						Change of size is allowed within <strong>7 days</strong> of delivery, subject to applicable return courier shipping shouldered by the buyer.
+					</p>
+					<p class="text-xs text-navy leading-relaxed">
+						If your garment arrives defective, misprinted, or incorrect, Kalye Noir shoulders 100% of the courier costs and replaces it immediately.
+					</p>
+					<a href="/incident-report" class="inline-block font-title text-xs font-bold uppercase tracking-wider text-accent underline underline-offset-4">
+						File an Incident Report / Claims Ticket →
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- 3. Kwento ng Kalye Banner (Image Visible with ONLY "Nasa Kalye" and "Pangarap") -->
+	<section class="relative w-full h-[75vh] min-h-[500px] sm:h-[85vh] sm:min-h-[620px] overflow-hidden bg-ink">
+		<Image
+			src={homeBannerOne}
+			alt="Kalye Noir crew on the streets of Manila"
+			widths={[640, 1024, 1440, 1920]}
+			sizes="100vw"
+			format="webp"
+			class="h-full w-full object-cover object-[center_25%]"
+		/>
+		<!-- Subtle top gradient vignette so the crew and jeepney stay 100% visible -->
+		<div class="absolute inset-0 bg-gradient-to-b from-ink/75 via-transparent via-40% to-ink/60 pointer-events-none"></div>
+
+		<!-- ONLY text: Nasa Kalye and Pangarap positioned cleanly at the top -->
+		<div class="absolute inset-0 flex flex-col justify-start items-center text-center pt-8 sm:pt-14 px-4 z-10 pointer-events-none">
+			<h2 class="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl uppercase tracking-tight text-white drop-shadow-lg">
+				Nasa Kalye <span class="text-accent">Pangarap</span>
+			</h2>
+		</div>
+	</section>
+
+	<!-- 4. Related Products (Matches Laureti Page 5 & 6) -->
 	{suggestions.length > 0 && (
-		<section class="border-t border-line">
-			<div class="wrap pt-12">
-				<h2 class="display text-2xl sm:text-3xl uppercase">
-					More Prints from Batch 001
+		<section class="border-t border-hairline bg-paper py-16 sm:py-20">
+			<div class="wrap text-center pb-10">
+				<p class="font-title text-xs uppercase tracking-[0.28em] text-navy mb-2">
+					Batch 001 Collection
+				</p>
+				<h2 class="font-display text-3xl sm:text-4xl uppercase tracking-[-0.025em] text-ink font-normal">
+					RELATED PRODUCTS
 				</h2>
 			</div>
 			<ProductGrid products={suggestions} />
 		</section>
 	)}
+
+	<!-- 5. Customer Reviews Section (0 Reviews State) -->
+	<section class="border-t border-hairline bg-white py-16 sm:py-24">
+		<div class="wrap">
+			<!-- Reviews Header -->
+			<div class="flex flex-wrap items-center justify-between gap-4 border-b border-hairline pb-6">
+				<div class="flex items-center gap-3">
+					<span class="text-xl sm:text-2xl tracking-tight text-amber-500" aria-hidden="true">★★★★★</span>
+					<span class="font-display text-2xl sm:text-3xl uppercase tracking-tight text-ink font-normal">
+						0 Reviews
+					</span>
+				</div>
+				<div class="flex items-center gap-3">
+					<button
+						type="button"
+						data-reviews-open
+						class="btn btn-primary text-xs py-2.5 px-6 uppercase tracking-[0.18em] cursor-pointer"
+					>
+						Write a review
+					</button>
+				</div>
+			</div>
+
+			<!-- 0 Reviews Empty State -->
+			<div class="py-16 text-center">
+				<div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center border border-dashed border-hairline bg-paper text-navy">
+					<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+						<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+					</svg>
+				</div>
+				<h3 class="font-display text-2xl uppercase tracking-wider text-ink">
+					No customer reviews yet
+				</h3>
+				<p class="font-sans text-xs sm:text-sm text-navy max-w-md mx-auto mt-2 leading-relaxed">
+					Batch 001 pieces are currently in production and courier transit. Be the first to wear this print and share your street fit review.
+				</p>
+				<button
+					type="button"
+					data-reviews-open
+					class="btn btn-primary mt-6 text-xs py-3 px-8 uppercase tracking-[0.2em] cursor-pointer inline-block"
+				>
+					Write the first review
+				</button>
+			</div>
+		</div>
+	</section>
 </MainLayout>
 
 <script>
 	import { zoomOrigin } from '../../lib/zoom';
 
-	// Origin follows the pointer so the back print can be read, not a fixed centre crop.
-	// Mouse and pen only: on touch the browser's own pinch-zoom already covers inspection.
+	// Thumbnail Switcher Logic (Matches Laureti Page 1)
+	const thumbs = document.querySelectorAll<HTMLButtonElement>('[data-thumb]');
+	const mainImg = document.getElementById('main-product-img') as HTMLImageElement;
+
+	thumbs.forEach(thumb => {
+		thumb.addEventListener('click', () => {
+			thumbs.forEach(t => {
+				t.classList.remove('border-2', 'border-ink');
+				t.classList.add('border', 'border-plate');
+			});
+			thumb.classList.remove('border', 'border-plate');
+			thumb.classList.add('border-2', 'border-ink');
+
+			const newSrc = thumb.getAttribute('data-src');
+			const newAlt = thumb.getAttribute('data-alt');
+			if (mainImg && newSrc) {
+				mainImg.style.opacity = '0.3';
+				setTimeout(() => {
+					mainImg.src = newSrc;
+					if (newAlt) mainImg.alt = newAlt;
+					if (thumb.getAttribute('data-thumb') === '0') {
+						mainImg.className = 'aspect-[4/5] w-full object-contain transition-opacity duration-200';
+					} else {
+						mainImg.className = 'aspect-[4/5] w-full object-cover transition-opacity duration-200';
+					}
+					mainImg.style.opacity = '1';
+				}, 120);
+			}
+		});
+	});
+
+	// Zoom Logic for Main Image
 	document.querySelectorAll<HTMLElement>('[data-zoom]').forEach(frame => {
 		const track = (event: PointerEvent) => {
 			if (event.pointerType === 'touch') return;

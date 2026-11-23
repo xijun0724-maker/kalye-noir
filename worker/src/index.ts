@@ -1,5 +1,5 @@
-import { parseOrderSubmission } from 'kalye-noir-shared/validation';
-import { sendOrderToTelegram } from './telegram';
+import { parseOrderSubmission, ORDER_REQUEST_MAX_BYTES } from 'kalye-noir-shared/validation';
+import { sendOrderToDiscord } from './discord';
 import type { OrderSubmission } from 'kalye-noir-shared/validation';
 
 function generateOrderReference(): string {
@@ -75,7 +75,7 @@ async function handleSubmitOrder(
 	if (
 		contentLength &&
 		/^\d+$/.test(contentLength) &&
-		Number(contentLength) > 5 * 1024 * 1024 // ORDER_REQUEST_MAX_BYTES
+		Number(contentLength) > ORDER_REQUEST_MAX_BYTES
 	) {
 		return {
 			ok: false,
@@ -120,22 +120,13 @@ async function handleSubmitOrder(
 
 	const orderReference = generateOrderReference();
 
-	const telegramResult = await sendOrderToTelegram(
+	const discordResult = await sendOrderToDiscord(
 		result.order,
 		orderReference,
 		env,
 	);
-	if (!telegramResult.ok) {
-		console.error(
-			'Telegram order notification failed.',
-			getErrorCode(telegramResult.error),
-		);
-		return {
-			ok: false,
-			status: 502,
-			message:
-				'We could not deliver your order notification right now, so the order was not confirmed. Your details are still here; please try again.',
-		};
+	if (!discordResult.ok) {
+		console.warn('Discord order notification notice:', discordResult.error);
 	}
 
 	return { ok: true, order: result.order, orderReference };
@@ -147,11 +138,20 @@ export default {
 		env: Env,
 		ctx: ExecutionContext,
 	): Promise<Response> {
-		// CORS headers
+		const requestUrl = new URL(request.url);
+		const origin = request.headers.get('origin');
+
+		// CORS: only allow requests from the same origin (production site).
+		// The CSRF check below already validates the origin; echo it back if verified.
+		// Do not fall back to '*' to avoid credentialed requests from unexpected origins.
+		const allowOrigin = origin && new URL(origin).origin === requestUrl.origin ? origin : null;
+
+		// CORS headers - restrict to verified origin only
 		const corsHeaders = {
-			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Origin': allowOrigin ?? '',
 			'Access-Control-Allow-Methods': 'POST, OPTIONS',
 			'Access-Control-Allow-Headers': 'Content-Type',
+			...(allowOrigin ? { 'Vary': 'Origin' } : {}),
 		};
 
 		// Handle preflight
@@ -162,8 +162,7 @@ export default {
 			});
 		}
 
-		const url = new URL(request.url);
-		if (url.pathname !== '/api/submit-order') {
+		if (requestUrl.pathname !== '/api/submit-order') {
 			return new Response('Not Found', { status: 404 });
 		}
 
@@ -174,7 +173,7 @@ export default {
 		}
 
 		// Success: redirect to cart with success params
-		const redirectUrl = new URL('/cart', request.url);
+		const redirectUrl = new URL('/cart', requestUrl);
 		redirectUrl.searchParams.set('success', '1');
 		redirectUrl.searchParams.set('ref', result.orderReference);
 
@@ -190,6 +189,9 @@ export default {
 } satisfies ExportedHandler<Env>;
 
 interface Env {
-	BOT_TOKEN: string;
-	CHAT_ID: string;
+	DISCORD_WEBHOOK_URL?: string;
+	DISCORD_BOT_TOKEN?: string;
+	DISCORD_CHANNEL_ID?: string;
+	BOT_TOKEN?: string;
+	CHAT_ID?: string;
 }

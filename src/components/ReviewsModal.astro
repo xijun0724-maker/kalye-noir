@@ -1,0 +1,402 @@
+---
+---
+
+<!-- Floating Reviews Tab (Matches DESIGN.md brand-tab: registration-red, paper-stock text, tab-edge 6px) -->
+<button
+	type="button"
+	data-reviews-open
+	aria-label="Open customer reviews"
+	class="fixed right-0 top-1/2 -translate-y-1/2 z-30 flex items-center gap-1.5 bg-accent text-paper font-title text-xs font-bold uppercase tracking-[0.24em] py-4 px-2.5 rounded-l-[6px] shadow-lg cursor-pointer hover:bg-accent/90 transition-colors [writing-mode:vertical-rl]"
+>
+	<span class="flex items-center gap-1 text-[11px]">
+		★ Reviews
+	</span>
+</button>
+
+<!-- Reviews Modal Dialog (Matches DESIGN.md square 0px, paper-stock bg, plate border) -->
+<dialog
+	data-reviews-dialog
+	class="w-full max-w-5xl rounded-none border border-plate bg-paper text-ink shadow-panel p-6 sm:p-8 overflow-y-auto max-h-[92vh] backdrop:bg-ink/60"
+	aria-labelledby="reviews-modal-title"
+>
+	<!-- Top Bar with Close Button on Left -->
+	<div class="flex items-center justify-between border-b border-hairline pb-4">
+		<button
+			type="button"
+			data-reviews-close
+			class="flex h-10 w-10 items-center justify-center rounded-none text-2xl text-navy hover:text-ink hover:bg-putty cursor-pointer transition-colors"
+			aria-label="Close reviews"
+		>
+			✕
+		</button>
+		<button
+			type="button"
+			data-reviews-write-toggle
+			class="btn btn-primary text-xs py-2 px-4 uppercase tracking-[0.16em]"
+		>
+			+ Write a review
+		</button>
+	</div>
+
+	<!-- Summary Header (Solid Stars, Count, Filter) -->
+	<div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+		<div class="flex items-center gap-2">
+			<span class="text-xl tracking-tight text-accent" aria-hidden="true">★★★★★</span>
+			<span id="reviews-modal-title" data-reviews-summary-count class="font-title text-base font-bold uppercase tracking-wider text-ink">
+				0 Reviews
+			</span>
+			<svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" class="text-navy">
+				<path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+			</svg>
+		</div>
+
+		<div class="flex items-center gap-2">
+			<button
+				type="button"
+				class="flex h-9 w-9 items-center justify-center rounded-none border border-plate hover:bg-putty text-navy hover:text-ink cursor-pointer transition-colors"
+				aria-label="Filter reviews"
+			>
+				<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="4" y1="21" x2="4" y2="14"></line>
+					<line x1="4" y1="10" x2="4" y2="3"></line>
+					<line x1="12" y1="21" x2="12" y2="12"></line>
+					<line x1="12" y1="8" x2="12" y2="3"></line>
+					<line x1="20" y1="21" x2="20" y2="16"></line>
+					<line x1="20" y1="12" x2="20" y2="3"></line>
+					<line x1="1" y1="14" x2="7" y2="14"></line>
+					<line x1="9" y1="8" x2="15" y2="8"></line>
+					<line x1="17" y1="16" x2="23" y2="16"></line>
+				</svg>
+			</button>
+		</div>
+	</div>
+
+	<!-- Review Submission Form (Expandable) -->
+	<form
+		data-reviews-form
+		class="hidden mt-6 border border-plate bg-putty/30 p-6 rounded-none"
+	>
+		<h3 class="font-display text-xl uppercase tracking-[-0.025em] text-ink mb-4">
+			Write your review
+		</h3>
+
+		<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+			<div>
+				<label class="block font-title text-xs font-semibold uppercase tracking-[0.24em] text-navy mb-1.5">
+					Your Name
+				</label>
+				<input
+					type="text"
+					name="author"
+					required
+					placeholder="e.g. Gabriele C."
+					class="w-full rounded-none border border-plate bg-white px-3.5 py-2 text-sm text-ink focus:border-ink focus:outline-none"
+				/>
+			</div>
+
+			<div>
+				<label class="block font-title text-xs font-semibold uppercase tracking-[0.24em] text-navy mb-1.5">
+					Garment / Item
+				</label>
+				<select
+					name="product"
+					class="w-full rounded-none border border-plate bg-white px-3.5 py-2 text-sm text-ink focus:border-ink focus:outline-none"
+				>
+					<option value="KALYENOIR Tee">KALYENOIR Tee (Black)</option>
+					<option value="MEDUSA Tee">MEDUSA Tee (Black)</option>
+					<option value="MANILA Tee">MANILA Tee (Black)</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="mt-4">
+			<label class="block font-title text-xs font-semibold uppercase tracking-[0.24em] text-navy mb-1.5">
+				Rating
+			</label>
+			<div class="flex items-center gap-1.5" data-star-picker>
+				{[1, 2, 3, 4, 5].map(star => (
+					<button
+						type="button"
+						data-star-val={star}
+						class="text-2xl text-accent hover:scale-110 transition-transform cursor-pointer"
+						aria-label={`${star} star`}
+					>
+						★
+					</button>
+				))}
+				<input type="hidden" name="rating" value="5" />
+			</div>
+		</div>
+
+		<div class="mt-4">
+			<label class="block font-title text-xs font-semibold uppercase tracking-[0.24em] text-navy mb-1.5">
+				Review Comments
+			</label>
+			<textarea
+				name="content"
+				required
+				rows="3"
+				placeholder="How does it fit? Quality, sizing, street feel..."
+				class="w-full rounded-none border border-plate bg-white px-3.5 py-2 text-sm text-ink focus:border-ink focus:outline-none"
+			></textarea>
+		</div>
+
+		<div class="mt-4">
+			<label class="block font-title text-xs font-semibold uppercase tracking-[0.24em] text-navy mb-1.5">
+				Attach Photo (Optional)
+			</label>
+			<input
+				type="file"
+				accept="image/*"
+				name="photo"
+				class="text-xs text-navy file:mr-3 file:py-2 file:px-4 file:border file:border-plate file:bg-white file:text-xs file:font-semibold file:uppercase file:cursor-pointer hover:file:bg-paper"
+			/>
+			<div data-photo-preview class="mt-2 hidden">
+				<img src="" alt="Review preview" class="h-20 w-20 object-cover rounded-none border border-plate" />
+			</div>
+		</div>
+
+		<div class="mt-6 flex items-center gap-3">
+			<button type="submit" class="btn btn-primary text-xs py-2 px-6 uppercase tracking-wider">
+				Submit Review
+			</button>
+			<button type="button" data-reviews-form-cancel class="btn btn-ghost text-xs py-2 px-4 uppercase tracking-wider">
+				Cancel
+			</button>
+		</div>
+	</form>
+
+	<!-- 0 Reviews Empty State (Initial State matching user specification) -->
+	<div data-reviews-empty class="py-16 text-center">
+		<div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-paper text-navy">
+			<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8">
+				<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+			</svg>
+		</div>
+		<h3 class="font-display text-2xl uppercase tracking-wider text-ink">
+			No reviews yet
+		</h3>
+		<p class="font-sans text-sm text-navy max-w-md mx-auto mt-2">
+			Be the first to leave a review for Kalye Noir streetwear. Share your fit, sizing, and street photos with the community!
+		</p>
+		<div class="mt-6">
+			<button
+				type="button"
+				data-write-first-review
+				class="btn btn-primary text-xs py-3 px-6 uppercase tracking-[0.2em]"
+			>
+				Write the First Review
+			</button>
+		</div>
+	</div>
+
+	<!-- Reviews Cards Grid (Visible when reviews exist, matches screenshot layout) -->
+	<div data-reviews-grid class="hidden mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+		<!-- Populated via JavaScript from localStorage -->
+	</div>
+
+	<!-- Footer Branding (Matches "Powered by LOOX") -->
+	<div class="mt-10 pt-4 border-t border-hairline/60 flex items-center justify-end text-[11px] text-navy">
+		<span>Powered by <strong class="text-ink font-semibold">KALYE NOIR</strong></span>
+	</div>
+</dialog>
+
+<script>
+	interface ReviewItem {
+		id: string;
+		author: string;
+		date: string;
+		rating: number;
+		content: string;
+		product: string;
+		photoUrl?: string;
+	}
+
+	const STORAGE_KEY = 'kalye_noir_reviews';
+
+	// Elements
+	const openBtns = document.querySelectorAll<HTMLElement>('[data-reviews-open]');
+	const dialog = document.querySelector<HTMLDialogElement>('[data-reviews-dialog]');
+	const closeBtn = document.querySelector<HTMLButtonElement>('[data-reviews-close]');
+	const writeToggleBtn = document.querySelector<HTMLButtonElement>('[data-reviews-write-toggle]');
+	const writeFirstBtn = document.querySelector<HTMLButtonElement>('[data-write-first-review]');
+	const formCancelBtn = document.querySelector<HTMLButtonElement>('[data-reviews-form-cancel]');
+	const form = document.querySelector<HTMLFormElement>('[data-reviews-form]');
+	const emptyState = document.querySelector<HTMLElement>('[data-reviews-empty]');
+	const gridState = document.querySelector<HTMLElement>('[data-reviews-grid]');
+	const countText = document.querySelector<HTMLElement>('[data-reviews-summary-count]');
+	const starPicker = document.querySelector<HTMLElement>('[data-star-picker]');
+	const photoInput = form?.querySelector<HTMLInputElement>('input[name="photo"]');
+	const photoPreview = form?.querySelector<HTMLElement>('[data-photo-preview]');
+	const photoImg = photoPreview?.querySelector<HTMLImageElement>('img');
+
+	let selectedRating = 5;
+	let photoBase64 = '';
+
+	// Load stored reviews (default is empty array: 0 reviews first)
+	function getReviews(): ReviewItem[] {
+		try {
+			const saved = localStorage.getItem(STORAGE_KEY);
+			return saved ? JSON.parse(saved) : [];
+		} catch {
+			return [];
+		}
+	}
+
+	function saveReviews(items: ReviewItem[]) {
+		try {
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+		} catch (e) {
+			console.error('Failed to save reviews', e);
+		}
+	}
+
+	function renderReviews() {
+		const reviews = getReviews();
+		const count = reviews.length;
+
+		if (countText) {
+			countText.textContent = `${count} Review${count === 1 ? '' : 's'}`;
+		}
+
+		if (count === 0) {
+			emptyState?.classList.remove('hidden');
+			gridState?.classList.add('hidden');
+		} else {
+			emptyState?.classList.add('hidden');
+			if (gridState) {
+				gridState.classList.remove('hidden');
+				gridState.innerHTML = reviews
+					.map(item => {
+						const stars = '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating);
+						const photoBlock = item.photoUrl
+							? `<div class="aspect-square w-full overflow-hidden bg-paper">
+									<img src="${item.photoUrl}" alt="Review photo by ${item.author}" class="h-full w-full object-cover" />
+								</div>`
+							: `<div class="aspect-square w-full flex items-center justify-center bg-paper text-navy/40 font-title text-xs uppercase tracking-wider">
+									No Photo
+								</div>`;
+
+						return `
+							<article class="flex flex-col border border-plate bg-white overflow-hidden shadow-xs rounded-none">
+								${photoBlock}
+								<div class="p-4 flex flex-col flex-1">
+									<h4 class="font-title text-sm font-semibold uppercase tracking-wider text-ink">${item.author}</h4>
+									<p class="text-[11px] text-navy mt-0.5">${item.date}</p>
+									<p class="text-xs text-accent tracking-tighter mt-1" aria-label="${item.rating} out of 5 stars">${stars}</p>
+									<p class="font-sans text-xs text-ink/90 mt-2 flex-1 leading-relaxed">${item.content}</p>
+									<p class="font-title text-[10px] uppercase tracking-wider text-navy mt-3 pt-2 border-t border-hairline/60">
+										${item.product}
+									</p>
+								</div>
+							</article>
+						`;
+					})
+					.join('');
+			}
+		}
+	}
+
+	// Modal Open & Close Listeners
+	openBtns.forEach(btn => {
+		btn.addEventListener('click', () => {
+			renderReviews();
+			dialog?.showModal();
+		});
+	});
+
+	closeBtn?.addEventListener('click', () => {
+		dialog?.close();
+	});
+
+	dialog?.addEventListener('click', e => {
+		if (e.target === dialog) {
+			dialog.close();
+		}
+	});
+
+	// Toggle Write Form
+	function toggleForm(show?: boolean) {
+		if (!form) return;
+		const shouldShow = show !== undefined ? show : form.classList.contains('hidden');
+		form.classList.toggle('hidden', !shouldShow);
+		if (shouldShow) {
+			form.scrollIntoView({ behavior: 'smooth' });
+		}
+	}
+
+	writeToggleBtn?.addEventListener('click', () => toggleForm());
+	writeFirstBtn?.addEventListener('click', () => toggleForm(true));
+	formCancelBtn?.addEventListener('click', () => toggleForm(false));
+
+	// Star Picker interaction
+	starPicker?.querySelectorAll<HTMLButtonElement>('[data-star-val]').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const val = Number(btn.getAttribute('data-star-val') || '5');
+			selectedRating = val;
+			const hiddenInput = form?.querySelector<HTMLInputElement>('input[name="rating"]');
+			if (hiddenInput) hiddenInput.value = String(val);
+
+			starPicker.querySelectorAll<HTMLButtonElement>('[data-star-val]').forEach(b => {
+				const starNum = Number(b.getAttribute('data-star-val') || '1');
+				b.style.opacity = starNum <= val ? '1' : '0.25';
+			});
+		});
+	});
+
+	// Photo attachment preview
+	photoInput?.addEventListener('change', () => {
+		const file = photoInput.files?.[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = e => {
+				photoBase64 = String(e.target?.result || '');
+				if (photoImg && photoPreview) {
+					photoImg.src = photoBase64;
+					photoPreview.classList.remove('hidden');
+				}
+			};
+			reader.readAsDataURL(file);
+		} else {
+			photoBase64 = '';
+			photoPreview?.classList.add('hidden');
+		}
+	});
+
+	// Form Submission
+	form?.addEventListener('submit', e => {
+		e.preventDefault();
+		const formData = new FormData(form);
+		const author = String(formData.get('author') || '').trim();
+		const product = String(formData.get('product') || 'KALYENOIR Tee');
+		const content = String(formData.get('content') || '').trim();
+
+		if (!author || !content) return;
+
+		const today = new Date();
+		const dateStr = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+
+		const newReview: ReviewItem = {
+			id: `rev-${Date.now()}`,
+			author,
+			date: dateStr,
+			rating: selectedRating,
+			content,
+			product,
+			photoUrl: photoBase64 || undefined,
+		};
+
+		const existing = getReviews();
+		existing.unshift(newReview);
+		saveReviews(existing);
+
+		form.reset();
+		photoBase64 = '';
+		photoPreview?.classList.add('hidden');
+		toggleForm(false);
+		renderReviews();
+	});
+
+	// Initial render
+	renderReviews();
+</script>

@@ -1,7 +1,6 @@
 ---
 import type { Product } from '../data/catalog';
 import { uniqueSizes } from '../data/catalog';
-import { getSizePrice } from '../data/catalog';
 
 interface Props {
 	product: Product;
@@ -9,160 +8,203 @@ interface Props {
 
 const { product } = Astro.props;
 const sizes = uniqueSizes(product);
-// Seed the island with a real size so the add button always resolves to a SKU.
 const first = product.variants[0];
 
-const pill =
-	'min-h-11 min-w-11 border border-line-strong px-3 py-2 text-xs transition-colors hover:border-ink data-[selected=true]:border-ink data-[selected=true]:bg-ink data-[selected=true]:text-paper';
-const initialPrice = getSizePrice(first.size);
+const sizeNames: Record<string, string> = {
+	XS: 'Extra Small',
+	S: 'Small',
+	M: 'Medium',
+	L: 'Large',
+	XL: 'Extra Large',
+	'2XL': '2 Extra Large',
+};
 ---
 
-<div data-atc data-slug={product.slug} data-default-size={first.size}>
-	<div class="mb-5">
-		<div class="flex items-center justify-between mb-2">
-			<p class="label">Size</p>
+<div data-atc data-slug={product.slug} data-default-size={first.size} class="mt-4">
+	<!-- Size Selector (Matches reference layout) -->
+	<div>
+		<div class="mb-2">
+			<span class="text-xs text-ink font-normal">Size:</span>
+		</div>
+
+		<!-- Row 1: Extra Small (Out of Stock / Slashed), Small, Medium, Large -->
+		<div
+			class="grid grid-cols-4 gap-2 mb-2 max-w-sm"
+			role="radiogroup"
+			aria-label="Available garment sizes - Row 1"
+		>
+			<!-- Extra Small (Sold Out) -->
 			<button
 				type="button"
-				data-size-guide-open
-				class="tap font-condensed text-[0.6875rem] uppercase tracking-[0.2em] text-muted underline underline-offset-4 transition-colors hover:text-registration"
+				disabled
+				aria-disabled="true"
+				class="relative min-h-[38px] px-2 py-1.5 text-xs text-navy/40 border border-plate/60 bg-white flex items-center justify-center cursor-not-allowed overflow-hidden rounded-none select-none"
+				title="Extra Small - Out of stock"
 			>
-				Fit Guide (Inches / CM)
+				<span class="z-10">Extra Small</span>
+				<svg class="absolute inset-0 w-full h-full stroke-plate" preserveAspectRatio="none" aria-hidden="true">
+					<line x1="0" y1="100%" x2="100%" y2="0" stroke="currentColor" stroke-width="1.2" />
+				</svg>
 			</button>
+
+			<!-- Small, Medium, Large -->
+			{sizes.filter(sz => ['S', 'M', 'L'].includes(sz)).map(sz => {
+				const isSelected = sz === first.size;
+				const label = sizeNames[sz] || sz;
+				return (
+					<button
+						type="button"
+						role="radio"
+						aria-checked={isSelected ? 'true' : 'false'}
+						tabindex={isSelected ? 0 : -1}
+						data-selected={isSelected ? 'true' : 'false'}
+						data-value={sz}
+						class={`min-h-[38px] px-2 py-1.5 text-xs flex items-center justify-center transition-all cursor-pointer bg-white rounded-none ${
+							isSelected
+								? 'border border-ink text-ink font-semibold'
+								: 'border border-plate/80 text-ink/80 hover:border-ink font-normal'
+						}`}
+						aria-label={`Size ${label}`}
+					>
+						{label}
+					</button>
+				);
+			})}
 		</div>
-		<div
-			class="flex flex-wrap gap-2"
-			role="radiogroup"
-			aria-label="Available garment sizes"
-		>
-			{sizes.map(size => (
-				<button
-					type="button"
-					role="radio"
-					aria-checked={size === first.size ? 'true' : 'false'}
-					tabindex={size === first.size ? 0 : -1}
-					data-selected={size === first.size ? 'true' : 'false'}
-					data-value={size}
-					class={pill}
-					aria-label={`Size ${size}`}
-				>
-					{size}
-				</button>
-			))}
+
+		<!-- Row 2: Extra Large, 2 Extra Large -->
+		<div class="grid grid-cols-4 gap-2 max-w-sm" role="radiogroup" aria-label="Available garment sizes - Row 2">
+			{sizes.filter(sz => ['XL', '2XL'].includes(sz)).map(sz => {
+				const isSelected = sz === first.size;
+				const label = sizeNames[sz] || sz;
+				return (
+					<button
+						type="button"
+						role="radio"
+						aria-checked={isSelected ? 'true' : 'false'}
+						tabindex={isSelected ? 0 : -1}
+						data-selected={isSelected ? 'true' : 'false'}
+						data-value={sz}
+						class={`min-h-[38px] px-2 py-1.5 text-xs flex items-center justify-center transition-all cursor-pointer bg-white rounded-none ${
+							isSelected
+								? 'border border-ink text-ink font-semibold'
+								: 'border border-plate/80 text-ink/80 hover:border-ink font-normal'
+						}`}
+						aria-label={`Size ${label}`}
+					>
+						{label}
+					</button>
+				);
+			})}
 		</div>
 	</div>
 
-	<p
-		data-size-price
-		class="mb-5 font-display text-xl uppercase tracking-wider text-ink"
-	>
-		₱{initialPrice.toLocaleString()}
-	</p>
-
-	<div class="mb-5 flex items-center gap-4">
-		<p class="label">Qty</p>
-		<div class="flex items-stretch border border-line">
+	<!-- Quantity Stepper (Matches reference box) -->
+	<div class="mt-4">
+		<div class="flex items-center justify-between border border-plate/80 w-28 h-10 px-3 bg-white text-ink text-sm rounded-none">
 			<button
 				type="button"
 				data-step="-1"
-				class="flex h-11 w-11 items-center justify-center text-lg leading-none transition-colors hover:bg-line/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-registration"
+				class="text-base text-navy hover:text-ink cursor-pointer leading-none p-1"
 				aria-label="Decrease quantity"
 			>
-				<span aria-hidden="true">−</span>
+				−
 			</button>
 			<span
 				data-qty
-				class="flex min-w-[3rem] items-center justify-center text-sm font-semibold"
+				class="font-title text-xs font-bold text-ink"
 			>
 				1
 			</span>
 			<button
 				type="button"
 				data-step="1"
-				class="flex h-11 w-11 items-center justify-center text-lg leading-none transition-colors hover:bg-line/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-registration"
+				class="text-base text-navy hover:text-ink cursor-pointer leading-none p-1"
 				aria-label="Increase quantity"
 			>
-				<span aria-hidden="true">+</span>
+				+
 			</button>
 		</div>
 	</div>
 
-	<button type="button" data-add class="btn btn-primary w-full">
-		Add to cart
+	<!-- ADD TO CART Button (Matches reference solid navy button) -->
+	<button
+		type="button"
+		data-add
+		class="w-full bg-[#1e2d4f] hover:bg-[#16223b] text-white text-xs font-title font-semibold uppercase tracking-[0.22em] py-3.5 transition-colors text-center cursor-pointer mt-5 rounded-none shadow-xs"
+	>
+		ADD TO CART
 	</button>
 
+	<!-- Size Guide Dialog -->
 	<dialog
 		data-size-dialog
 		aria-labelledby="size-dialog-title"
-		class="cart-dialog max-w-lg p-6 bg-paper border border-line text-ink shadow-2xl backdrop:bg-ink/60"
+		class="w-full max-w-lg rounded-none md:rounded-lg border border-hairline bg-paper p-6 text-ink shadow-panel backdrop:bg-ink/50"
 	>
-		<div class="flex items-center justify-between border-b border-line pb-4">
+		<div class="flex items-center justify-between border-b border-hairline pb-4">
 			<div>
-				<h2
-					id="size-dialog-title"
-					class="font-display text-xl uppercase tracking-wider"
-				>
-					Garment Measurements
+				<h2 id="size-dialog-title" class="font-display text-xl uppercase tracking-wider text-ink">
+					Garment measurements
 				</h2>
-				<p class="meta text-xs text-muted mt-0.5">
+				<p class="font-title text-xs uppercase tracking-wider text-navy mt-1">
 					Heavyweight boxy cut · S–2XL
 				</p>
 			</div>
 			<button
 				type="button"
 				data-size-dialog-close
-				class="-m-2 flex h-11 w-11 shrink-0 items-center justify-center text-2xl leading-none hover:text-registration"
+				class="-m-2 flex h-11 w-11 shrink-0 items-center justify-center text-2xl leading-none text-navy hover:text-ink cursor-pointer"
 				aria-label="Close size guide"
 			>
 				×
 			</button>
 		</div>
+
 		<div class="mt-4 overflow-x-auto">
-			<table class="w-full text-left font-condensed text-xs uppercase tracking-wider">
+			<table class="w-full text-left text-xs text-ink font-sans">
 				<thead>
-					<tr class="border-b border-ink/40 text-muted">
+					<tr class="border-b border-hairline font-title uppercase tracking-wider text-navy">
 						<th class="py-2 pr-4">Size</th>
 						<th class="py-2 px-3">Chest Width</th>
 						<th class="py-2 px-3">Body Length</th>
-						<th class="py-2 pl-3">Fit Profile</th>
+						<th class="py-2 px-3">Sleeve</th>
 					</tr>
 				</thead>
-				<tbody class="divide-y divide-line">
+				<tbody class="divide-y divide-hairline">
 					<tr>
-						<td class="py-2.5 pr-4 font-bold text-ink">S</td>
-						<td class="py-2.5 px-3">20" / 51cm</td>
-						<td class="py-2.5 px-3">28" / 71cm</td>
-						<td class="py-2.5 pl-3 text-muted">Relaxed</td>
+						<td class="py-2.5 pr-4 font-bold">Small</td>
+						<td class="py-2.5 px-3">20.5 in / 52 cm</td>
+						<td class="py-2.5 px-3">27.5 in / 70 cm</td>
+						<td class="py-2.5 px-3">8.5 in / 21 cm</td>
 					</tr>
 					<tr>
-						<td class="py-2.5 pr-4 font-bold text-ink">M</td>
-						<td class="py-2.5 px-3">21" / 53cm</td>
-						<td class="py-2.5 px-3">29" / 74cm</td>
-						<td class="py-2.5 pl-3 text-muted">Relaxed</td>
+						<td class="py-2.5 pr-4 font-bold">Medium</td>
+						<td class="py-2.5 px-3">21.5 in / 55 cm</td>
+						<td class="py-2.5 px-3">28.5 in / 72 cm</td>
+						<td class="py-2.5 px-3">9.0 in / 23 cm</td>
 					</tr>
 					<tr>
-						<td class="py-2.5 pr-4 font-bold text-ink">L</td>
-						<td class="py-2.5 px-3">22" / 56cm</td>
-						<td class="py-2.5 px-3">30" / 76cm</td>
-						<td class="py-2.5 pl-3 text-muted">Oversized</td>
+						<td class="py-2.5 pr-4 font-bold">Large</td>
+						<td class="py-2.5 px-3">22.5 in / 57 cm</td>
+						<td class="py-2.5 px-3">29.5 in / 75 cm</td>
+						<td class="py-2.5 px-3">9.5 in / 24 cm</td>
 					</tr>
 					<tr>
-						<td class="py-2.5 pr-4 font-bold text-ink">XL</td>
-						<td class="py-2.5 px-3">23" / 58cm</td>
-						<td class="py-2.5 px-3">31" / 79cm</td>
-						<td class="py-2.5 pl-3 text-muted">Oversized</td>
+						<td class="py-2.5 pr-4 font-bold">Extra Large</td>
+						<td class="py-2.5 px-3">23.5 in / 60 cm</td>
+						<td class="py-2.5 px-3">30.5 in / 77 cm</td>
+						<td class="py-2.5 px-3">10.0 in / 25 cm</td>
 					</tr>
 					<tr>
-						<td class="py-2.5 pr-4 font-bold text-ink">2XL</td>
-						<td class="py-2.5 px-3">24" / 61cm</td>
-						<td class="py-2.5 px-3">32" / 81cm</td>
-						<td class="py-2.5 pl-3 text-muted">Boxy Heavyweight</td>
+						<td class="py-2.5 pr-4 font-bold">2 Extra Large</td>
+						<td class="py-2.5 px-3">24.5 in / 62 cm</td>
+						<td class="py-2.5 px-3">31.5 in / 80 cm</td>
+						<td class="py-2.5 px-3">10.5 in / 26 cm</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
-		<p class="meta text-xs text-muted mt-4 border-t border-line pt-3">
-			Cold wash recommended. Shrinkage is pre-treated during screen printing.
-		</p>
 	</dialog>
 </div>
 
@@ -177,13 +219,19 @@ const initialPrice = getSizePrice(first.size);
 
 		const addBtn = root.querySelector<HTMLButtonElement>('[data-add]')!;
 		const qtyEl = root.querySelector<HTMLElement>('[data-qty]')!;
-		const priceEl = root.querySelector<HTMLElement>('[data-size-price]');
-		const sizeModal =
-			root.querySelector<HTMLDialogElement>('[data-size-dialog]');
+		const priceDisplay = document.querySelector<HTMLElement>('[data-price-display]');
+		const sizeModal = root.querySelector<HTMLDialogElement>('[data-size-dialog]');
 		const openGuide = root.querySelector<HTMLElement>('[data-size-guide-open]');
-		const closeGuide = root.querySelector<HTMLElement>(
-			'[data-size-dialog-close]',
-		);
+		const closeGuide = root.querySelector<HTMLElement>('[data-size-dialog-close]');
+
+		function updatePrice(currentSize: string) {
+			if (!priceDisplay) return;
+			const isOversize = currentSize === 'XL' || currentSize === '2XL';
+			priceDisplay.textContent = isOversize ? '₱ 265.00' : '₱ 253.00';
+		}
+
+		// Initial price update
+		updatePrice(size);
 
 		openGuide?.addEventListener('click', () => sizeModal?.showModal());
 		closeGuide?.addEventListener('click', () => sizeModal?.close());
@@ -191,28 +239,24 @@ const initialPrice = getSizePrice(first.size);
 			if (e.target === sizeModal) sizeModal.close();
 		});
 
-		root.querySelectorAll<HTMLElement>('[data-value]').forEach(btn => {
-			const isSelected = btn.dataset.value === size;
-			btn.dataset.selected = String(isSelected);
-			btn.setAttribute('aria-checked', String(isSelected));
-		});
-
-		const sizeButtons = Array.from(
-			root.querySelectorAll<HTMLButtonElement>('[data-value]'),
-		);
+		const sizeButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-value]'));
 
 		function selectSize(opt: HTMLElement) {
 			sizeButtons.forEach(btn => {
 				btn.dataset.selected = 'false';
 				btn.setAttribute('aria-checked', 'false');
 				btn.tabIndex = -1;
+				btn.classList.remove('border-ink', 'text-ink', 'font-semibold');
+				btn.classList.add('border-plate/80', 'text-ink/80', 'font-normal');
 			});
 			opt.dataset.selected = 'true';
 			opt.setAttribute('aria-checked', 'true');
 			opt.tabIndex = 0;
+			opt.classList.remove('border-plate/80', 'text-ink/80', 'font-normal');
+			opt.classList.add('border-ink', 'text-ink', 'font-semibold');
+
 			size = opt.dataset.value!;
-			if (priceEl)
-				priceEl.textContent = `₱${getSizePrice(size).toLocaleString()}`;
+			updatePrice(size);
 		}
 
 		sizeButtons.forEach((btn, idx) => {
@@ -261,14 +305,18 @@ const initialPrice = getSizePrice(first.size);
 				unitPrice: getSizePrice(v.size),
 			});
 
-			const originalText = 'Add to cart';
-			addBtn.textContent = 'Added ✓';
-			addBtn.classList.add('!bg-registration', '!border-registration');
+			const originalText = 'ADD TO CART';
+			addBtn.textContent = 'ADDED ✓';
+			addBtn.classList.add('!bg-accent');
 			if (addResetTimeout) clearTimeout(addResetTimeout);
 			addResetTimeout = setTimeout(() => {
 				addBtn.textContent = originalText;
-				addBtn.classList.remove('!bg-registration', '!border-registration');
+				addBtn.classList.remove('!bg-accent');
 			}, 800);
+
+			// Also open the cart drawer smoothly
+			const cartBtn = document.querySelector<HTMLButtonElement>('[data-cart-open]');
+			cartBtn?.click();
 		});
 	}
 </script>

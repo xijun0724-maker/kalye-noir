@@ -24,19 +24,17 @@ export const footerLists = [
 	{
 		title: 'Support',
 		items: [
-			{ title: 'Contact Us', href: '/contact' },
-			{ title: 'Incident Report', href: '/incident-report' },
-			{ title: 'Your Cart', href: '/cart' },
-			{ title: 'Order Support', href: '/contact' },
+			{ title: 'Contact us', href: '/contact' },
+			{ title: 'Incident report', href: '/incident-report' },
+			{ title: 'Order summary', href: '/cart' },
+			{ title: 'How ordering works', href: '/#how-it-works' },
 		],
 	},
 ];
 
-export const taglines = ['Manila streets', 'Real dreams', 'Same sky'];
-
 export const contact = {
 	name: 'KALYE NOIR',
-	mobile: '09459864354',
+	mobile: '+63 9xx xxx xxxx',
 	email: 'kalyenoirorders@gmail.com',
 	facebook: 'www.facebook.com/kalyenoir',
 };

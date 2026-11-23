@@ -8,37 +8,68 @@ import { products } from '../../data/catalog';
 	title="Kalye's Tee · KALYE NOIR Street Wear Manila"
 	description="Kalye's Tee: the Kalye Noir collection. KALYENOIR, MEDUSA and MANILA prints on heavyweight cotton."
 >
-	<div class="wrap pt-7">
-		<nav
-			class="meta flex items-center gap-2 text-muted"
-			aria-label="Breadcrumb"
-		>
-			<a href="/" class="transition-colors hover:text-registration">
-				Home
-			</a>
-			<span aria-hidden="true">/</span>
-			<span class="text-ink">Kalye's Tee</span>
-		</nav>
-	</div>
+	<!-- Collection Page Layout with Design Tokens -->
+	<div class="bg-paper text-ink min-h-screen">
+		<!-- Page Title: Anton Display Uppercase (Matches DESIGN.md) -->
+		<header class="pt-10 pb-8 text-center">
+			<h1 class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-[-0.025em] text-ink font-normal">
+				Kalye's Tee
+			</h1>
+		</header>
 
-	<header class="wrap pt-10 pb-4 text-center">
-		<h1 class="display reveal text-4xl sm:text-5xl lg:text-6xl text-ink">
-			Kalye's Tee
-		</h1>
-		<p class="meta mx-auto mt-3 max-w-lg text-muted">
-			Batch 001 Collection · Heavyweight custom screen-print tees · 14.5995° N,
-			120.9842° E
-		</p>
-	</header>
+		<!-- Divider line with Right-aligned SORT BY dropdown (matches DESIGN.md plate line) -->
+		<div class="border-y border-hairline bg-paper">
+			<div class="wrap flex items-center justify-end py-2">
+				<div class="relative">
+					<select
+						id="sort-select"
+						data-sort-select
+						aria-label="Sort products by"
+						class="appearance-none bg-transparent pr-5 font-title text-xs uppercase tracking-[0.2em] font-medium text-navy hover:text-ink focus:outline-none cursor-pointer"
+					>
+						<option value="featured">SORT BY ∨</option>
+						<option value="best-selling">Best Selling</option>
+						<option value="alpha-asc">Alphabetically, A-Z</option>
+						<option value="alpha-desc">Alphabetically, Z-A</option>
+						<option value="price-asc">Price, low to high</option>
+						<option value="price-desc">Price, high to low</option>
+					</select>
+				</div>
+			</div>
+		</div>
 
-	<div class="border-y border-line mt-6">
-		<div class="wrap flex items-center justify-between gap-6 py-3">
-			<p class="meta text-muted">
-				{products.length} {products.length === 1 ? 'print' : 'prints'}
-			</p>
-			<p class="meta text-muted">Batch 001 · S–2XL Available</p>
+		<!-- Product Grid (no outer borders, centered details, ratings & prices) -->
+		<div class="py-4">
+			<ProductGrid products={products} priority />
 		</div>
 	</div>
-
-	<ProductGrid products={products} priority />
 </MainLayout>
+
+<script>
+	const sortSelect = document.querySelector<HTMLSelectElement>('[data-sort-select]');
+	const grid = document.querySelector<HTMLUListElement>('[data-product-grid]');
+
+	sortSelect?.addEventListener('change', () => {
+		if (!grid) return;
+		const items = Array.from(grid.children) as HTMLLIElement[];
+		const val = sortSelect.value;
+
+		items.sort((a, b) => {
+			const nameA = a.getAttribute('data-name') || '';
+			const nameB = b.getAttribute('data-name') || '';
+			const priceA = Number(a.getAttribute('data-price') || '0');
+			const priceB = Number(b.getAttribute('data-price') || '0');
+			const indexA = Number(a.getAttribute('data-index') || '0');
+			const indexB = Number(b.getAttribute('data-index') || '0');
+
+			if (val === 'price-asc') return priceA - priceB || nameA.localeCompare(nameB);
+			if (val === 'price-desc') return priceB - priceA || nameA.localeCompare(nameB);
+			if (val === 'alpha-asc') return nameA.localeCompare(nameB);
+			if (val === 'alpha-desc') return nameB.localeCompare(nameA);
+			if (val === 'best-selling') return nameA.includes('MEDUSA') ? -1 : 1;
+			return indexA - indexB;
+		});
+
+		items.forEach(item => grid.appendChild(item));
+	});
+</script>

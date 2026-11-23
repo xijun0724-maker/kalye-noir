@@ -10,22 +10,20 @@ interface Props {
 const { products, priority = false } = Astro.props;
 ---
 
-<section class="wrap py-12">
+<section class="wrap py-8 sm:py-12">
 	<ul
 		data-product-grid
-		class="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3"
+		class="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 max-w-7xl mx-auto"
 	>
-		{products.map((product: Product, index: number) => {
-			const isOddLead = index === 0 && products.length % 2 !== 0;
-			return (
-				<li
-					data-name={product.title}
-					data-index={index}
-					class={isOddLead ? 'col-span-2 md:col-span-1' : 'col-span-1'}
-				>
-					<ProductCard product={product} priority={priority && index < 2} />
-				</li>
-			);
-		})}
+		{products.map((product: Product, index: number) => (
+			<li
+				data-name={product.title}
+				data-price={product.price}
+				data-index={index}
+				class="col-span-1"
+			>
+				<ProductCard product={product} priority={priority && index < 3} />
+			</li>
+		))}
 	</ul>
 </section>

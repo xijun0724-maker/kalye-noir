@@ -1,114 +1,373 @@
 ---
 import { nav, site } from '../config/site';
 import CartButton from './CartButton.astro';
+import { products } from '../data/catalog';
+import { productArt } from '../data/productArt';
+import { Image } from 'astro:assets';
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
-<header class="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
-	<div class="wrap flex h-16 items-center justify-between gap-4">
-		<a
-			href="/"
-			class="tap font-display text-xl uppercase leading-none tracking-[0.18em]"
-			aria-label={`${site.name} home`}
-		>
-			{site.name}
-		</a>
+<header class="sticky top-0 z-40 bg-paper/95 backdrop-blur-md text-ink border-b border-hairline shadow-xs">
+	<!-- Top Bar: Centered Logo and Right Utility Icons -->
+	<div class="wrap relative flex h-16 items-center justify-between">
+		<!-- Left spacer for mobile hamburger alignment -->
+		<div class="flex items-center lg:hidden">
+			<button
+				type="button"
+				data-mobile-menu-toggle
+				aria-label="Toggle navigation menu"
+				aria-expanded="false"
+				class="flex h-10 w-10 items-center justify-center text-navy hover:text-ink cursor-pointer"
+			>
+				<svg
+					viewBox="0 0 24 24"
+					width="22"
+					height="22"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.8"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<line x1="3" y1="12" x2="21" y2="12"></line>
+					<line x1="3" y1="6" x2="21" y2="6"></line>
+					<line x1="3" y1="18" x2="21" y2="18"></line>
+				</svg>
+			</button>
+		</div>
 
-		<nav class="hidden lg:block" aria-label="Primary">
-			<ul class="flex items-center gap-8">
-				{nav.map(item => {
-					const itemPath = item.href.replace(/\/$/, '') || '/';
-					const isActive =
-						currentPath === itemPath ||
-						(itemPath !== '/' && currentPath.startsWith(itemPath));
-					return (
-						<li>
-							<a
-								href={item.href}
-								aria-current={isActive ? 'page' : undefined}
-								class={`relative py-1 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.26em] transition-colors ${
-									isActive ? 'text-ink' : 'text-muted hover:text-registration'
-								}`}
-							>
-								{item.title}
-								{isActive && (
-									<span class="absolute -bottom-1 left-0 right-0 h-0.5 bg-registration" />
-								)}
-							</a>
-						</li>
-					);
-				})}
-			</ul>
-		</nav>
+		<!-- Centered Brand Wordmark in Anton Display font -->
+		<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+			<a
+				href="/"
+				class="font-display text-3xl sm:text-4xl tracking-[-0.025em] text-ink uppercase leading-none transition-colors hover:text-accent"
+				aria-label={`${site.name} home`}
+			>
+				{site.name}
+			</a>
+		</div>
 
-		<div class="flex items-center gap-7">
+		<!-- Right Utilities (User Account, Search, Cart Bag) -->
+		<div class="ml-auto flex items-center gap-4 sm:gap-5">
+			<!-- User Account Icon -->
 			<a
 				href="/contact"
-				aria-label="Contact and order inquiries"
-				class="relative text-ink/80 transition-colors before:absolute before:-inset-3 before:content-[''] hover:text-registration"
+				aria-label="Customer account and support"
+				class="hidden text-navy transition-colors hover:text-ink sm:flex items-center justify-center"
 			>
-				<svg viewBox="0 0 24 24" width="20" height="20">
-					<path
-						fill="currentColor"
-						d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"
-					/>
-				</svg>
-			</a>
-			<CartButton />
-		</div>
-	</div>
-
-	<details class="group border-t border-line lg:hidden">
-		<summary class="wrap flex min-h-[48px] cursor-pointer items-center justify-between py-3.5 font-condensed text-xs font-semibold uppercase tracking-[0.24em] transition-colors hover:text-registration">
-			<span>Menu</span>
-			<div class="relative flex h-5 w-5 items-center justify-center">
 				<svg
 					viewBox="0 0 24 24"
 					width="20"
 					height="20"
-					class="transition-transform duration-200 group-open:rotate-90"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.8"
+					stroke-linecap="round"
+					stroke-linejoin="round"
 				>
-					<path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" />
+					<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+					<circle cx="12" cy="7" r="4"></circle>
+				</svg>
+			</a>
+
+			<!-- Search Icon -->
+			<button
+				type="button"
+				data-search-open
+				aria-label="Search prints"
+				class="flex items-center justify-center text-navy transition-colors hover:text-ink cursor-pointer"
+			>
+				<svg
+					viewBox="0 0 24 24"
+					width="20"
+					height="20"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.8"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<circle cx="11" cy="11" r="8"></circle>
+					<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+				</svg>
+			</button>
+
+			<!-- Shopping Bag Icon (Cart) -->
+			<div class="flex items-center">
+				<CartButton />
+			</div>
+		</div>
+	</div>
+
+	<!-- Centered Horizontal Navigation Menu -->
+	<nav class="hidden border-t border-hairline py-3 lg:block" aria-label="Primary">
+		<ul class="wrap flex items-center justify-center gap-8 xl:gap-12">
+			{nav.map(item => {
+				const itemPath = item.href.replace(/\/$/, '') || '/';
+				const isActive =
+					currentPath === itemPath ||
+					(itemPath !== '/' && currentPath.startsWith(itemPath));
+				return (
+					<li>
+						<a
+							href={item.href}
+							aria-current={isActive ? 'page' : undefined}
+							class={`font-title text-xs font-semibold uppercase tracking-[0.24em] transition-colors ${
+								isActive
+									? 'text-accent font-bold'
+									: 'text-navy hover:text-ink'
+							}`}
+						>
+							{item.title}
+						</a>
+					</li>
+				);
+			})}
+		</ul>
+	</nav>
+
+	<!-- Mobile Navigation Drawer -->
+	<div
+		data-mobile-menu
+		class="hidden border-t border-hairline bg-paper px-6 py-5 lg:hidden"
+	>
+		<ul class="flex flex-col gap-3">
+			{nav.map(item => {
+				const itemPath = item.href.replace(/\/$/, '') || '/';
+				const isActive =
+					currentPath === itemPath ||
+					(itemPath !== '/' && currentPath.startsWith(itemPath));
+				return (
+					<li>
+						<a
+							href={item.href}
+							aria-current={isActive ? 'page' : undefined}
+							class={`font-title flex items-center justify-between py-2 text-xs font-semibold uppercase tracking-[0.2em] transition-colors ${
+								isActive
+									? 'text-accent font-bold'
+									: 'text-navy hover:text-ink'
+							}`}
+						>
+							<span>{item.title}</span>
+							{isActive && (
+								<span class="h-1.5 w-1.5 rounded-full bg-accent" />
+							)}
+						</a>
+					</li>
+				);
+			})}
+			<li class="pt-2 border-t border-hairline">
+				<a
+					href="/contact"
+					class="font-title flex items-center gap-2 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-navy hover:text-ink transition-colors"
+				>
+					<svg
+						viewBox="0 0 24 24"
+						width="16"
+						height="16"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+					>
+						<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+						<circle cx="12" cy="7" r="4"></circle>
+					</svg>
+					<span>Support &amp; Inquiries</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+
+	<!-- Full-Width Header Search Bar (Matches screenshot: Search Icon + SEARCH FOR... + Close Icon) -->
+	<div
+		data-search-bar
+		class="hidden absolute inset-0 z-50 h-16 w-full items-center justify-between bg-ink text-paper px-4 sm:px-8 border-b border-plate shadow-panel"
+		role="search"
+		aria-label="Site search"
+	>
+		<div class="wrap w-full flex items-center justify-between gap-3 sm:gap-4">
+			<!-- Left Search Icon (Magnifying Glass) -->
+			<div class="flex items-center text-paper/80 shrink-0">
+				<svg
+					viewBox="0 0 24 24"
+					width="20"
+					height="20"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.8"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<circle cx="11" cy="11" r="8"></circle>
+					<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
 				</svg>
 			</div>
-		</summary>
-		<nav aria-label="Mobile">
-			<ul class="wrap flex flex-col gap-1 border-t border-line/40 pb-6 pt-2">
-				{nav.map(item => {
-					const itemPath = item.href.replace(/\/$/, '') || '/';
-					const isActive =
-						currentPath === itemPath ||
-						(itemPath !== '/' && currentPath.startsWith(itemPath));
-					return (
-						<li>
-							<a
-								href={item.href}
-								aria-current={isActive ? 'page' : undefined}
-								class={`flex min-h-[44px] items-center justify-between py-2 font-condensed text-base font-semibold uppercase tracking-[0.2em] transition-colors ${
-									isActive
-										? 'text-registration font-bold'
-										: 'text-ink hover:text-registration'
-								}`}
-							>
-								<span>{item.title}</span>
-								{isActive && <span class="h-2 w-2 rotate-45 bg-registration" />}
-							</a>
-						</li>
-					);
-				})}
+
+			<!-- Search Input Field: SEARCH FOR... -->
+			<input
+				type="search"
+				data-search-input
+				placeholder="SEARCH FOR..."
+				aria-label="Search collection"
+				autocomplete="off"
+				class="w-full bg-transparent px-2 py-2 font-title text-xs sm:text-sm font-semibold uppercase tracking-[0.24em] text-paper placeholder:text-paper/60 focus:outline-none border-none ring-0"
+			/>
+
+			<!-- Right Close Button (✕) -->
+			<button
+				type="button"
+				data-search-close
+				aria-label="Close search"
+				class="flex h-10 w-10 items-center justify-center text-paper/80 hover:text-paper hover:bg-white/10 transition-colors cursor-pointer shrink-0 text-2xl font-light leading-none"
+			>
+				✕
+			</button>
+		</div>
+	</div>
+
+	<!-- Live Search Dropdown Panel (Displays matching products under the header) -->
+	<div
+		data-search-dropdown
+		class="hidden absolute left-0 top-full w-full border-b border-plate bg-paper text-ink shadow-panel max-h-[75vh] overflow-y-auto z-40"
+	>
+		<div class="wrap py-6">
+			<div class="flex items-center justify-between border-b border-hairline pb-2.5 mb-4">
+				<span class="font-title text-xs font-semibold uppercase tracking-[0.24em] text-navy">
+					Matching Prints
+				</span>
+				<span data-search-count class="font-title text-xs font-semibold uppercase tracking-[0.2em] text-navy">
+					{products.length} Available
+				</span>
+			</div>
+
+			<ul data-search-list class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+				{products.map(item => (
+					<li data-search-item={item.title.toLowerCase()} class="border border-plate bg-white p-3 hover:border-ink transition-colors">
+						<a href={`/products/${item.slug}`} class="flex items-center gap-3">
+							<div class="h-16 w-16 bg-paper shrink-0 overflow-hidden flex items-center justify-center border border-hairline p-1">
+								<Image
+									src={productArt[item.slug]}
+									alt={item.title}
+									width={100}
+									height={100}
+									format="webp"
+									class="h-full w-full object-contain"
+								/>
+							</div>
+							<div class="flex-1 min-w-0">
+								<p class="font-title text-xs font-semibold uppercase tracking-wider text-ink truncate">
+									{item.title}
+								</p>
+								<p class="text-[11px] text-navy mt-0.5 truncate">
+									{item.blurb}
+								</p>
+								<div class="mt-1 flex items-baseline gap-2">
+									<span class="font-bold text-xs text-ink">₱{item.price}.00</span>
+									<span class="text-[10px] text-navy line-through">₱350.00</span>
+								</div>
+							</div>
+						</a>
+					</li>
+				))}
 			</ul>
-		</nav>
-	</details>
+
+			<div data-search-empty class="hidden py-10 text-center">
+				<p class="font-title text-xs uppercase tracking-[0.24em] text-navy">
+					No prints found matching your search.
+				</p>
+			</div>
+		</div>
+	</div>
 </header>
 
 <script>
-	const navDetails =
-		document.querySelector<HTMLDetailsElement>('header details');
-	if (navDetails) {
-		navDetails.querySelectorAll('a').forEach(link => {
-			link.addEventListener('click', () => {
-				navDetails.removeAttribute('open');
-			});
-		});
+	// Full-width Header Search Bar Logic (Matches screenshot)
+	const searchOpenBtns = document.querySelectorAll<HTMLButtonElement>('[data-search-open]');
+	const searchBar = document.querySelector<HTMLElement>('[data-search-bar]');
+	const searchCloseBtn = document.querySelector<HTMLButtonElement>('[data-search-close]');
+	const searchInput = document.querySelector<HTMLInputElement>('[data-search-input]');
+	const searchDropdown = document.querySelector<HTMLElement>('[data-search-dropdown]');
+	const searchItems = document.querySelectorAll<HTMLLIElement>('[data-search-item]');
+	const searchEmpty = document.querySelector<HTMLElement>('[data-search-empty]');
+	const searchCount = document.querySelector<HTMLElement>('[data-search-count]');
+
+	function openSearch() {
+		if (!searchBar) return;
+		searchBar.classList.remove('hidden');
+		searchBar.classList.add('flex');
+		searchDropdown?.classList.remove('hidden');
+		searchInput?.focus();
 	}
+
+	function closeSearch() {
+		if (!searchBar) return;
+		searchBar.classList.add('hidden');
+		searchBar.classList.remove('flex');
+		searchDropdown?.classList.add('hidden');
+		if (searchInput) searchInput.value = '';
+		searchItems.forEach(item => (item.style.display = ''));
+		if (searchCount) searchCount.textContent = `${searchItems.length} Available`;
+		if (searchEmpty) searchEmpty.style.display = 'none';
+	}
+
+	searchOpenBtns.forEach(btn => {
+		btn.addEventListener('click', e => {
+			e.preventDefault();
+			openSearch();
+		});
+	});
+
+	searchCloseBtn?.addEventListener('click', closeSearch);
+
+	// Close on Escape
+	document.addEventListener('keydown', e => {
+		if (e.key === 'Escape' && searchBar && !searchBar.classList.contains('hidden')) {
+			closeSearch();
+		}
+	});
+
+	// Close on click outside header and dropdown
+	document.addEventListener('click', e => {
+		const target = e.target as HTMLElement;
+		if (
+			searchBar &&
+			!searchBar.classList.contains('hidden') &&
+			!target.closest('[data-search-bar]') &&
+			!target.closest('[data-search-dropdown]') &&
+			!target.closest('[data-search-open]')
+		) {
+			closeSearch();
+		}
+	});
+
+	// Live filter input
+	searchInput?.addEventListener('input', () => {
+		const q = searchInput.value.toLowerCase().trim();
+		let visibleCount = 0;
+		searchItems.forEach(item => {
+			const name = item.getAttribute('data-search-item') || '';
+			const matches = !q || name.includes(q);
+			item.style.display = matches ? '' : 'none';
+			if (matches) visibleCount++;
+		});
+		if (searchCount) {
+			searchCount.textContent = `${visibleCount} Print${visibleCount === 1 ? '' : 's'} Found`;
+		}
+		if (searchEmpty) {
+			searchEmpty.style.display = visibleCount === 0 ? 'block' : 'none';
+		}
+	});
+
+	// Mobile Menu Toggle
+	const menuToggle = document.querySelector<HTMLButtonElement>('[data-mobile-menu-toggle]');
+	const mobileMenu = document.querySelector<HTMLElement>('[data-mobile-menu]');
+
+	menuToggle?.addEventListener('click', () => {
+		const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+		menuToggle.setAttribute('aria-expanded', String(!isExpanded));
+		if (mobileMenu) {
+			mobileMenu.classList.toggle('hidden', isExpanded);
+		}
+	});
 </script>

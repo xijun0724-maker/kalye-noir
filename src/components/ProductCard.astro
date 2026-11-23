@@ -11,35 +11,48 @@ interface Props {
 
 const { product, priority = false } = Astro.props;
 const sourceWidth = productArt[product.slug].width;
+
+const reviews = 0;
 ---
 
-<a href={`/products/${product.slug}`} class="group block">
-	<div class="relative overflow-hidden bg-white p-2">
+<a href={`/products/${product.slug}`} class="group block text-center">
+	<!-- Clean flatlay garment visual on white ground with DESIGN.md hairline border -->
+	<div class="relative overflow-hidden bg-white p-3 border border-hairline">
 		<Image
 			src={productArt[product.slug]}
 			alt={product.alt}
 			widths={[200, 300, sourceWidth]}
-			sizes="(min-width: 1024px) 30vw, 45vw"
+			sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 48vw"
 			format="webp"
 			loading={priority ? 'eager' : 'lazy'}
 			fetchpriority={priority ? 'high' : undefined}
 			decoding="async"
-			class="aspect-[4/5] w-full object-contain transition-transform duration-500 group-hover:scale-105"
+			class="aspect-[4/5] w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04]"
 		/>
-		<span class="absolute left-0 top-0 h-0.5 w-0 bg-registration transition-all duration-500 group-hover:w-full" />
-		<span class="absolute bottom-2 right-2 bg-ink px-2 py-0.5 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-paper">
-			Full-Back Print
-		</span>
 	</div>
-	<div class="pt-3">
-		<h2 class="font-condensed text-[0.8125rem] font-semibold uppercase tracking-[0.12em] text-ink transition-colors duration-200 group-hover:text-registration">
+
+	<!-- Centered Product Info matching DESIGN.md typography -->
+	<div class="pt-4 text-center">
+		<!-- Title in Barlow Condensed tracked font -->
+		<h2
+			class="font-title text-xs uppercase tracking-[0.18em] font-semibold text-ink transition-colors group-hover:text-accent"
+		>
 			{product.title}
 		</h2>
-		<div class="mt-1 flex items-baseline justify-between gap-2">
-			<span class="font-condensed text-sm font-semibold text-ink">
-				₱{product.price}
-			</span>
-			<span class="meta text-muted">S–2XL</span>
+
+		<!-- 5-Star Rating matching registration red accent -->
+		<div
+			class="mt-1.5 flex items-center justify-center gap-1 text-xs"
+			aria-label="5 out of 5 stars"
+		>
+			<span class="text-xs tracking-tight text-accent" aria-hidden="true">★★★★★</span>
+			<span class="text-xs text-navy/80">({reviews})</span>
+		</div>
+
+		<!-- Price line: Current bold price and strikethrough regular price -->
+		<div class="mt-1.5 flex items-baseline justify-center gap-2 text-xs">
+			<span class="font-bold text-ink">₱{product.price}.00</span>
+			<span class="text-navy line-through">₱350.00</span>
 		</div>
 	</div>
 </a>

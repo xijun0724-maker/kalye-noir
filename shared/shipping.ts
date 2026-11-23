@@ -12,6 +12,7 @@ export interface ShippingZone {
 const list = (csv: string) => csv.split(', ');
 
 export const courier = 'Delivery Parcel Express';
+// Free shipping at 3+ items to encourage bundle purchases and increase AOV.
 export const FREE_SHIPPING_THRESHOLD = 3;
 
 export const shippingZones: ShippingZone[] = [

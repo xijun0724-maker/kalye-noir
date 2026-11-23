@@ -2,7 +2,7 @@
 	"name": "kalye-noir",
 	"version": "4.0.0",
 	"type": "module",
-	"description": "KALYE NOIR: Manila streetwear storefront (Astro + Tailwind + nanostores), order notifications via Telegram Bot + Cloudflare Workers.",
+	"description": "KALYE NOIR: Manila streetwear storefront (Astro + Tailwind + nanostores), order notifications via Discord Bot + Cloudflare Workers.",
 	"private": true,
 	"homepage": "https://kalyenoir.netlify.app",
 	"repository": {
@@ -22,11 +22,11 @@
 		"@astrojs/sitemap": "^3.7.6",
 		"@tailwindcss/vite": "^4.3.5",
 		"astro": "^7.4.13",
+		"impeccable": "^4.10.0",
 		"tailwindcss": "^4.3.5"
 	},
 	"dependencies": {
 		"@nanostores/persistent": "^1.3.5",
-		"impeccable": "^4.10.0",
 		"kalye-noir-shared": "file:./shared",
 		"nanostores": "^1.5.5"
 	}

@@ -1,42 +1,132 @@
 @import 'tailwindcss';
 
+/* Design System: Kalye Noir — "The Kalye Print Room"
+   Manila screen-print streetwear on cream paper. */
 @theme {
 	--color-ink: #111110;
 	--color-paper: #f4ede2;
-	--color-registration: #c8202a;
-	--color-muted: #6d6459;
-	--color-line: #e2d8c8;
-	/* For control boundaries. Decorative rules keep --color-line; anything a
-     person has to see in order to use it needs 3:1 against its surface, and
-     --color-line only reaches 1.2:1 on paper. */
-	--color-line-strong: #8d8073;
+	--color-cloud: #ffffff;
+	--color-putty: #e2d8c8;
+	--color-cream: #f4ede2;
+	--color-butter: #f4ede2;
+
+	/* Accent: registration-red */
+	--color-accent: #c8202a;
+	--color-accent-gold: #c8202a;
+
+	/* Secondary & tertiary text / control lines */
+	--color-navy: #6d6459;
+	--color-tertiary: #8d8073;
+
+	/* Subtle and strong border hairlines */
+	--color-hairline: #e2d8c8;
+	--color-plate: #8d8073;
 
 	--font-sans:
-		Archivo, system-ui, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-	--font-display: Anton, Impact, system-ui, sans-serif;
-	--font-condensed: 'Barlow Condensed', Archivo, system-ui, sans-serif;
+		'Archivo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		sans-serif;
+	--font-display:
+		'Anton', 'Impact', 'Barlow Condensed', system-ui, sans-serif;
+	--font-title:
+		'Barlow Condensed', 'Archivo', system-ui, sans-serif;
+	--font-serif:
+		'Barlow Condensed', 'Archivo', sans-serif;
 
-	--container-content: 1280px;
+	/* Kalye Print Room type scale */
+	--text-xs: 0.6875rem;
+	--text-xs--line-height: 1.2;
+	--text-sm: 0.8125rem;
+	--text-sm--line-height: 1.3;
+	--text-base: 1rem;
+	--text-base--line-height: 1.6;
+	--text-lg: 1.125rem;
+	--text-lg--line-height: 1.45;
+	--text-xl: 1.3125rem;
+	--text-xl--line-height: 1.25;
+	--text-2xl: 2rem;
+	--text-2xl--line-height: 1.1;
+	--text-3xl: 2.75rem;
+	--text-3xl--line-height: 1;
+	--text-4xl: 3.5rem;
+	--text-4xl--line-height: 0.95;
+	--text-5xl: 4.5rem;
+	--text-5xl--line-height: 0.9;
+	--text-6xl: 5.5rem;
+	--text-6xl--line-height: 0.88;
+	--text-7xl: 6.5rem;
+	--text-7xl--line-height: 0.88;
+	--text-8xl: 7.5rem;
+	--text-8xl--line-height: 0.88;
+
+	--radius-square: 0px;
+	--radius-sm: 0px;
+	--radius-md: 2px;
+	--radius-lg: 4px;
+	--radius-xl: 6px;
+	--radius-pill: 9999px;
+	--radius-tab: 6px;
+
+	--shadow-edge: inset 0 -1px 0 0 rgba(17, 17, 16, 0.1);
+	--shadow-panel: 0 24px 60px -24px rgba(17, 17, 16, 0.35);
+
+	--ease-snap: cubic-bezier(0.16, 1, 0.3, 1);
+
+	--container-content: 1440px;
 }
 
 @layer base {
 	:root {
 		color-scheme: light;
+		scrollbar-color: var(--color-hairline) transparent;
 	}
 	body {
 		@apply bg-paper text-ink antialiased;
+		font-family: var(--font-sans);
+		font-size: var(--text-base);
+		line-height: 1.6;
 	}
 	html {
-		/* Keeps in-page anchors clear of the sticky header, which is 114px on
-       phones (logo row plus the Menu row). Without this the section heading
-       lands behind it. */
 		scroll-padding-top: 7.5rem;
+	}
+	h1,
+	h2,
+	h3,
+	h4 {
+		font-family: var(--font-display);
+		font-weight: 400;
+		line-height: 0.92;
+		letter-spacing: -0.025em;
+		text-transform: uppercase;
+		text-wrap: balance;
 	}
 	img {
 		@apply block max-w-full;
 	}
+	::selection {
+		background: var(--color-ink);
+		color: var(--color-paper);
+	}
 	:focus-visible {
-		@apply outline-2 outline-offset-2 outline-registration;
+		outline: 2px solid var(--color-accent);
+		outline-offset: 3px;
+		border-radius: var(--radius-sm);
+	}
+	::-webkit-scrollbar {
+		width: 12px;
+		height: 12px;
+	}
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	::-webkit-scrollbar-thumb {
+		background: var(--color-hairline);
+		border: 3px solid var(--color-paper);
+	}
+	::-webkit-scrollbar-thumb:hover {
+		background: var(--color-plate);
+	}
+	textarea {
+		field-sizing: content;
 	}
 }
 
@@ -45,35 +135,41 @@
 		@apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
 	}
 	.btn {
-		@apply inline-flex items-center justify-center gap-2 border-2 border-ink px-6 py-3 font-condensed text-xs font-semibold uppercase tracking-[0.24em] transition-colors;
+		@apply inline-flex min-h-11 items-center justify-center gap-2 border border-ink rounded-none px-6 py-3 font-title text-sm font-semibold uppercase tracking-[0.14em] transition-all duration-200 cursor-pointer;
 	}
 	.btn-primary {
-		@apply bg-ink text-paper hover:border-registration hover:bg-registration;
+		@apply bg-ink text-paper hover:bg-accent hover:border-accent hover:text-white;
 	}
 	.btn-invert {
-		@apply border-paper bg-paper text-ink hover:border-registration hover:bg-registration hover:text-paper;
+		@apply border-ink bg-paper text-ink hover:bg-ink hover:text-paper;
 	}
 	.btn-ghost {
-		@apply border-paper/40 bg-transparent text-paper hover:border-paper hover:bg-paper hover:text-ink;
+		@apply border-hairline bg-transparent text-ink hover:border-ink hover:bg-putty;
+	}
+	.badge-pill {
+		@apply inline-flex items-center gap-1.5 rounded-full border border-hairline bg-paper px-3 py-0.5 font-title text-xs font-semibold tracking-wider text-navy shadow-xs uppercase;
+	}
+	.brand-tab {
+		@apply bg-accent text-paper rounded-[6px] px-3 py-1 font-title text-xs font-bold uppercase tracking-wider;
 	}
 	.label {
-		@apply font-condensed text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-muted;
-	}
-	.display {
-		@apply font-display uppercase leading-[0.88] tracking-tight;
+		@apply block font-title text-[11px] font-semibold tracking-[0.28em] uppercase text-navy;
 	}
 	.meta {
-		@apply font-condensed text-[0.6875rem] uppercase tracking-[0.28em];
+		@apply font-title text-xs font-semibold tracking-[0.12em] uppercase;
 	}
-	/* DESIGN.md's 44px touch target, for controls that would otherwise be as
-     tall as their own text. */
+	.display {
+		@apply font-display font-normal leading-[0.9] tracking-[-0.025em] uppercase text-balance;
+	}
+	.tab-edge {
+		border-radius: var(--radius-tab);
+	}
+	.tnum {
+		font-variant-numeric: tabular-nums;
+	}
 	.tap {
 		@apply inline-flex min-h-11 items-center;
 	}
-	/* Breadcrumb links read as one line, so they get the strip too. The width
-     comes from an extending pseudo-element rather than padding, so the row's
-     min-content width does not grow. At 200% text the labels double and the
-     row wraps instead of pushing past the viewport. */
 	nav[aria-label='Breadcrumb'] {
 		@apply flex-wrap;
 	}
@@ -83,17 +179,7 @@
 }
 
 @layer utilities {
-	/* Film grain, matching the print texture on the posters. */
-	.grain::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		pointer-events: none;
-		opacity: 0.18;
-		mix-blend-mode: overlay;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
-	}
-
+	/* A SKU mark, drawn from the palette. */
 	.barcode {
 		background-image: repeating-linear-gradient(
 			90deg,
@@ -106,17 +192,30 @@
 		);
 	}
 
+	/* Underline that draws from the left on hover, used on catalog links. */
+	.draw-under {
+		background-image: linear-gradient(currentColor, currentColor);
+		background-position: 0 100%;
+		background-repeat: no-repeat;
+		background-size: 0 1px;
+		transition: background-size 0.3s ease-in-out;
+	}
+	.draw-under:hover,
+	.draw-under:focus-visible {
+		background-size: 100% 1px;
+	}
+
 	.marquee {
 		animation: kn-marquee 30s linear infinite;
 	}
 	.reveal {
-		animation: kn-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+		animation: kn-rise 0.4s var(--ease-snap) both;
 	}
 	.reveal-2 {
-		animation-delay: 0.12s;
+		animation-delay: 0.06s;
 	}
 	.reveal-3 {
-		animation-delay: 0.24s;
+		animation-delay: 0.12s;
 	}
 }
 
@@ -129,7 +228,7 @@
 @keyframes kn-rise {
 	from {
 		opacity: 0;
-		transform: translateY(1.75rem);
+		transform: translateY(1.25rem);
 	}
 }
 
@@ -139,5 +238,8 @@
 	.reveal-2,
 	.reveal-3 {
 		animation: none;
+	}
+	.draw-under {
+		transition: none;
 	}
 }

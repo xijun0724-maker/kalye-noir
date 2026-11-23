@@ -34,6 +34,7 @@ export const shippingProvince = persistentAtom<string>(
 	'',
 );
 
+
 export function addToCart(item: CartItem) {
 	const items = cartItems.get();
 	const existing = items.find(i => i.sku === item.sku);
@@ -77,11 +78,4 @@ export function cartSubtotal(items: CartItem[] = cartItems.get()): number {
 		(total, item) => total + getCartItemPrice(item) * item.qty,
 		0,
 	);
-}
-
-export function cartSummary(): string {
-	return cartItems
-		.get()
-		.map(i => `${i.qty}× ${i.title} (${i.variant})`)
-		.join('\n');
 }

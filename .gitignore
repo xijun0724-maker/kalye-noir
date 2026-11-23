@@ -17,7 +17,13 @@ preview.log
 
 # environment variables
 .env
-.env.production
+.env.*
+!.env.example
+discord-bot/.env
+discord-bot/.env.*
+!discord-bot/.env.example
+discord-bot/data/*.json
+!discord-bot/data/.gitkeep
 
 # macOS-specific files
 .DS_Store
@@ -26,6 +32,7 @@ icon.d.ts
 *.cache
 
 # --- dev / tooling (not part of the published site) ---
+.taste-skill/
 .agents/
 .impeccable/
 .codex/

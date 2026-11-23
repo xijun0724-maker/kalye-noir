@@ -1,0 +1,718 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { getImage } from 'astro:assets';
+import { productArt } from '../data/productArt';
+import { shippingZones } from '../data/shipping';
+import { contact } from '../config/site';
+
+const thumbnails = Object.fromEntries(
+	await Promise.all(
+		Object.entries(productArt).map(async ([slug, image]) => {
+			const thumbnail = await getImage({
+				src: image,
+				width: 192,
+				format: 'webp',
+				quality: 80,
+			});
+			return [slug, thumbnail.src];
+		}),
+	),
+);
+---
+
+<MainLayout
+	title="Checkout · KALYE NOIR Manila"
+	description="Complete your Kalye Noir order with Cash on Delivery or GCash manual transfer."
+>
+	<div class="wrap py-10 max-w-6xl mx-auto">
+		<!-- Empty Cart Notice -->
+		<div data-checkout-empty class="hidden py-24 text-center">
+			<h1 class="font-title text-2xl uppercase tracking-wider text-ink font-bold">
+				Your cart is empty
+			</h1>
+			<p class="text-xs text-navy mt-2">
+				Add items from Batch 001 before proceeding to checkout.
+			</p>
+			<a href="/products" class="btn btn-primary mt-6 inline-block text-xs py-3 px-8 uppercase tracking-[0.2em]">
+				Browse Collection
+			</a>
+		</div>
+
+		<!-- Success Confirmation View -->
+		<div data-checkout-success class="hidden py-16 sm:py-24 text-center max-w-2xl mx-auto px-4">
+			<div class="mb-8 flex h-16 w-16 items-center justify-center border border-ink bg-white mx-auto shadow-sm">
+				<svg class="w-8 h-8 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square">
+					<polyline points="20 6 9 17 4 12"></polyline>
+				</svg>
+			</div>
+
+			<p class="font-sans text-xs uppercase tracking-[0.3em] text-accent font-semibold mb-3">
+				Order Confirmed
+			</p>
+
+			<h1 class="font-title text-4xl sm:text-5xl md:text-6xl uppercase tracking-tight text-ink font-bold leading-tight">
+				Thank You!
+			</h1>
+
+			<p class="mt-4 font-display text-xl sm:text-2xl md:text-3xl uppercase tracking-wider text-ink font-bold">
+				You make Kalye Dreams Come True
+			</p>
+
+			<div class="my-8 py-4 px-6 border border-plate/80 bg-white inline-block max-w-md w-full">
+				<p class="text-[11px] uppercase tracking-[0.2em] text-navy font-semibold">
+					Order Reference
+				</p>
+				<p class="mt-1 font-mono text-lg sm:text-xl font-bold tracking-wider text-accent select-all">
+					#<span data-success-ref-text></span>
+				</p>
+			</div>
+
+			<p class="text-xs sm:text-sm text-navy max-w-lg mx-auto leading-relaxed">
+				Your order is officially logged in our system. The Manila studio team is now preparing your garments for packing and dispatch. We will send courier tracking details via SMS and email.
+			</p>
+
+			<div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<a href="/products" class="btn btn-primary text-xs py-3.5 px-8 uppercase tracking-[0.2em] w-full sm:w-auto">
+					Continue Exploring Collection
+				</a>
+				<a href="/" class="btn btn-secondary text-xs py-3.5 px-8 uppercase tracking-[0.2em] w-full sm:w-auto">
+					Back to Home
+				</a>
+			</div>
+		</div>
+
+		<!-- Two-Column Checkout View (Matches PDF Page 1) -->
+		<div data-checkout-main class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+			<!-- Left Column: Checkout Form (7 cols) -->
+			<div class="lg:col-span-7 space-y-8">
+				<form data-checkout-form class="space-y-8" novalidate>
+					<!-- Hidden field for serialized cart items -->
+					<input type="hidden" name="cart-items" value="" />
+					<!-- Honeypot -->
+					<div class="hidden" aria-hidden="true">
+						<input type="text" name="website" tabindex="-1" autocomplete="off" />
+					</div>
+
+					<!-- 1. Contact -->
+					<section class="space-y-3">
+						<div class="flex items-center justify-between">
+							<h2 class="font-title text-sm sm:text-base font-semibold uppercase tracking-wider text-ink">
+								Contact
+							</h2>
+							<a href="/contact" class="text-xs text-navy underline underline-offset-2 hover:text-ink">
+								Sign in
+							</a>
+						</div>
+						<div>
+							<label class="sr-only" for="checkout-email">Email</label>
+							<input
+								type="email"
+								id="checkout-email"
+								name="email"
+								required
+								autocomplete="email"
+								placeholder="Email"
+								class="w-full text-xs sm:text-sm p-3.5 bg-white border border-plate/80 rounded-none text-ink placeholder:text-navy/60 focus:border-ink focus:outline-none"
+							/>
+						</div>
+					</section>
+
+					<!-- 2. Delivery Address -->
+					<section class="space-y-3.5">
+						<div>
+							<h2 class="font-title text-sm sm:text-base font-semibold uppercase tracking-wider text-ink">
+								Delivery
+							</h2>
+							<p class="text-[11px] text-navy/70 mt-0.5">
+								This will also be used as your billing address for this order.
+							</p>
+						</div>
+
+						<!-- Country/Region -->
+						<div>
+							<label class="block font-title text-[10px] uppercase tracking-wider text-navy/70 mb-1">
+								Country/Region
+							</label>
+							<select
+								disabled
+								class="w-full text-xs sm:text-sm p-3.5 bg-paper/50 border border-plate/80 text-ink rounded-none cursor-not-allowed"
+							>
+								<option value="Philippines" selected>Philippines</option>
+							</select>
+						</div>
+
+						<!-- First & Last Name -->
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+							<div>
+								<label class="sr-only" for="checkout-first-name">First name</label>
+								<input
+									type="text"
+									id="checkout-first-name"
+									name="first-name"
+									required
+									placeholder="First name"
+									class="w-full text-xs sm:text-sm p-3.5 bg-white border border-plate/80 rounded-none text-ink placeholder:text-navy/60 focus:border-ink focus:outline-none"
+								/>
+							</div>
+							<div>
+								<label class="sr-only" for="checkout-last-name">Last name</label>
+								<input
+									type="text"
+									id="checkout-last-name"
+									name="last-name"
+									required
+									placeholder="Last name"
+									class="w-full text-xs sm:text-sm p-3.5 bg-white border border-plate/80 rounded-none text-ink placeholder:text-navy/60 focus:border-ink focus:outline-none"
+								/>
+							</div>
+						</div>
+
+						<!-- Full combined name hidden field for server validation -->
+						<input type="hidden" name="name" value="" />
+
+						<!-- Landmark ONLY -->
+						<div>
+							<label class="sr-only" for="checkout-landmark">Landmark</label>
+							<input
+								type="text"
+								id="checkout-landmark"
+								name="landmark"
+								placeholder="*Enter 1 Nearest Landmark ONLY (No Instructions)*"
+								class="w-full text-xs sm:text-sm p-3.5 bg-white border border-plate/80 rounded-none text-ink placeholder:text-navy/60 focus:border-ink focus:outline-none"
+							/>
+						</div>
+
+						<!-- Street Address -->
+						<div>
+							<label class="sr-only" for="checkout-street">Unit / House No. and Street Name</label>
+							<input
+								type="text"
+								id="checkout-street"
+								name="street"
+								required
+								autocomplete="street-address"
+								placeholder="Unit / House No. and Street Name"
+								class="w-full text-xs sm:text-sm p-3.5 bg-white border border-plate/80 rounded-none text-ink placeholder:text-navy/60 focus:border-ink focus:outline-none"
+							/>
+						</div>
+
+						<!-- Barangay -->
+						<div>
+							<label class="sr-only" for="checkout-barangay">Barangay</label>
+							<input
+								type="text"
+								id="checkout-barangay"
+								name="barangay"
+								placeholder="Barangay"
+								class="w-full text-xs sm:text-sm p-3.5 bg-white border border-plate/80 rounded-none text-ink placeholder:text-navy/60 focus:border-ink focus:outline-none"
+							/>
+						</div>
+
+						<!-- Zip & City -->
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+							<div>
+								<label class="sr-only" for="checkout-zip">Zip Code</label>
+								<input
+									type="text"
+									id="checkout-zip"
+									name="zip"
+									required
+									pattern="[0-9]{4}"
+									title="4-digit Philippine zip code"
+									placeholder="Zip Code / Type 0000 if Not Applicable"
+									class="w-full text-xs sm:text-sm p-3.5 bg-white border border-plate/80 rounded-none text-ink placeholder:text-navy/60 focus:border-ink focus:outline-none"
+								/>
+							</div>
+							<div>
+								<label class="sr-only" for="checkout-city">City / Municipality</label>
+								<input
+									type="text"
+									id="checkout-city"
+									name="city"
+									required
+									autocomplete="address-level2"
+									placeholder="City / Municipality"
+									class="w-full text-xs sm:text-sm p-3.5 bg-white border border-plate/80 rounded-none text-ink placeholder:text-navy/60 focus:border-ink focus:outline-none"
+								/>
+							</div>
+						</div>
+
+						<!-- Province / Region -->
+						<div>
+							<label class="block font-title text-[10px] uppercase tracking-wider text-navy/70 mb-1">
+								Province / Region
+							</label>
+							<select
+								id="checkout-province"
+								name="province"
+								required
+								data-checkout-province
+								class="w-full text-xs sm:text-sm p-3.5 bg-white border border-plate/80 text-ink rounded-none focus:border-ink focus:outline-none"
+							>
+								<option value="" disabled selected>Select Province / Region</option>
+								{shippingZones.flatMap(z =>
+									z.provinces.map(p => (
+										<option value={p} data-zone={z.id}>
+											{p} ({z.label})
+										</option>
+									)),
+								)}
+							</select>
+						</div>
+
+						<!-- Phone -->
+						<div>
+							<label class="sr-only" for="checkout-phone">Phone</label>
+							<input
+								type="tel"
+								id="checkout-phone"
+								name="phone"
+								required
+								autocomplete="tel"
+								pattern="^(09|[+]639)[0-9]{9}$"
+								title="Philippine mobile format (e.g. 09171234567 or +639171234567)"
+								placeholder="Phone (e.g. 0917 123 4567)"
+								class="w-full text-xs sm:text-sm p-3.5 bg-white border border-plate/80 rounded-none text-ink placeholder:text-navy/60 focus:border-ink focus:outline-none"
+							/>
+						</div>
+
+						<!-- Optional Order Note -->
+						<div>
+							<label class="block font-title text-[10px] uppercase tracking-wider text-navy/70 mb-1">
+								Order Note (Optional)
+							</label>
+							<textarea
+								name="note"
+								data-checkout-note
+								rows="2"
+								placeholder="Special delivery instructions, landmarks, or notes..."
+								class="w-full text-xs sm:text-sm p-3 bg-white border border-plate/80 rounded-none text-ink placeholder:text-navy/60 focus:border-ink focus:outline-none"
+							></textarea>
+						</div>
+					</section>
+
+					<!-- 3. Shipping Method -->
+					<section class="space-y-3">
+						<h2 class="font-title text-sm sm:text-base font-semibold uppercase tracking-wider text-ink">
+							Shipping method
+						</h2>
+						<div class="p-4 bg-paper/60 border border-plate/80 flex items-center justify-between text-xs sm:text-sm">
+							<div class="space-y-0.5">
+								<p class="font-semibold text-ink">LBC Express · Standard Courier Delivery</p>
+								<p class="text-xs text-navy" data-shipping-method-desc>
+									Select your province to view delivery schedule
+								</p>
+							</div>
+							<span class="font-bold text-ink" data-shipping-method-fee>Pending</span>
+						</div>
+					</section>
+
+					<!-- 4. Payment (Matches PDF Page 1) -->
+					<section class="space-y-4">
+						<div>
+							<h2 class="font-title text-sm sm:text-base font-semibold uppercase tracking-wider text-ink">
+								Payment
+							</h2>
+							<p class="text-[11px] text-navy/70 mt-0.5">
+								All transactions are secure and encrypted.
+							</p>
+						</div>
+
+						<!-- Payment Options Box -->
+						<div class="border border-plate/80 divide-y divide-hairline bg-white">
+							<!-- Cash on Delivery -->
+							<label class="p-4 flex items-start gap-3 cursor-pointer hover:bg-paper/30 transition-colors">
+								<input
+									type="radio"
+									name="payment-type"
+									value="cod"
+									checked
+									class="mt-1 accent-ink cursor-pointer"
+								/>
+								<div class="flex-1">
+									<p class="font-title text-xs sm:text-sm font-bold uppercase tracking-wider text-ink">
+										Cash on Delivery (COD)
+									</p>
+									<p class="text-xs text-navy mt-0.5">
+										Pay exact cash to courier upon physical delivery.
+									</p>
+								</div>
+							</label>
+
+							<!-- GCash / Maya -->
+							<label class="p-4 flex items-start gap-3 cursor-pointer hover:bg-paper/30 transition-colors">
+								<input
+									type="radio"
+									name="payment-type"
+									value="gcash"
+									class="mt-1 accent-ink cursor-pointer"
+								/>
+								<div class="flex-1">
+									<p class="font-title text-xs sm:text-sm font-bold uppercase tracking-wider text-ink">
+										GCash / Maya Manual Transfer
+									</p>
+									<p class="text-xs text-navy mt-0.5">
+										Transfer manually to merchant account &amp; enter 13-digit reference.
+									</p>
+								</div>
+							</label>
+						</div>
+
+						<!-- GCash Details Panel (Conditional) -->
+						<div data-gcash-panel class="hidden p-5 border border-plate/80 bg-paper/60 space-y-3.5 text-xs">
+							<div class="space-y-1">
+								<p class="font-bold text-ink uppercase tracking-wider">Merchant Payment Account</p>
+								<p class="text-sm font-display text-ink">{contact.name}</p>
+								<p class="text-sm font-sans font-bold text-ink">{contact.mobile}</p>
+								<p class="text-navy/75 leading-relaxed">
+									Transfer the exact total amount shown on this order. Enter your 13-digit transaction reference number below:
+								</p>
+							</div>
+							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+								<div>
+									<label class="block font-title text-[10px] uppercase tracking-wider text-navy mb-1">
+										Reference No. *
+									</label>
+									<input
+										type="text"
+										name="payment-ref"
+										data-payment-ref
+										pattern="[0-9]{13}"
+										title="13-digit transaction reference number"
+										placeholder="13-digit numeric ref"
+										class="w-full text-xs p-2.5 bg-white border border-plate/80 rounded-none text-ink focus:border-ink focus:outline-none"
+									/>
+								</div>
+								<div>
+									<label class="block font-title text-[10px] uppercase tracking-wider text-navy mb-1">
+										Screenshot Receipt (Optional)
+									</label>
+									<input
+										type="file"
+										name="payment-slip"
+										accept="image/*,application/pdf"
+										class="w-full text-[11px] p-1.5 bg-white border border-plate/80 text-navy"
+									/>
+								</div>
+							</div>
+						</div>
+
+						<!-- Exact Laureti Terms & Policy Copy from PDF Page 1 -->
+						<div class="border border-plate/80 bg-white p-5 space-y-4 text-xs text-navy/85 leading-relaxed">
+							<div>
+								<strong class="text-ink font-semibold uppercase tracking-wider block mb-1">IMPORTANT:</strong>
+								<p>
+									→ We will not be able to cancel or make any changes to your order once it has been submitted to us for processing. Please double check the items, complete address and mobile number before placing your order.
+								</p>
+							</div>
+
+							<div class="border-t border-hairline pt-3">
+								<strong class="text-ink font-semibold uppercase tracking-wider block mb-1">RETURN POLICY:</strong>
+								<ul class="space-y-1 list-disc pl-4">
+									<li>Change of color and/or size is allowed but subject to applicable shipping fees shouldered by the Buyer.</li>
+									<li>Buyer may NOT apply for the return of the Item due to a change of mind.</li>
+									<li>Kalye Noir will review the application on a case-by-case basis and, in its sole discretion, determine whether Buyer's application is successful.</li>
+									<li>NOTE: Please check your item upon receipt. If you notice any issues, kindly report them to us immediately so we can assist you promptly.</li>
+								</ul>
+							</div>
+
+							<div class="border-t border-hairline pt-3 space-y-1.5">
+								<p>Please allow our team <strong>2 – 3 BUSINESS DAYS</strong>, weekends and holidays NOT included, to verify and prepare the orders.</p>
+								<p>→ <strong>NOTE that delivery to your address (from date of pick-up) would be:</strong></p>
+								<p>• <strong>1 – 3 Business days</strong> for METRO MANILA address</p>
+								<p>• <strong>5 – 7 Business days</strong> for LUZON PROVINCIAL address</p>
+								<p>• <strong>10 – 12 Business days</strong> for VISAYAS/MINDANAO address</p>
+								<p>• <strong>10 – 15 Business days</strong> for PALAWAN address</p>
+								<p class="pt-2 font-medium text-ink">• Please prepare exact amount for your payment. Your order will arrive soon.</p>
+							</div>
+						</div>
+					</section>
+
+					<!-- Error Notification Box -->
+					<div data-checkout-error class="hidden p-4 bg-accent/10 border border-accent text-accent text-xs font-bold"></div>
+
+					<!-- Complete Order Button -->
+					<button
+						type="submit"
+						data-submit-order-btn
+						class="w-full bg-[#111110] hover:bg-black text-white text-xs sm:text-sm font-title font-semibold uppercase tracking-[0.24em] py-4 transition-colors text-center block rounded-none shadow-md cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+					>
+						Complete order
+					</button>
+				</form>
+			</div>
+
+			<!-- Right Column: Order Summary Sidebar (5 cols, Matches PDF Page 1) -->
+			<div class="lg:col-span-5 bg-paper/60 border border-plate/80 p-6 sm:p-8 space-y-6">
+				<!-- Items List Container -->
+				<div
+					data-summary-items-list
+					data-thumbnail-sources={JSON.stringify(thumbnails)}
+					class="divide-y divide-hairline max-h-96 overflow-y-auto"
+				>
+					<!-- Populated via JavaScript -->
+				</div>
+
+				<!-- Totals Breakdown -->
+				<div class="border-t border-hairline pt-4 space-y-2 text-xs sm:text-sm">
+					<div class="flex items-center justify-between text-navy">
+						<span>Subtotal</span>
+						<span class="font-semibold text-ink" data-summary-subtotal>₱0.00</span>
+					</div>
+					<div class="flex items-center justify-between text-navy">
+						<span>Shipping</span>
+						<span class="font-semibold text-ink" data-summary-shipping>Enter shipping address</span>
+					</div>
+					<div class="border-t border-hairline pt-3 flex items-baseline justify-between">
+						<span class="font-title text-sm uppercase tracking-wider font-bold text-ink">Total</span>
+						<div class="text-right">
+							<span class="text-xs text-navy mr-1">PHP</span>
+							<span class="font-display text-xl sm:text-2xl text-ink font-bold" data-summary-total>₱0.00</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</MainLayout>
+
+<script>
+	import {
+		cartItems,
+		cartSubtotal,
+		orderNote,
+		shippingZoneId,
+		shippingProvince,
+		getCartItemPrice,
+	} from '../stores/cartStore';
+	import { products } from '../data/catalog';
+	import { zoneById, calculateShippingFee } from '../data/shipping';
+	import { submitOrder } from '../lib/submitOrder';
+	import { escapeHTML } from '../lib/escapeHTML';
+
+	const emptySection = document.querySelector<HTMLElement>('[data-checkout-empty]');
+	const mainSection = document.querySelector<HTMLElement>('[data-checkout-main]');
+	const successSection = document.querySelector<HTMLElement>('[data-checkout-success]');
+	const successRefText = document.querySelector<HTMLElement>('[data-success-ref-text]');
+
+	const form = document.querySelector<HTMLFormElement>('[data-checkout-form]');
+	const provinceSelect = document.querySelector<HTMLSelectElement>('[data-checkout-province]');
+	const noteTextarea = document.querySelector<HTMLTextAreaElement>('[data-checkout-note]');
+	const cartItemsField = form?.querySelector<HTMLInputElement>('input[name="cart-items"]');
+	const nameHiddenField = form?.querySelector<HTMLInputElement>('input[name="name"]');
+	const errorBox = document.querySelector<HTMLElement>('[data-checkout-error]');
+	const submitBtn = document.querySelector<HTMLButtonElement>('[data-submit-order-btn]');
+
+	const shippingMethodDesc = document.querySelector<HTMLElement>('[data-shipping-method-desc]');
+	const shippingMethodFee = document.querySelector<HTMLElement>('[data-shipping-method-fee]');
+	const gcashPanel = document.querySelector<HTMLElement>('[data-gcash-panel]');
+	const paymentRefInput = document.querySelector<HTMLInputElement>('[data-payment-ref]');
+
+	const summaryList = document.querySelector<HTMLElement>('[data-summary-items-list]');
+	const summarySubtotal = document.querySelector<HTMLElement>('[data-summary-subtotal]');
+	const summaryShipping = document.querySelector<HTMLElement>('[data-summary-shipping]');
+	const summaryTotal = document.querySelector<HTMLElement>('[data-summary-total]');
+
+	const rawThumbnails: unknown = JSON.parse(summaryList?.dataset.thumbnailSources ?? '{}');
+	const thumbnailSources = new Map<string, string>(Object.entries(rawThumbnails as Record<string, string>));
+
+	// Preload note
+	if (noteTextarea) {
+		noteTextarea.value = orderNote.get();
+		noteTextarea.addEventListener('input', () => orderNote.set(noteTextarea.value));
+	}
+
+	// Preload province
+	if (provinceSelect && shippingProvince.get()) {
+		provinceSelect.value = shippingProvince.get();
+	}
+
+	// Toggle GCash Panel
+	form?.querySelectorAll<HTMLInputElement>('input[name="payment-type"]').forEach(radio => {
+		radio.addEventListener('change', () => {
+			const isGCash = radio.value === 'gcash';
+			gcashPanel?.classList.toggle('hidden', !isGCash);
+			if (paymentRefInput) paymentRefInput.required = isGCash;
+		});
+	});
+
+	function updateSummary() {
+		const items = cartItems.get();
+
+		if (!items.length) {
+			mainSection?.classList.add('hidden');
+			emptySection?.classList.remove('hidden');
+			return;
+		}
+
+		mainSection?.classList.remove('hidden');
+		emptySection?.classList.add('hidden');
+
+		// Render item rows matching PDF Page 1
+		if (summaryList) {
+			summaryList.innerHTML = items
+				.map(item => {
+					const product = products.find(p => p.slug === item.slug);
+					const title = product?.title ?? item.title;
+					const image = thumbnailSources.get(item.slug) ?? '';
+					const unitPrice = getCartItemPrice(item);
+					const lineTotal = unitPrice * item.qty;
+
+					const size = item.variant.includes('·')
+						? item.variant.split('·').pop()?.trim().toUpperCase()
+						: item.variant.toUpperCase();
+
+					const fullSizeName: Record<string, string> = {
+						XS: 'Extra Small',
+						S: 'Small',
+						M: 'Medium',
+						L: 'Large',
+						XL: 'Extra Large',
+						'2XL': '2 Extra Large',
+					};
+					const displaySize = (fullSizeName[size ?? ''] || size) ?? '';
+
+					return `
+						<div class="py-3 flex items-center gap-3.5">
+							<div class="relative h-16 w-14 bg-white border border-hairline shrink-0 p-1">
+								<img
+									src="${escapeHTML(image)}"
+									alt="${escapeHTML(title)}"
+									class="h-full w-full object-contain"
+									loading="lazy"
+								/>
+								<span class="absolute -top-1.5 -right-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-ink text-white font-title text-[10px] font-bold px-1">
+									${item.qty}
+								</span>
+							</div>
+							<div class="flex-1 min-w-0">
+								<p class="font-title text-xs font-semibold uppercase tracking-wider text-ink leading-tight">
+									${escapeHTML(title)}
+								</p>
+								<p class="text-[11px] text-navy/70 mt-0.5">
+									${escapeHTML(displaySize)}
+								</p>
+							</div>
+							<span class="font-sans text-xs font-bold text-ink">
+								₱${lineTotal.toFixed(2)}
+							</span>
+						</div>
+					`;
+				})
+				.join('');
+		}
+
+		const subtotal = cartSubtotal(items);
+		if (summarySubtotal) summarySubtotal.textContent = `₱${subtotal.toFixed(2)}`;
+
+		// Province shipping calculation
+		const selectedOpt = provinceSelect?.selectedOptions[0];
+		const zoneId = selectedOpt?.dataset.zone || shippingZoneId.get();
+		const zone = zoneById(zoneId);
+
+		if (zone) {
+			const itemCount = items.reduce((sum, i) => sum + i.qty, 0);
+			const fee = calculateShippingFee(zone.id, itemCount);
+			const grandTotal = subtotal + fee;
+
+			const feeLabel = fee === 0 ? 'FREE' : `₱${fee.toFixed(2)}`;
+			if (summaryShipping) summaryShipping.textContent = feeLabel;
+			if (shippingMethodFee) shippingMethodFee.textContent = feeLabel;
+			if (shippingMethodDesc) {
+				shippingMethodDesc.textContent = `Standard courier delivery to ${zone.label} in ${zone.days} business days`;
+			}
+			if (summaryTotal) summaryTotal.textContent = `₱${grandTotal.toFixed(2)}`;
+		} else {
+			if (summaryShipping) summaryShipping.textContent = 'Enter shipping address';
+			if (shippingMethodFee) shippingMethodFee.textContent = 'Pending';
+			if (shippingMethodDesc) {
+				shippingMethodDesc.textContent = 'Select your province to view delivery schedule';
+			}
+			if (summaryTotal) summaryTotal.textContent = `₱${subtotal.toFixed(2)}`;
+		}
+	}
+
+	provinceSelect?.addEventListener('change', () => {
+		const selectedOpt = provinceSelect.selectedOptions[0];
+		if (selectedOpt?.dataset.zone) {
+			shippingZoneId.set(selectedOpt.dataset.zone);
+			shippingProvince.set(provinceSelect.value);
+		}
+		updateSummary();
+	});
+
+	// Form Submission
+	form?.addEventListener('submit', async e => {
+		e.preventDefault();
+		if (errorBox) errorBox.classList.add('hidden');
+
+		// Sync combined name
+		const first = (form.querySelector<HTMLInputElement>('input[name="first-name"]')?.value || '').trim();
+		const last = (form.querySelector<HTMLInputElement>('input[name="last-name"]')?.value || '').trim();
+		if (nameHiddenField) nameHiddenField.value = `${first} ${last}`.trim();
+
+		// Sync cart items
+		if (cartItemsField) {
+			cartItemsField.value = JSON.stringify(
+				cartItems.get().map(({ sku, qty }) => ({ sku, qty })),
+			);
+		}
+
+		if (!form.checkValidity()) {
+			form.reportValidity();
+			return;
+		}
+
+		if (submitBtn) {
+			submitBtn.disabled = true;
+			submitBtn.textContent = 'Processing order…';
+		}
+
+		try {
+			const formData = new FormData(form);
+			const result = await submitOrder(formData);
+
+			if (result.ok) {
+				mainSection?.classList.add('hidden');
+				emptySection?.classList.add('hidden');
+				successSection?.classList.remove('hidden');
+				if (successRefText) {
+					const raw = result.orderReference || 'KN-SUCCESS';
+					successRefText.textContent = raw.startsWith('#') ? raw.slice(1) : raw;
+				}
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+				return;
+			}
+
+			if (errorBox) {
+				errorBox.classList.remove('hidden');
+				errorBox.textContent = result.message || 'We could not complete your order. Please check your details and try again.';
+			}
+		} catch (err) {
+			if (errorBox) {
+				errorBox.classList.remove('hidden');
+				errorBox.textContent = 'An unexpected connection error occurred. Please try again.';
+			}
+		} finally {
+			if (submitBtn) {
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Complete order';
+			}
+		}
+	});
+
+	cartItems.subscribe(updateSummary);
+	updateSummary();
+
+	// Check if page loaded with an existing order reference
+	const urlRef = new URLSearchParams(window.location.search).get('ref');
+	if (urlRef) {
+		mainSection?.classList.add('hidden');
+		emptySection?.classList.add('hidden');
+		successSection?.classList.remove('hidden');
+		if (successRefText) {
+			const clean = urlRef.startsWith('#') ? urlRef.slice(1) : urlRef;
+			successRefText.textContent = clean;
+		}
+	}
+</script>
