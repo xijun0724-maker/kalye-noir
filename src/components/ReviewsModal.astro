@@ -190,8 +190,8 @@
 		</div>
 	</div>
 
-	<!-- Reviews Cards Grid (Visible when reviews exist, matches screenshot layout) -->
-	<div data-reviews-grid class="hidden mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+	<!-- Reviews Cards Container (Centered flex layout for single and multi-card displays) -->
+	<div data-reviews-grid class="hidden mt-8 flex flex-wrap justify-center gap-6">
 		<!-- Populated via JavaScript from localStorage -->
 	</div>
 
@@ -278,14 +278,14 @@
 								</div>`;
 
 						return `
-							<article class="flex flex-col border border-plate bg-white overflow-hidden shadow-xs rounded-none">
+							<article class="flex flex-col border border-plate bg-white overflow-hidden shadow-xs rounded-none w-full max-w-[280px] text-center">
 								${photoBlock}
-								<div class="p-4 flex flex-col flex-1">
+								<div class="p-4 flex flex-col items-center text-center flex-1">
 									<h4 class="font-title text-sm font-semibold uppercase tracking-wider text-ink">${item.author}</h4>
 									<p class="text-[11px] text-navy mt-0.5">${item.date}</p>
 									<p class="text-xs text-accent tracking-tighter mt-1" aria-label="${item.rating} out of 5 stars">${stars}</p>
-									<p class="font-sans text-xs text-ink/90 mt-2 flex-1 leading-relaxed">${item.content}</p>
-									<p class="font-title text-[10px] uppercase tracking-wider text-navy mt-3 pt-2 border-t border-hairline/60">
+									${item.content ? `<p class="font-sans text-xs text-ink/90 mt-2 flex-1 leading-relaxed">${item.content}</p>` : ''}
+									<p class="font-title text-[10px] uppercase tracking-wider text-navy mt-3 pt-2 border-t border-hairline/60 w-full text-center">
 										${item.product}
 									</p>
 								</div>
