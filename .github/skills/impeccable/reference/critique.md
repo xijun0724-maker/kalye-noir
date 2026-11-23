@@ -35,6 +35,7 @@ Resolve one stable target, run two independent assessments, synthesize a design 
 Delegate Assessment A and Assessment B to separate sub-agents. They must not see each other's output. Do not show findings to the user until synthesis.
 
 Sub-agent gate (all harnesses):
+
 - Unless a harness-specific gate below overrides this, spawn A and B as two isolated, parallel sub-agents whenever a sub-agent/Task tool is exposed. This is the default and is mandatory; do not run them inline because it is faster.
 - Desktop apps (see **Desktop apps** under Assessment B) are the one exception to parallel: both sub-agents would drive the app's single window at once. Seed the window, spawn A, wait until it has finished and put the window back, then spawn B. They are still two isolated sub-agents, so this is not the degraded path.
 - "Unavailable" means exactly one thing: no sub-agent/Task tool is exposed in this session (or, on harnesses that ask, the user declined). It does not mean inconvenient.
@@ -50,6 +51,7 @@ If browser automation is available, each assessment creates its own new tab. Nev
 Read relevant source files and visually inspect the live page when browser automation is available. Think like a design director.
 
 Evaluate:
+
 - **Design specificity**: Is the composition, interaction, and visual language grounded in this product, or could an unrelated product use it unchanged? Make this judgment before seeing detector output.
 - **Holistic design**: hierarchy, IA, emotional fit, discoverability, composition, typography, color, accessibility, states, copy, and edge cases.
 - **Cognitive load**: consult the Cognitive Load Assessment in [critique-rubric.md](critique-rubric.md); report checklist failures and decision points with >4 visible options.
@@ -67,6 +69,7 @@ Return: design-specificity verdict, heuristic scores, cognitive load, emotional 
 Run the bundled detector and browser visualization evidence. On web, Assessment B is mandatory and must remain isolated from Assessment A until both are complete.
 
 CLI scan:
+
 ```bash
 .github/skills/impeccable/scripts/impeccable detect --json [target]
 ```
@@ -109,28 +112,30 @@ Structure your feedback as a design director would:
 #### Report header provenance
 
 The report's first line MUST declare how the assessments were run, so a degraded run is never silent:
+
 - Dual-agent: `Method: dual-agent (A: <agent-id> · B: <agent-id>)`
 - Degraded: `⚠️ DEGRADED: single-context (<reason, e.g. no sub-agent tool exposed>)`
 - Native: `Method: design review only (detector not applicable, native platform)`
 
 #### Design Health Score
-> *Use Assessment A's scores; the bands are under [Scoring the report](#scoring-the-report) below.*
+
+> _Use Assessment A's scores; the bands are under [Scoring the report](#scoring-the-report) below._
 
 Present the Nielsen's 10 heuristics scores as a table:
 
-| # | Heuristic | Score | Key Issue |
-|---|-----------|-------|-----------|
-| 1 | Visibility of System Status | ? | [specific finding or "n/a" if solid] |
-| 2 | Match System / Real World | ? | |
-| 3 | User Control and Freedom | ? | |
-| 4 | Consistency and Standards | ? | |
-| 5 | Error Prevention | ? | |
-| 6 | Recognition Rather Than Recall | ? | |
-| 7 | Flexibility and Efficiency | ? | |
-| 8 | Aesthetic and Minimalist Design | ? | |
-| 9 | Error Recovery | ? | |
-| 10 | Help and Documentation | ? | |
-| **Total** | | **??/[applicable max]** | **[Rating band]** |
+| #         | Heuristic                       | Score                   | Key Issue                            |
+| --------- | ------------------------------- | ----------------------- | ------------------------------------ |
+| 1         | Visibility of System Status     | ?                       | [specific finding or "n/a" if solid] |
+| 2         | Match System / Real World       | ?                       |                                      |
+| 3         | User Control and Freedom        | ?                       |                                      |
+| 4         | Consistency and Standards       | ?                       |                                      |
+| 5         | Error Prevention                | ?                       |                                      |
+| 6         | Recognition Rather Than Recall  | ?                       |                                      |
+| 7         | Flexibility and Efficiency      | ?                       |                                      |
+| 8         | Aesthetic and Minimalist Design | ?                       |                                      |
+| 9         | Error Recovery                  | ?                       |                                      |
+| 10        | Help and Documentation          | ?                       |                                      |
+| **Total** |                                 | **??/[applicable max]** | **[Rating band]**                    |
 
 The applicable maximum is 4 times the number of heuristics you actually scored: **/40** when all ten apply, **/32** when two are `n/a`. Never print `/40` over a partial set.
 
@@ -149,22 +154,27 @@ Be honest with scores. A 4 means genuinely excellent. Most real interfaces score
 **Visual overlays** (if injection succeeded): Tell the user that overlays are now visible in the **[Human]** tab in their browser, highlighting the detected issues. Summarize what the console output reported. If browser visualization was attempted but injection failed, say that no reliable user-visible overlay is available and report the fallback signal instead.
 
 #### Overall Impression
+
 A brief gut reaction: what works, what doesn't, and the single biggest opportunity.
 
 #### What's Working
+
 Highlight 2-3 things done well. Be specific about why they work.
 
 #### Priority Issues
+
 The 3-5 most impactful design problems, ordered by importance.
 
 For each issue, tag with **P0-P3 severity** (see [Issue Severity below](#issue-severity-p0p3) for definitions):
+
 - **[P?] What**: Name the problem clearly
 - **Why it matters**: How this hurts users or undermines goals
 - **Fix**: What to do about it (be concrete)
 - **Suggested command**: Which command could address this (from: /impeccable adapt, /impeccable animate, /impeccable audit, /impeccable bolder, /impeccable clarify, /impeccable colorize, /impeccable critique, /impeccable delight, /impeccable distill, /impeccable document, /impeccable harden, /impeccable layout, /impeccable onboard, /impeccable optimize, /impeccable overdrive, /impeccable polish, /impeccable quieter, /impeccable shape, /impeccable typeset)
 
 #### Persona Red Flags
-> *Use Assessment A's persona red flags; it selected the personas from [critique-rubric.md](critique-rubric.md).*
+
+> _Use Assessment A's persona red flags; it selected the personas from [critique-rubric.md](critique-rubric.md)._
 
 Assessment A selected 2-3 personas most relevant to this interface type (the selection table in critique-rubric.md). If PRODUCT.md has a `## Users` section, also generate 1-2 project-specific personas from it and from `## Brand Commitments`.
 
@@ -177,15 +187,19 @@ For each selected persona, walk through the primary user action and list specifi
 Be specific. Name the exact elements and interactions that fail each persona. Don't write generic persona descriptions; write what broke for them.
 
 #### Minor Observations
+
 Quick notes on smaller issues worth addressing.
 
 #### Questions to Consider
+
 Provocative questions that might unlock better solutions:
+
 - "What if the primary action were more prominent?"
 - "Does this need to feel this complex?"
 - "What would a confident version of this look like?"
 
 **Remember**:
+
 - Be direct. Vague feedback wastes everyone's time.
 - Be specific. "The submit button," not "some elements."
 - Say what's wrong AND why it matters to users.
@@ -212,18 +226,22 @@ Skip this step if the Setup slug was null (vague or root-level target), and say 
    This is a copy of the report you already delivered above, for later commands to read. It is not delivery. If you find yourself composing the report for the first time inside this heredoc, you have skipped Deliver the Report; go back and send it.
 
 2. **Pass the structured metadata** through `IMPECCABLE_CRITIQUE_META` (JSON), then run the write command:
+
    ```bash
    IMPECCABLE_CRITIQUE_META='{"target":"<user phrasing>","total_score":<n>,"max_score":<n>,"na_heuristics":"<comma-separated numbers, or empty>","p0_count":<n>,"p1_count":<n>}' \
      .github/skills/impeccable/scripts/impeccable critique-storage write "<resolved target>" <body-file>
    ```
+
    `max_score` is the applicable maximum from the heuristic table (40 when every heuristic applied), so a later run can tell a renormalized total from a full one. For a local file target, the helper also records an exact content fingerprint so polish can distinguish the assessed bytes from later edits without relying on Git state or timestamps. The helper prints the absolute path it wrote, and sometimes one more line (`Saved to Impeccable: <link>`, `Not saved to Impeccable: <reason>` or `Keep this critique's history: impeccable login`); put that line in the close word for word. Leave that file on disk. Polish closes it; this run does not. `REPORTS OFF:` instead means the project opted out of saved reports: skip the trend read and carry on.
 
 3. **Delete the temp body file** after the write attempt completes, whether the write succeeded or failed. If deletion fails, mention `temp-file cleanup failed: <reason>` briefly in the final output, but do not block the critique.
 
 4. **Read the trend** for context:
+
    ```bash
    .github/skills/impeccable/scripts/impeccable critique-storage trend "<resolved target>" 5
    ```
+
    This returns a JSON array of the last 5 frontmatter entries (including the one you just wrote).
 
 5. **Append a single line to the user-visible output**, after the report and before the questions:
@@ -256,6 +274,7 @@ Ask questions along these lines (adapt to the specific findings; do not ask gene
 4. **Constraints** (optional; only ask if relevant): If the findings touch many areas, ask if anything is off-limits. For example: "Should any sections stay as-is?" This prevents the plan from touching things the user considers done.
 
 **Rules for questions**:
+
 - Every question must reference specific findings from the report. Never ask generic "who is your audience?" questions.
 - Keep it to 2-4 questions maximum. Respect the user's time.
 - Offer concrete options, not open-ended prompts.
@@ -273,9 +292,10 @@ List recommended commands in priority order, based on the user's answers:
 
 1. **`/command-name`**: Brief description of what to fix (specific context from critique findings)
 2. **`/command-name`**: Brief description (specific context)
-...
+   ...
 
 **Rules for recommendations**:
+
 - Only recommend commands from: /impeccable adapt, /impeccable animate, /impeccable audit, /impeccable bolder, /impeccable clarify, /impeccable colorize, /impeccable critique, /impeccable delight, /impeccable distill, /impeccable document, /impeccable harden, /impeccable layout, /impeccable onboard, /impeccable optimize, /impeccable overdrive, /impeccable polish, /impeccable quieter, /impeccable shape, /impeccable typeset
 - Order by the user's stated priorities first, then by impact
 - Each item's description should carry enough context that the command knows what to focus on
@@ -303,13 +323,13 @@ Assessment A scores against [critique-rubric.md](critique-rubric.md): the cognit
 
 **Total possible**: 40 points (10 heuristics × 4 max)
 
-| Score Range | Rating | What It Means |
-|-------------|--------|---------------|
-| 36–40 | Excellent | Minor polish only; ship it |
-| 28–35 | Good | Address weak areas, solid foundation |
-| 20–27 | Acceptable | Significant improvements needed before users are happy |
-| 12–19 | Poor | Major UX overhaul required; core experience broken |
-| 0–11 | Critical | Redesign needed; unusable in current state |
+| Score Range | Rating     | What It Means                                          |
+| ----------- | ---------- | ------------------------------------------------------ |
+| 36–40       | Excellent  | Minor polish only; ship it                             |
+| 28–35       | Good       | Address weak areas, solid foundation                   |
+| 20–27       | Acceptable | Significant improvements needed before users are happy |
+| 12–19       | Poor       | Major UX overhaul required; core experience broken     |
+| 0–11        | Critical   | Redesign needed; unusable in current state             |
 
 When heuristics were scored `n/a`, the maximum is lower than 40; read the band off the percentage instead of the raw number (90%+ Excellent, 70%+ Good, 50%+ Acceptable, 30%+ Poor, below that Critical). 24/32 is 75%, so Good.
 
@@ -319,11 +339,11 @@ When heuristics were scored `n/a`, the maximum is lower than 40; read the band o
 
 Tag each individual issue found during scoring with a priority level:
 
-| Priority | Name | Description | Action |
-|----------|------|-------------|--------|
-| **P0** | Blocking | Prevents task completion entirely | Fix immediately; this is a showstopper |
-| **P1** | Major | Causes significant difficulty or confusion | Fix before release |
-| **P2** | Minor | Annoyance, but workaround exists | Fix in next pass |
-| **P3** | Polish | Nice-to-fix, no real user impact | Fix if time permits |
+| Priority | Name     | Description                                | Action                                 |
+| -------- | -------- | ------------------------------------------ | -------------------------------------- |
+| **P0**   | Blocking | Prevents task completion entirely          | Fix immediately; this is a showstopper |
+| **P1**   | Major    | Causes significant difficulty or confusion | Fix before release                     |
+| **P2**   | Minor    | Annoyance, but workaround exists           | Fix in next pass                       |
+| **P3**   | Polish   | Nice-to-fix, no real user impact           | Fix if time permits                    |
 
 **Tip**: If you're unsure between two levels, ask: "Would a user contact support about this?" If yes, it's at least P1.

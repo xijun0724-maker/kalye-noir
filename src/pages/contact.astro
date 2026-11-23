@@ -1,81 +1,126 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import { contact } from '../config/site';
+
+const isIncidentSuccess = Astro.url.searchParams.get('incident') === '1';
 ---
 
 <MainLayout
-  title="Contact Us · KALYE NOIR Street Wear Manila"
-  description="Reach the Kalye Noir team for order, shipping, sizing or product concerns: mobile, email and the official Facebook page are all listed here."
+	title="Contact Us · KALYE NOIR Street Wear Manila"
+	description="Reach the Kalye Noir team for order, shipping, sizing or product concerns: mobile, email and the official Facebook page are all listed here."
 >
-  <div class="wrap pt-7">
-    <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
-      <a href="/" class="transition-colors hover:text-registration">Home</a>
-      <span aria-hidden="true">/</span>
-      <span class="text-ink">Contact Us</span>
-    </nav>
-  </div>
+	<div class="wrap pt-7">
+		<nav
+			class="meta flex items-center gap-2 text-muted"
+			aria-label="Breadcrumb"
+		>
+			<a href="/" class="transition-colors hover:text-registration">
+				Home
+			</a>
+			<span aria-hidden="true">/</span>
+			<span class="text-ink">Contact Us</span>
+		</nav>
+	</div>
 
-  <section class="wrap py-12">
-    <header class="text-center">
-      <h1 class="display reveal text-4xl sm:text-5xl">Contact Us</h1>
-      <p class="meta mx-auto mt-4 max-w-xl text-muted">
-        Direct dispatch line, studio email, and order support.
-      </p>
-    </header>
+	<section class="wrap py-12">
+		{isIncidentSuccess ? (
+			<div class="text-center">
+				<div class="mb-6 flex h-16 w-16 items-center justify-center border border-dashed border-line mx-auto">
+					<span
+						class="h-3 w-3 rotate-45 bg-registration"
+						aria-hidden="true"
+					></span>
+				</div>
+				<h1 class="display reveal text-4xl sm:text-5xl">
+					Incident report received
+				</h1>
+				<p class="mt-6 max-w-md mx-auto text-sm leading-relaxed text-muted">
+					Your report was submitted. The support team will review the details
+					and contact you if more information is needed.
+				</p>
+				<a href="/products" class="btn btn-primary mt-8 inline-block">
+					Explore Batch 001
+				</a>
+			</div>
+		) : (
+			<>
+				<header class="text-center">
+					<h1 class="display reveal text-4xl sm:text-5xl">Contact Us</h1>
+					<p class="meta mx-auto mt-4 max-w-xl text-muted">
+						Direct dispatch line, studio email, and order support.
+					</p>
+				</header>
 
-    <div class="mx-auto mt-12 max-w-xl space-y-6">
-      <div class="border border-line bg-paper p-6">
-        <p class="meta text-muted">Phone Inquiry</p>
-        <p class="mt-2 text-sm font-semibold text-ink">Orders & Shipping Desk</p>
-        <p class="mt-1 text-sm text-muted">
-          Mobile: <a href={`tel:${contact.mobile.replace(/\s+/g, '')}`} class="tap [overflow-wrap:anywhere] font-medium text-ink underline underline-offset-4 transition-colors hover:text-registration">{contact.mobile}</a>
-        </p>
-      </div>
+				<div class="mx-auto mt-12 max-w-xl space-y-6">
+					<div class="border border-line bg-paper p-6">
+						<p class="meta text-muted">Phone Inquiry</p>
+						<p class="mt-2 text-sm font-semibold text-ink">
+							Orders & Shipping Desk
+						</p>
+						<p class="mt-1 text-sm text-muted">
+							Mobile:{' '}
+							<a
+								href={`tel:${contact.mobile.replace(/\s+/g, '')}`}
+								class="tap [overflow-wrap:anywhere] font-medium text-ink underline underline-offset-4 transition-colors hover:text-registration"
+							>
+								{contact.mobile}
+							</a>
+						</p>
+					</div>
 
-      <div class="border border-line bg-paper p-6">
-        <p class="meta text-muted">Direct Email</p>
-        <p class="mt-2 text-sm font-semibold text-ink">General & Sizing Concerns</p>
-        <p class="mt-1 text-sm">
-          <a
-            href={`mailto:${contact.email}`}
-            class="tap [overflow-wrap:anywhere] text-ink underline underline-offset-4 transition-colors hover:text-registration"
-          >
-            {contact.email}
-          </a>
-        </p>
-      </div>
+					<div class="border border-line bg-paper p-6">
+						<p class="meta text-muted">Direct Email</p>
+						<p class="mt-2 text-sm font-semibold text-ink">
+							General & Sizing Concerns
+						</p>
+						<p class="mt-1 text-sm">
+							<a
+								href={`mailto:${contact.email}`}
+								class="tap [overflow-wrap:anywhere] text-ink underline underline-offset-4 transition-colors hover:text-registration"
+							>
+								{contact.email}
+							</a>
+						</p>
+					</div>
 
-      <div class="border border-line bg-paper p-6">
-        <p class="meta text-muted">Official Channel</p>
-        <p class="mt-2 text-sm font-semibold text-ink">Facebook Community Page</p>
-        <p class="mt-1 text-sm">
-          <a
-            href={`https://${contact.facebook}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="tap [overflow-wrap:anywhere] text-ink underline underline-offset-4 transition-colors hover:text-registration"
-          >
-            {contact.facebook}
-          </a>
-        </p>
-      </div>
+					<div class="border border-line bg-paper p-6">
+						<p class="meta text-muted">Official Channel</p>
+						<p class="mt-2 text-sm font-semibold text-ink">
+							Facebook Community Page
+						</p>
+						<p class="mt-1 text-sm">
+							<a
+								href={`https://${contact.facebook}`}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="tap [overflow-wrap:anywhere] text-ink underline underline-offset-4 transition-colors hover:text-registration"
+							>
+								{contact.facebook}
+							</a>
+						</p>
+					</div>
 
-      <div class="border border-line bg-ink p-6 text-paper">
-        <div class="flex items-center gap-2">
-          <span class="h-2 w-2 rotate-45 bg-registration" aria-hidden="true"></span>
-          <span class="meta text-paper/70">Order Claims</span>
-        </div>
-        <p class="mt-2 text-base font-semibold">Missing, damaged, or incorrect items?</p>
-        <p class="mt-1 text-xs text-paper/80 leading-relaxed">
-          File an official claims ticket with your order slip and photo verification so our team can resolve it.
-        </p>
-        <a
-          href="/incident-report"
-          class="btn btn-invert mt-5 inline-block"
-        >
-          File Incident Report →
-        </a>
-      </div>
-    </div>
-  </section>
+					<div class="border border-line bg-ink p-6 text-paper">
+						<div class="flex items-center gap-2">
+							<span
+								class="h-2 w-2 rotate-45 bg-registration"
+								aria-hidden="true"
+							></span>
+							<span class="meta text-paper/70">Order Claims</span>
+						</div>
+						<p class="mt-2 text-base font-semibold">
+							Missing, damaged, or incorrect items?
+						</p>
+						<p class="mt-1 text-xs text-paper/80 leading-relaxed">
+							File an official claims ticket with your order slip and photo
+							verification so our team can resolve it.
+						</p>
+						<a href="/incident-report" class="btn btn-invert mt-5 inline-block">
+							File Incident Report →
+						</a>
+					</div>
+				</div>
+			</>
+		)}
+	</section>
 </MainLayout>

@@ -5,173 +5,225 @@ import { getImage } from 'astro:assets';
 import { productArt } from '../data/productArt';
 
 const thumbnails = Object.fromEntries(
-  await Promise.all(
-    Object.entries(productArt).map(async ([slug, image]) => {
-      const thumbnail = await getImage({ src: image, width: 128, format: 'webp', quality: 80 });
-      return [slug, thumbnail.src];
-    })
-  )
+	await Promise.all(
+		Object.entries(productArt).map(async ([slug, image]) => {
+			const thumbnail = await getImage({
+				src: image,
+				width: 128,
+				format: 'webp',
+				quality: 80,
+			});
+			return [slug, thumbnail.src];
+		}),
+	),
 );
 ---
 
-<dialog data-cart-panel class="cart-dialog shadow-2xl" aria-label="Shopping cart">
-  <div class="flex items-center justify-between border-b border-line px-5 py-5">
-    <h2 class="meta text-ink">Cart</h2>
-    <button type="button" class="-m-3 p-3 text-2xl leading-none" data-cart-close aria-label="Close cart">
-      <span aria-hidden="true">×</span>
-    </button>
-  </div>
+<dialog
+	data-cart-panel
+	class="cart-dialog shadow-2xl"
+	aria-label="Shopping cart"
+>
+	<div class="flex items-center justify-between border-b border-line px-5 py-5">
+		<h2 class="meta text-ink">Cart</h2>
+		<button
+			type="button"
+			class="-m-3 p-3 text-2xl leading-none"
+			data-cart-close
+			aria-label="Close cart"
+		>
+			<span aria-hidden="true">×</span>
+		</button>
+	</div>
 
-  <div
-    class="flex-1 overflow-y-auto px-5"
-    data-cart-items
-    data-thumbnail-sources={JSON.stringify(thumbnails)}
-  ></div>
+	<div
+		class="flex-1 overflow-y-auto px-5"
+		data-cart-items
+		data-thumbnail-sources={JSON.stringify(thumbnails)}
+	></div>
 
-  <div class="border-t border-line px-5 py-5">
-    <div class="mb-3 flex items-center justify-between text-muted">
-      <span class="flex items-center gap-1.5 font-condensed text-[0.6875rem] uppercase tracking-[0.2em] text-ink/75">
-        <svg viewBox="0 0 24 24" width="13" height="13" class="text-registration" fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-        </svg>
-        Saved to device
-      </span>
-      <span class="font-condensed text-[0.6875rem] uppercase tracking-[0.2em] text-muted">Order Request Slip</span>
-    </div>
-    <label class="label mb-2 block" for="drawer-order-note">Add order note</label>
-    <textarea
-      id="drawer-order-note"
-      data-cart-note
-      rows="2"
-      placeholder="How can we help you?"
-      class="w-full border border-line-strong bg-transparent px-3 py-2 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
-    ></textarea>
-    <p class="meta mt-3 text-muted">Estimated delivery confirmed post-request</p>
-    <a
-      href="/cart"
-      class="meta mt-4 block text-center text-muted underline underline-offset-4 hover:text-registration"
-      >Go to cart</a
-    >
-    <a href="/checkout" data-drawer-checkout class="btn btn-primary mt-2 w-full">Send Order Request</a>
-  </div>
+	<div class="border-t border-line px-5 py-5">
+		<div class="mb-3 flex items-center justify-between text-muted">
+			<span class="flex items-center gap-1.5 font-condensed text-[0.6875rem] uppercase tracking-[0.2em] text-ink/75">
+				<svg
+					viewBox="0 0 24 24"
+					width="13"
+					height="13"
+					class="text-registration"
+					fill="currentColor"
+				>
+					<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+				</svg>
+				Saved to device
+			</span>
+			<span class="font-condensed text-[0.6875rem] uppercase tracking-[0.2em] text-muted">
+				Order Request Slip
+			</span>
+		</div>
+		<label class="label mb-2 block" for="drawer-order-note">
+			Add order note
+		</label>
+		<textarea
+			id="drawer-order-note"
+			data-cart-note
+			rows="2"
+			placeholder="How can we help you?"
+			class="w-full border border-line-strong bg-transparent px-3 py-2 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
+		></textarea>
+		<p class="meta mt-3 text-muted">
+			Estimated delivery confirmed post-request
+		</p>
+		<a
+			href="/cart"
+			class="meta mt-4 block text-center text-muted underline underline-offset-4 hover:text-registration"
+		>
+			Go to cart
+		</a>
+		<a href="/cart" data-drawer-checkout class="btn btn-primary mt-2 w-full">
+			Go to Cart & Send Request
+		</a>
+	</div>
 </dialog>
 
 <script>
-  import {
-    isCartOpen,
-    cartItems,
-    cartCount,
-    removeFromCart,
-    stepQty,
-    orderNote,
-  } from '../stores/cartStore';
-  import { ITEM_PRICE, products } from '../data/catalog';
+	import {
+		isCartOpen,
+		cartItems,
+		cartCount,
+		removeFromCart,
+		stepQty,
+		orderNote,
+		getCartItemPrice,
+	} from '../stores/cartStore';
+	import { products } from '../data/catalog';
 
-  const panel = document.querySelector<HTMLDialogElement>('[data-cart-panel]');
-  if (panel) {
-    const list = panel.querySelector<HTMLElement>('[data-cart-items]')!;
-    const note = panel.querySelector<HTMLTextAreaElement>('[data-cart-note]');
-    const checkout = panel.querySelector<HTMLAnchorElement>('[data-drawer-checkout]');
-    const rawThumbnails: unknown = JSON.parse(list.dataset.thumbnailSources ?? 'null');
-    if (typeof rawThumbnails !== 'object' || rawThumbnails === null || Array.isArray(rawThumbnails)) {
-      throw new Error('Cart thumbnail URLs are missing or invalid.');
-    }
-    const thumbnailSources = new Map<string, string>();
-    for (const [slug, source] of Object.entries(rawThumbnails)) {
-      if (typeof source !== 'string') throw new Error(`Cart thumbnail URL is invalid for ${slug}.`);
-      thumbnailSources.set(slug, source);
-    }
-    let focusIntent: { sku: string; action: string; index: number } | null = null;
+	const panel = document.querySelector<HTMLDialogElement>('[data-cart-panel]');
+	if (panel) {
+		const list = panel.querySelector<HTMLElement>('[data-cart-items]')!;
+		const note = panel.querySelector<HTMLTextAreaElement>('[data-cart-note]');
+		const checkout = panel.querySelector<HTMLAnchorElement>(
+			'[data-drawer-checkout]',
+		);
+		const rawThumbnails: unknown = JSON.parse(
+			list.dataset.thumbnailSources ?? 'null',
+		);
+		if (
+			typeof rawThumbnails !== 'object' ||
+			rawThumbnails === null ||
+			Array.isArray(rawThumbnails)
+		) {
+			throw new Error('Cart thumbnail URLs are missing or invalid.');
+		}
+		const thumbnailSources = new Map<string, string>();
+		for (const [slug, source] of Object.entries(rawThumbnails)) {
+			if (typeof source !== 'string')
+				throw new Error(`Cart thumbnail URL is invalid for ${slug}.`);
+			thumbnailSources.set(slug, source);
+		}
+		let focusIntent: { sku: string; action: string; index: number } | null =
+			null;
 
-    const escapeHTML = (value: string) =>
-      value.replace(/[&<>"']/g, (character) => {
-        const entities: Record<string, string> = {
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          '"': '&quot;',
-          "'": '&#39;',
-        };
-        return entities[character] ?? character;
-      });
+		const escapeHTML = (value: string) =>
+			value.replace(/[&<>"']/g, character => {
+				const entities: Record<string, string> = {
+					'&': '&amp;',
+					'<': '&lt;',
+					'>': '&gt;',
+					'"': '&quot;',
+					"'": '&#39;',
+				};
+				return entities[character] ?? character;
+			});
 
-    const getControl = (row: HTMLElement, action: string) => {
-      if (action === 'remove') return row.querySelector<HTMLElement>('[data-remove]');
-      return Array.from(row.querySelectorAll<HTMLElement>('[data-step]')).find(
-        (button) => button.dataset.step === action
-      ) ?? null;
-    };
+		const getControl = (row: HTMLElement, action: string) => {
+			if (action === 'remove')
+				return row.querySelector<HTMLElement>('[data-remove]');
+			return (
+				Array.from(row.querySelectorAll<HTMLElement>('[data-step]')).find(
+					button => button.dataset.step === action,
+				) ?? null
+			);
+		};
 
-    function restoreFocus() {
-      if (!focusIntent) return;
-      const intent = focusIntent;
-      focusIntent = null;
-      const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-sku]'));
-      const row = rows.find((candidate) => candidate.dataset.sku === intent.sku);
-      let target = row ? getControl(row, intent.action) : null;
-      if (!target && rows.length) {
-        const fallbackRow = rows[Math.min(intent.index, rows.length - 1)];
-        target = getControl(fallbackRow, intent.action) ?? getControl(fallbackRow, 'remove');
-      }
-      if (!target) target = list.querySelector<HTMLElement>('[data-empty-cart-focus]');
-      target?.focus();
-    }
+		function restoreFocus() {
+			if (!focusIntent) return;
+			const intent = focusIntent;
+			focusIntent = null;
+			const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-sku]'));
+			const row = rows.find(candidate => candidate.dataset.sku === intent.sku);
+			let target = row ? getControl(row, intent.action) : null;
+			if (!target && rows.length) {
+				const fallbackRow = rows[Math.min(intent.index, rows.length - 1)];
+				target =
+					getControl(fallbackRow, intent.action) ??
+					getControl(fallbackRow, 'remove');
+			}
+			if (!target)
+				target = list.querySelector<HTMLElement>('[data-empty-cart-focus]');
+			target?.focus();
+		}
 
-    const close = () => isCartOpen.set(false);
-    panel.querySelector('[data-cart-close]')?.addEventListener('click', close);
-    // Escape closes the modal natively; mirror that back into the store.
-    panel.addEventListener('close', () => isCartOpen.set(false));
-    document.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement).closest('[data-cart-open]')) isCartOpen.set(true);
-      if ((e.target as HTMLElement).closest('[data-cart-close]')) isCartOpen.set(false);
-    });
+		const close = () => isCartOpen.set(false);
+		panel.querySelector('[data-cart-close]')?.addEventListener('click', close);
+		// Escape closes the modal natively; mirror that back into the store.
+		panel.addEventListener('close', () => isCartOpen.set(false));
+		document.addEventListener('click', e => {
+			if ((e.target as HTMLElement).closest('[data-cart-open]'))
+				isCartOpen.set(true);
+			if ((e.target as HTMLElement).closest('[data-cart-close]'))
+				isCartOpen.set(false);
+		});
 
-    panel.addEventListener('click', (e) => {
-      const t = e.target as HTMLElement;
-      // A click on ::backdrop targets the dialog itself, never a child.
-      if (t === panel) return close();
-      const line = t.closest<HTMLElement>('[data-sku]');
-      const control = t.closest<HTMLElement>('[data-remove], [data-step]');
-      if (!line || !control) return;
-      const sku = line.dataset.sku!;
-      const currentItems = cartItems.get();
-      focusIntent = {
-        sku,
-        action: control.hasAttribute('data-remove') ? 'remove' : control.dataset.step ?? '',
-        index: currentItems.findIndex((item) => item.sku === sku),
-      };
-      if (control.hasAttribute('data-remove')) return removeFromCart(sku);
-      stepQty(sku, Number(control.dataset.step));
-    });
+		panel.addEventListener('click', e => {
+			const t = e.target as HTMLElement;
+			// A click on ::backdrop targets the dialog itself, never a child.
+			if (t === panel) return close();
+			const line = t.closest<HTMLElement>('[data-sku]');
+			const control = t.closest<HTMLElement>('[data-remove], [data-step]');
+			if (!line || !control) return;
+			const sku = line.dataset.sku!;
+			const currentItems = cartItems.get();
+			focusIntent = {
+				sku,
+				action: control.hasAttribute('data-remove')
+					? 'remove'
+					: (control.dataset.step ?? ''),
+				index: currentItems.findIndex(item => item.sku === sku),
+			};
+			if (control.hasAttribute('data-remove')) return removeFromCart(sku);
+			stepQty(sku, Number(control.dataset.step));
+		});
 
-    if (note) {
-      note.value = orderNote.get();
-      note.addEventListener('input', () => orderNote.set(note.value));
-    }
+		if (note) {
+			note.value = orderNote.get();
+			note.addEventListener('input', () => orderNote.set(note.value));
+		}
 
-    // aria-disabled plus pointer-events-none do not stop Enter on a link.
-    checkout?.addEventListener('click', (e) => {
-      if (!cartCount.get()) e.preventDefault();
-    });
+		// aria-disabled plus pointer-events-none do not stop Enter on a link.
+		checkout?.addEventListener('click', e => {
+			if (!cartCount.get()) e.preventDefault();
+		});
 
-    function render() {
-      const items = cartItems.get();
-      list.innerHTML = items.length
-        ? items
-            .map(
-              (i) => {
-                const product = products.find((candidate) => candidate.slug === i.slug);
-                const title = product?.title ?? String(i.title ?? 'Unknown print');
-                const alt = product?.alt ?? title;
-                const variant = String(i.variant ?? '');
-                const sku = String(i.sku ?? '');
-                const image = thumbnailSources.get(String(i.slug)) ?? '';
-                return `
+		function render() {
+			const items = cartItems.get();
+			list.innerHTML = items.length
+				? items
+						.map(i => {
+							const product = products.find(
+								candidate => candidate.slug === i.slug,
+							);
+							const title =
+								product?.title ?? String(i.title ?? 'Unknown print');
+							const alt = product?.alt ?? title;
+							const variant = String(i.variant ?? '');
+							const sku = String(i.sku ?? '');
+							const image = thumbnailSources.get(String(i.slug)) ?? '';
+							return `
           <div class="flex gap-4 border-b border-line py-4" data-sku="${escapeHTML(sku)}">
             <img src="${escapeHTML(image)}" alt="${escapeHTML(alt)}" width="72" height="90" loading="lazy" decoding="async" class="h-[90px] w-[72px] shrink-0 bg-white object-contain p-1.5" />
             <div class="flex min-w-0 flex-1 flex-col">
               <p class="font-condensed text-[0.8125rem] font-semibold uppercase leading-snug tracking-[0.12em]">${escapeHTML(title)}</p>
-              <p class="font-condensed text-sm font-bold text-ink mt-1">₱${ITEM_PRICE}</p>
+              <p class="font-condensed text-sm font-bold text-ink mt-1">₱${getCartItemPrice(i).toLocaleString()}</p>
               <p class="meta mt-0.5 text-muted">${escapeHTML(variant)}</p>
               <div class="mt-auto flex items-center gap-4 pt-3">
                 <div class="flex items-stretch border border-line">
@@ -183,10 +235,9 @@ const thumbnails = Object.fromEntries(
               </div>
             </div>
           </div>`;
-              }
-            )
-            .join('')
-        : `<div class="flex flex-col items-center justify-center py-16 text-center">
+						})
+						.join('')
+				: `<div class="flex flex-col items-center justify-center py-16 text-center">
             <div class="relative mb-4 flex h-16 w-16 items-center justify-center border border-line bg-paper">
               <svg viewBox="0 0 24 24" width="28" height="28" class="text-muted" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/>
@@ -198,72 +249,72 @@ const thumbnails = Object.fromEntries(
             <a href="/#drop" data-cart-close data-empty-cart-focus class="btn btn-primary mt-6 min-h-11 text-xs px-6 py-2.5">Explore Drop 001</a>
           </div>`;
 
-      const count = cartCount.get();
-      if (checkout) {
-        checkout.textContent = count
-          ? `Checkout · ${count} ${count === 1 ? 'item' : 'items'}`
-          : 'Checkout';
-        checkout.classList.toggle('pointer-events-none', count === 0);
-        checkout.classList.toggle('opacity-40', count === 0);
-        checkout.setAttribute('aria-disabled', String(count === 0));
-      }
-      restoreFocus();
-    }
+			const count = cartCount.get();
+			if (checkout) {
+				checkout.textContent = count
+					? `Checkout · ${count} ${count === 1 ? 'item' : 'items'}`
+					: 'Checkout';
+				checkout.classList.toggle('pointer-events-none', count === 0);
+				checkout.classList.toggle('opacity-40', count === 0);
+				checkout.setAttribute('aria-disabled', String(count === 0));
+			}
+			restoreFocus();
+		}
 
-    isCartOpen.subscribe((open) => {
-      if (open && !panel.open) panel.showModal();
-      else if (!open && panel.open) panel.close();
-    });
+		isCartOpen.subscribe(open => {
+			if (open && !panel.open) panel.showModal();
+			else if (!open && panel.open) panel.close();
+		});
 
-    cartItems.subscribe(render);
-    render();
-  }
+		cartItems.subscribe(render);
+		render();
+	}
 </script>
 
 <style>
-  /* The platform supplies the focus trap, the inert background and Escape; all
-     this adds is the slide and the scrim. */
-  .cart-dialog {
-    display: none;
-    flex-direction: column;
-    margin: 0 0 0 auto;
-    width: 100%;
-    max-width: 28rem;
-    height: 100%;
-    max-height: 100%;
-    padding: 0;
-    border: 0;
-    background: var(--color-paper);
-    color: var(--color-ink);
-    transform: translateX(100%);
-    transition:
-      transform 0.3s ease,
-      display 0.3s allow-discrete,
-      overlay 0.3s allow-discrete;
-  }
-  .cart-dialog[open] {
-    display: flex;
-    transform: none;
-  }
-  /* Open modal: the platform already makes the page inert, this stops it scrolling. */
-  :global(body:has(dialog[open])) {
-    overflow: hidden;
-  }
-  .cart-dialog::backdrop {
-    background: color-mix(in srgb, var(--color-ink) 40%, transparent);
-    transition: opacity 0.3s ease;
-  }
-  @starting-style {
-    .cart-dialog[open] {
-      transform: translateX(100%);
-    }
-    .cart-dialog[open]::backdrop {
-      opacity: 0;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .cart-dialog {
-      transition: none;
-    }
-  }
+	/* The platform supplies the focus trap, the inert background and Escape; all
+	   this adds is the slide and the scrim. */
+	.cart-dialog {
+		display: none;
+		flex-direction: column;
+		margin: 0 0 0 auto;
+		width: 100%;
+		max-width: 28rem;
+		height: 100%;
+		max-height: 100%;
+		padding: 0;
+		border: 0;
+		background: var(--color-paper);
+		color: var(--color-ink);
+		transform: translateX(100%);
+		transition:
+			transform 0.3s ease,
+			display 0.3s allow-discrete,
+			overlay 0.3s allow-discrete;
+	}
+	.cart-dialog[open] {
+		display: flex;
+		transform: none;
+	}
+	/* Open modal: the platform already makes the page inert, this stops it scrolling. */
+	:global(body:has(dialog[open])) {
+		overflow: hidden;
+	}
+	.cart-dialog::backdrop {
+		background: color-mix(in srgb, var(--color-ink) 40%, transparent);
+		transition: opacity 0.3s ease;
+	}
+	@starting-style {
+		.cart-dialog[open] {
+			transform: translateX(100%);
+		}
+		.cart-dialog[open]::backdrop {
+			opacity: 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.cart-dialog {
+			transition: none;
+		}
+	}
 </style>

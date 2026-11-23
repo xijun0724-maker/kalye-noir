@@ -8,112 +8,146 @@ import { products } from '../../data/catalog';
 import { courier } from '../../data/shipping';
 
 export function getStaticPaths() {
-  return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
+	return products.map(product => ({
+		params: { slug: product.slug },
+		props: { product },
+	}));
 }
 
 const { product } = Astro.props;
-const suggestions = products.filter((p) => p.slug !== product.slug).slice(0, 4);
+const suggestions = products.filter(p => p.slug !== product.slug).slice(0, 4);
 const sourceWidth = productArt[product.slug].width;
 ---
 
 <style>
-  [data-zoom] {
-    /* Capped at 1.6: the tee art is ~400 px wide, so deeper zoom shows upscaling. */
-    --zoom: 1.6;
-  }
-  [data-zoom] img {
-    transition: transform 300ms ease-out;
-  }
-  [data-zoom][data-zoomed] img {
-    transform: scale(var(--zoom));
-    transform-origin: var(--zoom-x, 50%) var(--zoom-y, 50%);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    [data-zoom] img {
-      transition: none;
-    }
-  }
+	[data-zoom] {
+		/* Capped at 1.6: the tee art is ~400 px wide, so deeper zoom shows upscaling. */
+		--zoom: 1.6;
+	}
+	[data-zoom] img {
+		transition: transform 300ms ease-out;
+	}
+	[data-zoom][data-zoomed] img {
+		transform: scale(var(--zoom));
+		transform-origin: var(--zoom-x, 50%) var(--zoom-y, 50%);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		[data-zoom] img {
+			transition: none;
+		}
+	}
 </style>
 
-<MainLayout title={`${product.title}: KALYE NOIR`} description={product.blurb} image={productArt[product.slug].src}>
-  <div class="wrap pt-7">
-    <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
-      <a href="/" class="transition-colors hover:text-registration">Home</a>
-      <span aria-hidden="true">/</span>
-      <a href="/products" class="transition-colors hover:text-registration">Kalye's Tee</a>
-      <span aria-hidden="true">/</span>
-      <span class="text-ink">{product.title}</span>
-    </nav>
-  </div>
+<MainLayout
+	title={`${product.title}: KALYE NOIR`}
+	description={product.blurb}
+	image={productArt[product.slug].src}
+>
+	<div class="wrap pt-7">
+		<nav
+			class="meta flex items-center gap-2 text-muted"
+			aria-label="Breadcrumb"
+		>
+			<a href="/" class="transition-colors hover:text-registration">
+				Home
+			</a>
+			<span aria-hidden="true">/</span>
+			<a href="/products" class="transition-colors hover:text-registration">
+				Kalye's Tee
+			</a>
+			<span aria-hidden="true">/</span>
+			<span class="text-ink">{product.title}</span>
+		</nav>
+	</div>
 
-  <section class="wrap grid gap-10 py-10 md:grid-cols-2 lg:gap-14">
-    <div class="relative overflow-hidden bg-white p-4" data-zoom>
-      <Image
-        src={productArt[product.slug]}
-        alt={product.alt}
-        widths={[200, 300, sourceWidth]}
-        sizes="(min-width: 768px) 45vw, 92vw"
-        format="webp"
-        fetchpriority="high"
-        loading="eager"
-        class="aspect-[4/5] w-full object-contain"
-      />
-    </div>
+	<section class="wrap grid gap-10 py-10 md:grid-cols-2 lg:gap-14">
+		<div class="relative overflow-hidden bg-white p-4" data-zoom>
+			<Image
+				src={productArt[product.slug]}
+				alt={product.alt}
+				widths={[200, 300, sourceWidth]}
+				sizes="(min-width: 768px) 45vw, 92vw"
+				format="webp"
+				fetchpriority="high"
+				loading="eager"
+				class="aspect-[4/5] w-full object-contain"
+			/>
+		</div>
 
-    <div class="md:pt-4">
-      <h1 class="display text-4xl sm:text-5xl">{product.title}</h1>
-      <p class="mt-5 max-w-prose leading-relaxed text-muted">{product.blurb}</p>
+		<div class="md:pt-4">
+			<h1 class="display text-4xl sm:text-5xl">{product.title}</h1>
+			<p class="mt-5 max-w-prose leading-relaxed text-muted">{product.blurb}</p>
 
-      <p class="mt-5 font-condensed text-xl font-bold tracking-wider text-ink">₱{product.price}</p>
+			<p class="mt-5 font-condensed text-xl font-bold tracking-wider text-ink">
+				₱253 for S–L · ₱265 for XL–2XL
+			</p>
 
-      <div class="mt-8">
-        <AddToCartForm product={product} />
-      </div>
+			<div class="mt-8">
+				<AddToCartForm product={product} />
+			</div>
 
-      <ul class="mt-8 space-y-3 border-t border-line pt-6 text-xs text-muted">
-        <li class="flex items-center gap-2.5">
-          <span class="h-1.5 w-1.5 rotate-45 bg-registration flex-shrink-0" aria-hidden="true"></span>
-          <span>Courier dispatch via {courier} · estimate calculated in cart</span>
-        </li>
-        <li class="flex items-center gap-2.5">
-          <span class="h-1.5 w-1.5 rotate-45 bg-registration flex-shrink-0" aria-hidden="true"></span>
-          <span>Allow 2–3 business days for order review and preparation; transit estimates begin at pickup</span>
-        </li>
-        <li class="flex items-center gap-2.5">
-          <span class="h-1.5 w-1.5 rotate-45 bg-registration flex-shrink-0" aria-hidden="true"></span>
-          <span>7-day return guarantee on unworn, tagged pressings</span>
-        </li>
-      </ul>
-    </div>
-  </section>
+			<ul class="mt-8 space-y-3 border-t border-line pt-6 text-xs text-muted">
+				<li class="flex items-center gap-2.5">
+					<span
+						class="h-1.5 w-1.5 rotate-45 bg-registration flex-shrink-0"
+						aria-hidden="true"
+					></span>
+					<span>
+						Courier dispatch via {courier} · estimate calculated in cart
+					</span>
+				</li>
+				<li class="flex items-center gap-2.5">
+					<span
+						class="h-1.5 w-1.5 rotate-45 bg-registration flex-shrink-0"
+						aria-hidden="true"
+					></span>
+					<span>
+						Allow 2–3 business days for order review and preparation; transit
+						estimates begin at pickup
+					</span>
+				</li>
+				<li class="flex items-center gap-2.5">
+					<span
+						class="h-1.5 w-1.5 rotate-45 bg-registration flex-shrink-0"
+						aria-hidden="true"
+					></span>
+					<span>7-day return guarantee on unworn, tagged pressings</span>
+				</li>
+			</ul>
+		</div>
+	</section>
 
-  {
-    suggestions.length > 0 && (
-      <section class="border-t border-line">
-        <div class="wrap pt-12">
-          <h2 class="display text-2xl sm:text-3xl uppercase">More Prints from Batch 001</h2>
-        </div>
-        <ProductGrid products={suggestions} />
-      </section>
-    )
-  }
+	{suggestions.length > 0 && (
+		<section class="border-t border-line">
+			<div class="wrap pt-12">
+				<h2 class="display text-2xl sm:text-3xl uppercase">
+					More Prints from Batch 001
+				</h2>
+			</div>
+			<ProductGrid products={suggestions} />
+		</section>
+	)}
 </MainLayout>
 
 <script>
-  import { zoomOrigin } from '../../lib/zoom';
+	import { zoomOrigin } from '../../lib/zoom';
 
-  // Origin follows the pointer so the back print can be read, not a fixed centre crop.
-  // Mouse and pen only: on touch the browser's own pinch-zoom already covers inspection.
-  document.querySelectorAll<HTMLElement>('[data-zoom]').forEach((frame) => {
-    const track = (event: PointerEvent) => {
-      if (event.pointerType === 'touch') return;
-      const { x, y } = zoomOrigin(frame.getBoundingClientRect(), event.clientX, event.clientY);
-      frame.style.setProperty('--zoom-x', `${x}%`);
-      frame.style.setProperty('--zoom-y', `${y}%`);
-      frame.dataset.zoomed = '';
-    };
+	// Origin follows the pointer so the back print can be read, not a fixed centre crop.
+	// Mouse and pen only: on touch the browser's own pinch-zoom already covers inspection.
+	document.querySelectorAll<HTMLElement>('[data-zoom]').forEach(frame => {
+		const track = (event: PointerEvent) => {
+			if (event.pointerType === 'touch') return;
+			const { x, y } = zoomOrigin(
+				frame.getBoundingClientRect(),
+				event.clientX,
+				event.clientY,
+			);
+			frame.style.setProperty('--zoom-x', `${x}%`);
+			frame.style.setProperty('--zoom-y', `${y}%`);
+			frame.dataset.zoomed = '';
+		};
 
-    frame.addEventListener('pointermove', track);
-    frame.addEventListener('pointerleave', () => delete frame.dataset.zoomed);
-  });
+		frame.addEventListener('pointermove', track);
+		frame.addEventListener('pointerleave', () => delete frame.dataset.zoomed);
+	});
 </script>

@@ -4,9 +4,9 @@ import type { Product } from '../data/catalog';
 import { productArt } from '../data/productArt';
 
 interface Props {
-  product: Product;
-  /** Above-the-fold cards: load eagerly so the grid's LCP image isn't deferred. */
-  priority?: boolean;
+	product: Product;
+	/** Above-the-fold cards: load eagerly so the grid's LCP image isn't deferred. */
+	priority?: boolean;
 }
 
 const { product, priority = false } = Astro.props;
@@ -14,30 +14,32 @@ const sourceWidth = productArt[product.slug].width;
 ---
 
 <a href={`/products/${product.slug}`} class="group block">
-  <div class="relative overflow-hidden bg-white p-2">
-    <Image
-      src={productArt[product.slug]}
-      alt={product.alt}
-      widths={[200, 300, sourceWidth]}
-      sizes="(min-width: 1024px) 30vw, 45vw"
-      format="webp"
-      loading={priority ? 'eager' : 'lazy'}
-      fetchpriority={priority ? 'high' : undefined}
-      decoding="async"
-      class="aspect-[4/5] w-full object-contain transition-transform duration-500 group-hover:scale-105"
-    />
-    <span class="absolute left-0 top-0 h-0.5 w-0 bg-registration transition-all duration-500 group-hover:w-full" />
-    <span class="absolute bottom-2 right-2 bg-ink px-2 py-0.5 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-paper">
-      Full-Back Print
-    </span>
-  </div>
-  <div class="pt-3">
-    <h2 class="font-condensed text-[0.8125rem] font-semibold uppercase tracking-[0.12em] text-ink transition-colors duration-200 group-hover:text-registration">
-      {product.title}
-    </h2>
-    <div class="mt-1 flex items-baseline justify-between gap-2">
-      <span class="font-condensed text-sm font-semibold text-ink">₱{product.price}</span>
-      <span class="meta text-muted">S–2XL</span>
-    </div>
-  </div>
+	<div class="relative overflow-hidden bg-white p-2">
+		<Image
+			src={productArt[product.slug]}
+			alt={product.alt}
+			widths={[200, 300, sourceWidth]}
+			sizes="(min-width: 1024px) 30vw, 45vw"
+			format="webp"
+			loading={priority ? 'eager' : 'lazy'}
+			fetchpriority={priority ? 'high' : undefined}
+			decoding="async"
+			class="aspect-[4/5] w-full object-contain transition-transform duration-500 group-hover:scale-105"
+		/>
+		<span class="absolute left-0 top-0 h-0.5 w-0 bg-registration transition-all duration-500 group-hover:w-full" />
+		<span class="absolute bottom-2 right-2 bg-ink px-2 py-0.5 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-paper">
+			Full-Back Print
+		</span>
+	</div>
+	<div class="pt-3">
+		<h2 class="font-condensed text-[0.8125rem] font-semibold uppercase tracking-[0.12em] text-ink transition-colors duration-200 group-hover:text-registration">
+			{product.title}
+		</h2>
+		<div class="mt-1 flex items-baseline justify-between gap-2">
+			<span class="font-condensed text-sm font-semibold text-ink">
+				₱{product.price}
+			</span>
+			<span class="meta text-muted">S–2XL</span>
+		</div>
+	</div>
 </a>

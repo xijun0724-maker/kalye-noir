@@ -5,104 +5,110 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
 <header class="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
-  <div class="wrap flex h-16 items-center justify-between gap-4">
-    <a
-      href="/"
-      class="tap font-display text-xl uppercase leading-none tracking-[0.18em]"
-      aria-label={`${site.name} home`}
-    >
-      {site.name}
-    </a>
+	<div class="wrap flex h-16 items-center justify-between gap-4">
+		<a
+			href="/"
+			class="tap font-display text-xl uppercase leading-none tracking-[0.18em]"
+			aria-label={`${site.name} home`}
+		>
+			{site.name}
+		</a>
 
-    <nav class="hidden lg:block" aria-label="Primary">
-      <ul class="flex items-center gap-8">
-        {
-          nav.map((item) => {
-            const itemPath = item.href.replace(/\/$/, '') || '/';
-            const isActive = currentPath === itemPath || (itemPath !== '/' && currentPath.startsWith(itemPath));
-            return (
-              <li>
-                <a
-                  href={item.href}
-                  aria-current={isActive ? 'page' : undefined}
-                  class={`relative py-1 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.26em] transition-colors ${
-                    isActive ? 'text-ink' : 'text-muted hover:text-registration'
-                  }`}
-                >
-                  {item.title}
-                  {isActive && (
-                    <span class="absolute -bottom-1 left-0 right-0 h-0.5 bg-registration" />
-                  )}
-                </a>
-              </li>
-            );
-          })
-        }
-      </ul>
-    </nav>
+		<nav class="hidden lg:block" aria-label="Primary">
+			<ul class="flex items-center gap-8">
+				{nav.map(item => {
+					const itemPath = item.href.replace(/\/$/, '') || '/';
+					const isActive =
+						currentPath === itemPath ||
+						(itemPath !== '/' && currentPath.startsWith(itemPath));
+					return (
+						<li>
+							<a
+								href={item.href}
+								aria-current={isActive ? 'page' : undefined}
+								class={`relative py-1 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.26em] transition-colors ${
+									isActive ? 'text-ink' : 'text-muted hover:text-registration'
+								}`}
+							>
+								{item.title}
+								{isActive && (
+									<span class="absolute -bottom-1 left-0 right-0 h-0.5 bg-registration" />
+								)}
+							</a>
+						</li>
+					);
+				})}
+			</ul>
+		</nav>
 
-    <div class="flex items-center gap-7">
-      <a
-        href="/contact"
-        aria-label="Contact and order inquiries"
-        class="relative text-ink/80 transition-colors before:absolute before:-inset-3 before:content-[''] hover:text-registration"
-      >
-        <svg viewBox="0 0 24 24" width="20" height="20">
-          <path
-            fill="currentColor"
-            d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"
-          />
-        </svg>
-      </a>
-      <CartButton />
-    </div>
-  </div>
+		<div class="flex items-center gap-7">
+			<a
+				href="/contact"
+				aria-label="Contact and order inquiries"
+				class="relative text-ink/80 transition-colors before:absolute before:-inset-3 before:content-[''] hover:text-registration"
+			>
+				<svg viewBox="0 0 24 24" width="20" height="20">
+					<path
+						fill="currentColor"
+						d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"
+					/>
+				</svg>
+			</a>
+			<CartButton />
+		</div>
+	</div>
 
-  <details class="group border-t border-line lg:hidden">
-    <summary
-      class="wrap flex min-h-[48px] cursor-pointer items-center justify-between py-3.5 font-condensed text-xs font-semibold uppercase tracking-[0.24em] transition-colors hover:text-registration"
-    >
-      <span>Menu</span>
-      <div class="relative flex h-5 w-5 items-center justify-center">
-        <svg viewBox="0 0 24 24" width="20" height="20" class="transition-transform duration-200 group-open:rotate-90">
-          <path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" />
-        </svg>
-      </div>
-    </summary>
-    <nav aria-label="Mobile">
-      <ul class="wrap flex flex-col gap-1 border-t border-line/40 pb-6 pt-2">
-        {
-          nav.map((item) => {
-            const itemPath = item.href.replace(/\/$/, '') || '/';
-            const isActive = currentPath === itemPath || (itemPath !== '/' && currentPath.startsWith(itemPath));
-            return (
-              <li>
-                <a
-                  href={item.href}
-                  aria-current={isActive ? 'page' : undefined}
-                  class={`flex min-h-[44px] items-center justify-between py-2 font-condensed text-base font-semibold uppercase tracking-[0.2em] transition-colors ${
-                    isActive ? 'text-registration font-bold' : 'text-ink hover:text-registration'
-                  }`}
-                >
-                  <span>{item.title}</span>
-                  {isActive && <span class="h-2 w-2 rotate-45 bg-registration" />}
-                </a>
-              </li>
-            );
-          })
-        }
-      </ul>
-    </nav>
-  </details>
+	<details class="group border-t border-line lg:hidden">
+		<summary class="wrap flex min-h-[48px] cursor-pointer items-center justify-between py-3.5 font-condensed text-xs font-semibold uppercase tracking-[0.24em] transition-colors hover:text-registration">
+			<span>Menu</span>
+			<div class="relative flex h-5 w-5 items-center justify-center">
+				<svg
+					viewBox="0 0 24 24"
+					width="20"
+					height="20"
+					class="transition-transform duration-200 group-open:rotate-90"
+				>
+					<path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" />
+				</svg>
+			</div>
+		</summary>
+		<nav aria-label="Mobile">
+			<ul class="wrap flex flex-col gap-1 border-t border-line/40 pb-6 pt-2">
+				{nav.map(item => {
+					const itemPath = item.href.replace(/\/$/, '') || '/';
+					const isActive =
+						currentPath === itemPath ||
+						(itemPath !== '/' && currentPath.startsWith(itemPath));
+					return (
+						<li>
+							<a
+								href={item.href}
+								aria-current={isActive ? 'page' : undefined}
+								class={`flex min-h-[44px] items-center justify-between py-2 font-condensed text-base font-semibold uppercase tracking-[0.2em] transition-colors ${
+									isActive
+										? 'text-registration font-bold'
+										: 'text-ink hover:text-registration'
+								}`}
+							>
+								<span>{item.title}</span>
+								{isActive && <span class="h-2 w-2 rotate-45 bg-registration" />}
+							</a>
+						</li>
+					);
+				})}
+			</ul>
+		</nav>
+	</details>
 </header>
 
 <script>
-  const navDetails = document.querySelector<HTMLDetailsElement>('header details');
-  if (navDetails) {
-    navDetails.querySelectorAll('a').forEach((link) => {
-      link.addEventListener('click', () => {
-        navDetails.removeAttribute('open');
-      });
-    });
-  }
+	const navDetails =
+		document.querySelector<HTMLDetailsElement>('header details');
+	if (navDetails) {
+		navDetails.querySelectorAll('a').forEach(link => {
+			link.addEventListener('click', () => {
+				navDetails.removeAttribute('open');
+			});
+		});
+	}
 </script>

@@ -7,7 +7,7 @@ import teeManila from '../assets/images/brand/tee-manila.png';
 
 // Cart components build small WebP derivatives; product detail pages use these full-size sources.
 export const productArt: Record<string, ImageMetadata> = {
-  'kalyenoir-tee': teeKalyenoir,
-  'medusa-tee': teeMedusa,
-  'manila-tee': teeManila,
+	'kalyenoir-tee': teeKalyenoir,
+	'medusa-tee': teeMedusa,
+	'manila-tee': teeManila,
 };

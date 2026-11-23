@@ -5,34 +5,40 @@ import { products } from '../../data/catalog';
 ---
 
 <MainLayout
-  title="Kalye's Tee · KALYE NOIR Street Wear Manila"
-  description="Kalye's Tee: the Kalye Noir collection. KALYENOIR, MEDUSA and MANILA prints on heavyweight cotton."
+	title="Kalye's Tee · KALYE NOIR Street Wear Manila"
+	description="Kalye's Tee: the Kalye Noir collection. KALYENOIR, MEDUSA and MANILA prints on heavyweight cotton."
 >
-  <div class="wrap pt-7">
-    <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
-      <a href="/" class="transition-colors hover:text-registration">Home</a>
-      <span aria-hidden="true">/</span>
-      <span class="text-ink">Kalye's Tee</span>
-    </nav>
-  </div>
+	<div class="wrap pt-7">
+		<nav
+			class="meta flex items-center gap-2 text-muted"
+			aria-label="Breadcrumb"
+		>
+			<a href="/" class="transition-colors hover:text-registration">
+				Home
+			</a>
+			<span aria-hidden="true">/</span>
+			<span class="text-ink">Kalye's Tee</span>
+		</nav>
+	</div>
 
-  <header class="wrap pt-10 pb-4 text-center">
-    <h1 class="display reveal text-4xl sm:text-5xl lg:text-6xl text-ink">Kalye's Tee</h1>
-    <p class="meta mx-auto mt-3 max-w-lg text-muted">
-      Batch 001 Collection · Heavyweight custom screen-print tees · 14.5995° N, 120.9842° E
-    </p>
-  </header>
+	<header class="wrap pt-10 pb-4 text-center">
+		<h1 class="display reveal text-4xl sm:text-5xl lg:text-6xl text-ink">
+			Kalye's Tee
+		</h1>
+		<p class="meta mx-auto mt-3 max-w-lg text-muted">
+			Batch 001 Collection · Heavyweight custom screen-print tees · 14.5995° N,
+			120.9842° E
+		</p>
+	</header>
 
-  <div class="border-y border-line mt-6">
-    <div class="wrap flex items-center justify-between gap-6 py-3">
-      <p class="meta text-muted">
-        {products.length} {products.length === 1 ? 'print' : 'prints'}
-      </p>
-      <p class="meta text-muted">
-        Batch 001 · S–2XL Available
-      </p>
-    </div>
-  </div>
+	<div class="border-y border-line mt-6">
+		<div class="wrap flex items-center justify-between gap-6 py-3">
+			<p class="meta text-muted">
+				{products.length} {products.length === 1 ? 'print' : 'prints'}
+			</p>
+			<p class="meta text-muted">Batch 001 · S–2XL Available</p>
+		</div>
+	</div>
 
-  <ProductGrid products={products} priority />
+	<ProductGrid products={products} priority />
 </MainLayout>

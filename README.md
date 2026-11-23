@@ -26,17 +26,17 @@
 
 ## The label
 
-Kalye Noir takes the street (*kalye*) and renders it with a designer's eye and a noir edge. Small-batch, made in Manila, for late nights and early dreams. Vernacular you can wear: jeepneys and tangled wires, halftone Gorgons, lanterns strung over Divisoria. Local proof over generic streetwear.
+Kalye Noir takes the street (_kalye_) and renders it with a designer's eye and a noir edge. Small-batch, made in Manila, for late nights and early dreams. Vernacular you can wear: jeepneys and tangled wires, halftone Gorgons, lanterns strung over Divisoria. Local proof over generic streetwear.
 
 ## The collection
 
 Three heavyweight tees, black, S–2XL, chest mark with a full back print.
 
-| Design | Story |
-| --- | --- |
-| **KALYENOIR** | The stacked wordmark over the wreathed Manila wires. *NASA KALYE NANGANGARAP.* |
-| **MEDUSA** | The Gorgon stare in halftone. *Not your myth.* |
-| **MANILA** | The Divisoria street scene (jeepney, wires, lanterns) under *Manila never sleeps.* |
+| Design        | Story                                                                              |
+| ------------- | ---------------------------------------------------------------------------------- |
+| **KALYENOIR** | The stacked wordmark over the wreathed Manila wires. _NASA KALYE NANGANGARAP._     |
+| **MEDUSA**    | The Gorgon stare in halftone. _Not your myth._                                     |
+| **MANILA**    | The Divisoria street scene (jeepney, wires, lanterns) under _Manila never sleeps._ |
 
 ## How the shop works
 
@@ -45,13 +45,13 @@ Straightforward and message-first:
 1. **Browse** the collection and open a piece.
 2. **Pick a size** (S–2XL) and **add to cart**.
 3. **Review** in the slide-in cart or the full cart page.
-4. **Send the request** at checkout: the studio receives the order and an order summary is emailed to you.
+4. **Send the request** at checkout: the studio receives the order via Telegram and the order details are confirmed on the cart page.
 
-Each tee is **₱325**. Delivery is calculated from the selected province, with free delivery on orders of three or more tees. Choose Cash on Delivery or GCash / Maya manual transfer at checkout. The payment QR is unavailable; the checkout shows the merchant account details for manual transfer.
+S–L tees are **₱253** and XL–2XL tees are **₱265**. Delivery is calculated from the selected province, with free delivery on orders of three or more tees. Choose Cash on Delivery or GCash / Maya manual transfer at checkout. The payment QR is unavailable; the checkout shows the merchant account details for manual transfer.
 
 ## Running it
 
-Astro static build. The cart lives in `localStorage`; a Netlify Function emails each order to the studio and sends the customer an order summary.
+Astro static build. The cart lives in `localStorage`; a Cloudflare Worker validates the order and sends the order notification via Telegram Bot API.
 
 ```sh
 npm install
@@ -62,16 +62,18 @@ npm run build    # output in dist/
 npm run preview  # preview the build
 ```
 
-Deploys on Netlify via `netlify.toml` (`npm run build` → `dist/`). The checkout function sends the store copy and the customer copy through **Netlify**, using the site's own email service. Set these environment variables in the Netlify site settings (and in a local `.env` when running with the Netlify CLI):
+Deploys on Netlify via `netlify.toml` (`npm run build` → `dist/`). The checkout form POSTs to a Cloudflare Worker which validates the order and forwards it to Telegram.
 
-<<<<<<< HEAD
-- `NETLIFY_API_TOKEN` (required) — a Netlify API token with write access to the site’s email send endpoint. The order function sends only after both emails are accepted by Netlify; receipt uploads are optional and limited to 4 MB.
-- `FROM_EMAIL` (optional) — the `From` address used for both emails. If omitted, the function defaults to `KALYE NOIR <<contact email from site config>>`.
+**Required environment variables:**
 
-**To send real order emails, your Netlify site must be configured to send email from addresses the platform accepts.** Without that, Netlify will not deliver messages to customer addresses outside the site's own sending domain. If email delivery is still not available in your target workspace, swap `sendOrderEmails` for your own mailer (for example, SMTP or a third-party transactional email service) by passing a custom handler to `createSubmitOrderHandler`.
+- `WORKER_SUBMIT_ORDER_URL` — the Cloudflare Worker endpoint (e.g., `https://kalye-noir-orders.<subdomain>.workers.dev/api/submit-order`). Set this in Netlify site settings and in a local `.env` for development.
 
-<<<<<<< HEAD
-`npm run dev` runs the Astro site without Netlify Functions. For end-to-end checkout testing, run the site with the Netlify CLI and provide `NETLIFY_API_TOKEN` (and `FROM_EMAIL` if you want a different sender) through the local environment.
+**Cloudflare Worker secrets (set via `wrangler secret put`):**
+
+- `BOT_TOKEN` — Telegram Bot token from @BotFather
+- `CHAT_ID` — Telegram chat ID to receive order notifications
+
+`npm run dev` runs the Astro site. For end-to-end checkout testing, ensure `WORKER_SUBMIT_ORDER_URL` is set in your local `.env` and the Worker is deployed with the required secrets.
 
 ## In this repo
 
@@ -82,15 +84,19 @@ src/
   components/AddToCartForm.astro   # size + qty → cart store
   components/CartDrawer.astro      # slide-in cart
   components/ProvinceSelect.astro  # zone picker, shared by cart + checkout
-  pages/                           # home, catalogue, product, cart, checkout, contact
+  pages/                           # home, catalogue, product, cart (with checkout), contact, incident-report
   stores/cartStore.ts              # localStorage cart (nanostores)
   lib/zoom.ts                      # PDP hover-zoom geometry
-netlify/functions/submit-order.mts # validate checkout and email the store + customer via Netlify
+  config/worker.ts                 # Worker URL from env
+worker/                            # Cloudflare Worker (order validation + Telegram)
+  src/index.ts                     # Worker entry: POST /api/submit-order
+  src/validation.ts                # Shared validation logic
+  src/telegram.ts                  # Telegram Bot API integration
+shared/                            # Shared code between frontend + Worker
+  validation.ts                    # parseOrderSubmission, formatOrderDetails, types
+  shipping.ts                      # shipping zones, fee calculation
+  catalog.ts                       # product catalog
 DESIGN.md                          # the design system
 ```
 
 All artwork belongs to Kalye Noir.
-
-## Email delivery note
-
-The checkout function no longer uses Resend. It sends the store copy and the customer copy through Netlify's email capability, authenticated with `NETLIFY_API_TOKEN`. If that path is not available in your workspace, replace the `sendOrderEmails` implementation by passing a different handler to `createSubmitOrderHandler` in `netlify/functions/submit-order.mts`.

@@ -1,9 +1,18 @@
 {
 	"compilerOptions": {
-		"types": ["astro/client"],
-		// Astro ships its types as ESM subpath exports; bundler resolution is what Astro's own base config uses.
+		"target": "ES2022",
+		"module": "ESNext",
 		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": true
+		"lib": ["ES2022"],
+		"strict": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"allowImportingTsExtensions": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"types": ["astro/client"]
 	},
-	"exclude": ["dist", "test"]
+	"exclude": ["dist", "test", "worker"]
 }

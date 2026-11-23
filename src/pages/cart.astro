@@ -1,268 +1,1164 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import ProvinceSelect from '../components/ProvinceSelect.astro';
-import { courier } from '../data/shipping';
-import { ITEM_PRICE } from '../data/catalog';
 import { getImage } from 'astro:assets';
 import { productArt } from '../data/productArt';
+import { courier } from '../data/shipping';
 
 const thumbnails = Object.fromEntries(
-  await Promise.all(
-    Object.entries(productArt).map(async ([slug, image]) => {
-      const thumbnail = await getImage({ src: image, width: 128, format: 'webp', quality: 80 });
-      return [slug, thumbnail.src];
-    })
-  )
+	await Promise.all(
+		Object.entries(productArt).map(async ([slug, image]) => {
+			const thumbnail = await getImage({
+				src: image,
+				width: 128,
+				format: 'webp',
+				quality: 80,
+			});
+			return [slug, thumbnail.src];
+		}),
+	),
 );
+
+// Check for success redirect from Worker
+const orderRef = Astro.url.searchParams.get('ref');
+const isSuccess = Astro.url.searchParams.get('success') === '1';
 ---
 
 <MainLayout
-  title="Cart · KALYE NOIR Street Wear Manila"
-  description="Review your Kalye Noir cart, add an order note, pick your province and estimate delivery before you send your order request."
+	title="Cart · KALYE NOIR Street Wear Manila"
+	description="Review your Kalye Noir cart, add an order note, pick your province and estimate delivery before you send your order request."
 >
-  <div class="wrap pt-7">
-    <nav class="meta flex items-center gap-2 text-muted" aria-label="Breadcrumb">
-      <a href="/" class="transition-colors hover:text-registration">Home</a>
-      <span aria-hidden="true">/</span>
-      <span class="text-ink">Cart</span>
-    </nav>
-  </div>
+	<div class="wrap pt-7">
+		<nav
+			class="meta flex items-center gap-2 text-muted"
+			aria-label="Breadcrumb"
+		>
+			<a href="/" class="transition-colors hover:text-registration">
+				Home
+			</a>
+			<span aria-hidden="true">/</span>
+			<span class="text-ink">Cart</span>
+		</nav>
+	</div>
 
-  <section class="wrap py-12">
-    <h1 class="display reveal text-center text-4xl sm:text-5xl">Cart</h1>
+	<section class="wrap py-12">
+		<h1 class="display reveal text-center text-4xl sm:text-5xl">Cart</h1>
 
-    <div class="mt-14">
-      <div
-        class="meta hidden border-b border-line pb-3 text-muted sm:flex sm:items-center sm:justify-between"
-      >
-        <span>Product</span>
-        <span>Quantity</span>
-      </div>
-      <div data-cart-rows data-thumbnail-sources={JSON.stringify(thumbnails)}></div>
-    </div>
+		{isSuccess ? (
+			<div class="mt-14 text-center">
+				<div class="mb-6 flex h-16 w-16 items-center justify-center border border-dashed border-line mx-auto">
+					<span
+						class="h-3 w-3 rotate-45 bg-registration"
+						aria-hidden="true"
+					></span>
+				</div>
+				<h2 class="display text-4xl sm:text-5xl lg:text-6xl">
+					Order request received
+				</h2>
+				{orderRef && (
+					<p class="mt-4 font-condensed text-lg text-ink">
+						Reference: <span class="font-display">{orderRef}</span>
+					</p>
+				)}
+				<p class="mt-6 max-w-md mx-auto text-sm leading-relaxed text-muted">
+					The studio received your request and an order summary was sent via
+					Telegram. This confirms your request, not payment, stock, or dispatch.
+					The studio will follow up with any next steps.
+				</p>
+				<a href="/products" class="btn btn-primary mt-8 inline-block">
+					Explore Batch 001
+				</a>
+			</div>
+		) : (
+			<div>
+				<div class="mt-14">
+					<div class="meta hidden border-b border-line pb-3 text-muted sm:flex sm:items-center sm:justify-between">
+						<span>Product</span>
+						<span>Quantity</span>
+					</div>
+					<div
+						data-cart-rows
+						data-thumbnail-sources={JSON.stringify(thumbnails)}
+					></div>
+				</div>
 
-    <div class="mt-10 grid gap-10 lg:grid-cols-2">
-      <div>
-        <label class="label mb-3 block" for="order-note">Add order note</label>
-        <textarea
-          id="order-note"
-          data-order-note
-          rows="5"
-          placeholder="How can we help you?"
-          class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
-        ></textarea>
-      </div>
+				<div class="mt-10 grid gap-10 lg:grid-cols-2">
+					<div>
+						<label class="label mb-3 block" for="order-note">
+							Add order note
+						</label>
+						<textarea
+							id="order-note"
+							data-order-note
+							rows="5"
+							placeholder="How can we help you?"
+							class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
+						></textarea>
+					</div>
 
-      <div class="flex flex-col items-start gap-3 lg:items-end">
-        <div class="flex flex-col items-start gap-1 lg:items-end">
-          <p class="meta text-muted" aria-live="polite" aria-atomic="true">
-            Items (<span data-cart-count-text>0</span>{' '}
-            <span data-cart-count-word>items</span>)
-          </p>
-          <p class="font-display text-2xl text-ink" data-cart-subtotal>₱0</p>
-        </div>
-        <p class="meta text-ink lg:text-right">
-          Estimated delivery: <span data-cart-shipping>Select a province below</span>
-        </p>
-        <p class="meta text-muted lg:text-right">
-          Shipping via {courier}
-        </p>
-        <p class="text-xs leading-relaxed text-muted lg:text-right">
-          ₱{ITEM_PRICE} per tee. Choose Cash on Delivery or GCash / Maya manual transfer at checkout.
-        </p>
-        <a href="/checkout" class="btn btn-primary w-full sm:w-auto" data-checkout>Checkout</a>
-      </div>
-    </div>
-  </section>
+					<div class="flex flex-col items-start gap-3 lg:items-end">
+						<div class="flex flex-col items-start gap-1 lg:items-end">
+							<p class="meta text-muted" aria-live="polite" aria-atomic="true">
+								Items (<span data-cart-count-text>0</span>{' '}
+								<span data-cart-count-word>items</span>)
+							</p>
+							<p class="font-display text-2xl text-ink" data-cart-subtotal>
+								₱0
+							</p>
+						</div>
+						<p class="meta text-ink lg:text-right">
+							Estimated delivery:{' '}
+							<span data-cart-shipping>Select a province below</span>
+						</p>
+						<p class="meta text-muted lg:text-right">Shipping via {courier}</p>
+						<p class="text-xs leading-relaxed text-muted lg:text-right">
+							S–L ₱253 · XL–2XL ₱265. Choose Cash on Delivery or GCash / Maya
+							transfer at checkout.
+						</p>
+					</div>
+				</div>
 
-  <section class="wrap pb-20">
-    <fieldset class="relative border border-line px-6 pb-6 pt-0">
-      <legend class="meta mx-auto px-4 text-ink">Estimate delivery</legend>
+				<div class="mt-12" data-checkout-section></div>
 
-      <label class="block">
-        <span class="meta mb-1.5 block text-muted">Province</span>
-        <ProvinceSelect class="w-full min-w-0 border border-line-strong bg-transparent px-3 py-2.5 text-base focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm" />
-      </label>
+				<section class="wrap pb-20">
+					<fieldset class="relative border border-line px-6 pb-6 pt-0">
+						<legend class="meta mx-auto px-4 text-ink">
+							Estimate delivery
+						</legend>
 
-      <p data-estimate-result class="meta mt-5 text-muted" aria-live="polite"></p>
-    </fieldset>
-  </section>
+						<label class="block">
+							<span class="meta mb-1.5 block text-muted">Province</span>
+							<ProvinceSelect class="w-full min-w-0 border border-line-strong bg-transparent px-3 py-2.5 text-base focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm" />
+						</label>
+
+						<p
+							data-estimate-result
+							class="meta mt-5 text-muted"
+							aria-live="polite"
+						></p>
+					</fieldset>
+				</section>
+			</div>
+		)}
+	</section>
 </MainLayout>
 
 <script>
-  import {
-    cartItems,
-    cartCount,
-    removeFromCart,
-    stepQty,
-    orderNote,
-    shippingZoneId,
-    shippingProvince,
-  } from '../stores/cartStore';
-  import type { CartItem } from '../stores/cartStore';
-  import { zoneById } from '../data/shipping';
-  import { ITEM_PRICE, products } from '../data/catalog';
+	import {
+		cartItems,
+		cartCount,
+		removeFromCart,
+		stepQty,
+		orderNote,
+		shippingZoneId,
+		shippingProvince,
+		clearCart,
+		getCartItemPrice,
+		cartSubtotal,
+	} from '../stores/cartStore';
+	import type { CartItem } from '../stores/cartStore';
+	import {
+		zoneById,
+		courier,
+		calculateShippingFee,
+		FREE_SHIPPING_THRESHOLD,
+		deliveryLines,
+		orderTerms,
+	} from '../data/shipping';
+	import { products } from '../data/catalog';
+	import { PAYMENT_SLIP_MAX_BYTES } from '../lib/orderSubmission';
+	import { worker } from '../config/worker';
+	import { contact } from '../config/site';
 
-  const rows = document.querySelector<HTMLElement>('[data-cart-rows]');
-  const countEl = document.querySelector<HTMLElement>('[data-cart-count-text]');
-  const countWord = document.querySelector<HTMLElement>('[data-cart-count-word]');
-  const subtotalEl = document.querySelector<HTMLElement>('[data-cart-subtotal]');
-  const checkout = document.querySelector<HTMLAnchorElement>('[data-checkout]');
-  const note = document.querySelector<HTMLTextAreaElement>('[data-order-note]');
-  const shipEl = document.querySelector<HTMLElement>('[data-cart-shipping]');
-  const rawThumbnails: unknown = JSON.parse(rows?.dataset.thumbnailSources ?? 'null');
-  if (typeof rawThumbnails !== 'object' || rawThumbnails === null || Array.isArray(rawThumbnails)) {
-    throw new Error('Cart thumbnail URLs are missing or invalid.');
-  }
-  const thumbnailSources = new Map<string, string>();
-  for (const [slug, source] of Object.entries(rawThumbnails)) {
-    if (typeof source !== 'string') throw new Error(`Cart thumbnail URL is invalid for ${slug}.`);
-    thumbnailSources.set(slug, source);
-  }
-  let focusIntent: { sku: string; action: string; index: number } | null = null;
+	const rows = document.querySelector<HTMLElement>('[data-cart-rows]');
+	const countEl = document.querySelector<HTMLElement>('[data-cart-count-text]');
+	const countWord = document.querySelector<HTMLElement>(
+		'[data-cart-count-word]',
+	);
+	const subtotalEl = document.querySelector<HTMLElement>(
+		'[data-cart-subtotal]',
+	);
+	const note = document.querySelector<HTMLTextAreaElement>('[data-order-note]');
+	const shipEl = document.querySelector<HTMLElement>('[data-cart-shipping]');
+	const checkoutSection = document.querySelector<HTMLElement>(
+		'[data-checkout-section]',
+	);
+	const rawThumbnails: unknown = JSON.parse(
+		rows?.dataset.thumbnailSources ?? 'null',
+	);
+	if (
+		typeof rawThumbnails !== 'object' ||
+		rawThumbnails === null ||
+		Array.isArray(rawThumbnails)
+	) {
+		throw new Error('Cart thumbnail URLs are missing or invalid.');
+	}
+	const thumbnailSources = new Map<string, string>();
+	for (const [slug, source] of Object.entries(rawThumbnails)) {
+		if (typeof source !== 'string')
+			throw new Error(`Cart thumbnail URL is invalid for ${slug}.`);
+		thumbnailSources.set(slug, source);
+	}
+	let focusIntent: { sku: string; action: string; index: number } | null = null;
 
-  const escapeHTML = (value: string) =>
-    value.replace(/[&<>"']/g, (character) => {
-      const entities: Record<string, string> = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;',
-      };
-      return entities[character] ?? character;
-    });
+	const escapeHTML = (value: string) =>
+		value.replace(/[&<>"']/g, character => {
+			const entities: Record<string, string> = {
+				'&': '&amp;',
+				'<': '&lt;',
+				'>': '&gt;',
+				'"': '&quot;',
+				"'": '&#39;',
+			};
+			return entities[character] ?? character;
+		});
 
-  const getControl = (row: HTMLElement, action: string) => {
-    if (action === 'remove') return row.querySelector<HTMLElement>('[data-remove]');
-    return Array.from(row.querySelectorAll<HTMLElement>('[data-step]')).find(
-      (button) => button.dataset.step === action
-    ) ?? null;
-  };
+	const getControl = (row: HTMLElement, action: string) => {
+		if (action === 'remove')
+			return row.querySelector<HTMLElement>('[data-remove]');
+		return (
+			Array.from(row.querySelectorAll<HTMLElement>('[data-step]')).find(
+				button => button.dataset.step === action,
+			) ?? null
+		);
+	};
 
-  function restoreFocus() {
-    if (!focusIntent || !rows) return;
-    const intent = focusIntent;
-    focusIntent = null;
-    const lineRows = Array.from(rows.querySelectorAll<HTMLElement>('[data-sku]'));
-    const row = lineRows.find((candidate) => candidate.dataset.sku === intent.sku);
-    let target = row ? getControl(row, intent.action) : null;
-    if (!target && lineRows.length) {
-      const fallbackRow = lineRows[Math.min(intent.index, lineRows.length - 1)];
-      target = getControl(fallbackRow, intent.action) ?? getControl(fallbackRow, 'remove');
-    }
-    if (!target) target = rows.querySelector<HTMLElement>('[data-empty-cart-focus]');
-    target?.focus();
-  }
+	function restoreFocus() {
+		if (!focusIntent || !rows) return;
+		const intent = focusIntent;
+		focusIntent = null;
+		const lineRows = Array.from(
+			rows.querySelectorAll<HTMLElement>('[data-sku]'),
+		);
+		const row = lineRows.find(
+			candidate => candidate.dataset.sku === intent.sku,
+		);
+		let target = row ? getControl(row, intent.action) : null;
+		if (!target && lineRows.length) {
+			const fallbackRow = lineRows[Math.min(intent.index, lineRows.length - 1)];
+			target =
+				getControl(fallbackRow, intent.action) ??
+				getControl(fallbackRow, 'remove');
+		}
+		if (!target)
+			target = rows.querySelector<HTMLElement>('[data-empty-cart-focus]');
+		target?.focus();
+	}
 
-  // Derived from the stored zone, so it never goes stale.
-  function refreshShipping() {
-    if (!shipEl) return;
-    const zone = zoneById(shippingZoneId.get());
-    shipEl.textContent = zone
-      ? `${zone.label} · ${zone.days} business days`
-      : 'Select a province below';
-  }
+	// Derived from the stored zone, so it never goes stale.
+	function refreshShipping() {
+		if (!shipEl) return;
+		const zone = zoneById(shippingZoneId.get());
+		shipEl.textContent = zone
+			? `${zone.label} · ${zone.days} business days`
+			: 'Select a province below';
+	}
 
-  if (rows && countEl && countWord && checkout) {
-    const line = (i: CartItem) => {
-      const product = products.find((candidate) => candidate.slug === i.slug);
-      const title = product?.title ?? String(i.title ?? 'Unknown print');
-      const alt = product?.alt ?? title;
-      const variant = String(i.variant ?? '');
-      const sku = String(i.sku ?? '');
-      const image = thumbnailSources.get(String(i.slug)) ?? '';
-      return `
-      <div data-sku="${escapeHTML(sku)}" class="grid grid-cols-[6rem_1fr] items-start gap-5 border-b border-line py-6 sm:grid-cols-[6rem_1fr_auto]">
-        <img src="${escapeHTML(image)}" alt="${escapeHTML(alt)}" width="96" height="120" loading="lazy" decoding="async" class="h-[120px] w-24 bg-white object-contain p-2" />
-        <div class="min-w-0">
-          <p class="font-condensed text-[0.8125rem] font-semibold uppercase tracking-[0.12em]">${escapeHTML(title)}</p>
-          <p class="font-condensed text-sm font-bold text-ink mt-1">₱${ITEM_PRICE}</p>
-          <p class="meta mt-0.5 text-muted">${escapeHTML(variant)}</p>
-        </div>
-        <div class="col-span-2 flex flex-col items-start gap-2 sm:col-span-1 sm:items-end">
-          <div class="flex items-stretch border border-line">
-            <button type="button" data-step="-1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Decrease quantity of ${escapeHTML(title)}, ${escapeHTML(variant)}"><span aria-hidden="true">−</span></button>
-            <span class="flex w-12 items-center justify-center text-sm">${escapeHTML(String(i.qty))}</span>
-            <button type="button" data-step="1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Increase quantity of ${escapeHTML(title)}, ${escapeHTML(variant)}"><span aria-hidden="true">+</span></button>
-          </div>
-          <button type="button" data-remove class="tap meta text-muted underline underline-offset-4 transition-colors hover:text-registration" aria-label="Remove ${escapeHTML(title)}, ${escapeHTML(variant)} from cart">Remove</button>
-        </div>
-      </div>`;
-    };
+	if (rows && countEl && countWord) {
+		const line = (i: CartItem) => {
+			const product = products.find(candidate => candidate.slug === i.slug);
+			const title = product?.title ?? String(i.title ?? 'Unknown print');
+			const alt = product?.alt ?? title;
+			const variant = String(i.variant ?? '');
+			const sku = String(i.sku ?? '');
+			const image = thumbnailSources.get(String(i.slug)) ?? '';
+			return `
+	      <div data-sku="${escapeHTML(sku)}" class="grid grid-cols-[6rem_1fr] items-start gap-5 border-b border-line py-6 sm:grid-cols-[6rem_1fr_auto]">
+	        <img src="${escapeHTML(image)}" alt="${escapeHTML(alt)}" width="96" height="120" loading="lazy" decoding="async" class="h-[120px] w-24 bg-white object-contain p-2" />
+	        <div class="min-w-0">
+	          <p class="font-condensed text-[0.8125rem] font-semibold uppercase tracking-[0.12em]">${escapeHTML(title)}</p>
+	          <p class="font-condensed text-sm font-bold text-ink mt-1">₱${getCartItemPrice(i).toLocaleString()}</p>
+	          <p class="meta mt-0.5 text-muted">${escapeHTML(variant)}</p>
+	        </div>
+	        <div class="col-span-2 flex flex-col items-start gap-2 sm:col-span-1 sm:items-end">
+	          <div class="flex items-stretch border border-line">
+	            <button type="button" data-step="-1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Decrease quantity of ${escapeHTML(title)}, ${escapeHTML(variant)}"><span aria-hidden="true">−</span></button>
+	            <span class="flex w-12 items-center justify-center text-sm">${escapeHTML(String(i.qty))}</span>
+	            <button type="button" data-step="1" class="h-11 w-11 text-lg leading-none transition-colors hover:bg-line/40" aria-label="Increase quantity of ${escapeHTML(title)}, ${escapeHTML(variant)}"><span aria-hidden="true">+</span></button>
+	          </div>
+	          <button type="button" data-remove class="tap meta text-muted underline underline-offset-4 transition-colors hover:text-registration" aria-label="Remove ${escapeHTML(title)}, ${escapeHTML(variant)} from cart">Remove</button>
+	        </div>
+	      </div>`;
+		};
 
-    function render() {
-      const items = cartItems.get();
-      rows!.innerHTML = items.length
-        ? items.map(line).join('')
-        : `<div class="flex flex-col items-center justify-center border-b border-line py-16 text-center">
-            <div class="relative mb-4 flex h-16 w-16 items-center justify-center border border-line bg-paper">
-              <svg viewBox="0 0 24 24" width="28" height="28" class="text-muted" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/>
-              </svg>
-              <span class="absolute -right-1 -top-1 h-2 w-2 rotate-45 bg-registration"></span>
-            </div>
-            <p class="font-display text-2xl uppercase tracking-wider text-ink">Your Slip Is Empty</p>
-            <p class="mt-2 text-xs text-muted max-w-xs">Pick a piece from Drop 001. Sizing and courier dispatch confirmed per request slip.</p>
-            <a href="/products" data-empty-cart-focus class="btn btn-primary mt-6 min-h-11 text-xs px-6 py-2.5">Browse Drop 001</a>
-          </div>`;
+		function render() {
+			const items = cartItems.get();
+			rows!.innerHTML = items.length
+				? items.map(line).join('')
+				: `<div class="flex flex-col items-center justify-center border-b border-line py-16 text-center">
+	            <div class="relative mb-4 flex h-16 w-16 items-center justify-center border border-line bg-paper">
+	              <svg viewBox="0 0 24 24" width="28" height="28" class="text-muted" fill="none" stroke="currentColor" stroke-width="1.5">
+	                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/>
+	              </svg>
+	              <span class="absolute -right-1 -top-1 h-2 w-2 rotate-45 bg-registration"></span>
+	            </div>
+	            <p class="font-display text-2xl uppercase tracking-wider text-ink">Your Slip Is Empty</p>
+	            <p class="mt-2 text-xs text-muted max-w-xs">Pick a piece from Drop 001. Sizing and courier dispatch confirmed per request slip.</p>
+	            <a href="/products" data-empty-cart-focus class="btn btn-primary mt-6 min-h-11 text-xs px-6 py-2.5">Browse Drop 001</a>
+	          </div>`;
 
-      const count = cartCount.get();
-      const subtotal = count * ITEM_PRICE;
-      countEl!.textContent = String(count);
-      countWord!.textContent = count === 1 ? 'item' : 'items';
-      if (subtotalEl) subtotalEl.textContent = `₱${subtotal.toLocaleString()}`;
-      checkout!.classList.toggle('pointer-events-none', count === 0);
-      checkout!.classList.toggle('opacity-40', count === 0);
-      checkout!.setAttribute('aria-disabled', String(count === 0));
-      refreshShipping();
-      restoreFocus();
-    }
+			const count = cartCount.get();
+			const subtotal = cartSubtotal(cartItems.get());
+			countEl!.textContent = String(count);
+			countWord!.textContent = count === 1 ? 'item' : 'items';
+			if (subtotalEl) subtotalEl.textContent = `₱${subtotal.toLocaleString()}`;
+			refreshShipping();
+			restoreFocus();
+			renderCheckoutForm();
+		}
 
-    rows.addEventListener('click', (e) => {
-      const t = e.target as HTMLElement;
-      const line = t.closest<HTMLElement>('[data-sku]');
-      const control = t.closest<HTMLElement>('[data-remove], [data-step]');
-      const sku = line?.dataset.sku;
-      if (!line || !control || !sku) return;
-      const currentItems = cartItems.get();
-      focusIntent = {
-        sku,
-        action: control.hasAttribute('data-remove') ? 'remove' : control.dataset.step ?? '',
-        index: currentItems.findIndex((item) => item.sku === sku),
-      };
-      if (control.hasAttribute('data-remove')) return removeFromCart(sku);
-      stepQty(sku, Number(control.dataset.step));
-    });
+		rows.addEventListener('click', e => {
+			const t = e.target as HTMLElement;
+			const line = t.closest<HTMLElement>('[data-sku]');
+			const control = t.closest<HTMLElement>('[data-remove], [data-step]');
+			const sku = line?.dataset.sku;
+			if (!line || !control || !sku) return;
+			const currentItems = cartItems.get();
+			focusIntent = {
+				sku,
+				action: control.hasAttribute('data-remove')
+					? 'remove'
+					: (control.dataset.step ?? ''),
+				index: currentItems.findIndex(item => item.sku === sku),
+			};
+			if (control.hasAttribute('data-remove')) return removeFromCart(sku);
+			stepQty(sku, Number(control.dataset.step));
+		});
 
-    // pointer-events-none only stops the mouse; a link still activates on Enter.
-    checkout.addEventListener('click', (e) => {
-      if (!cartCount.get()) e.preventDefault();
-    });
+		cartItems.subscribe(render);
+		render();
+	}
 
-    cartItems.subscribe(render);
-    render();
-  }
+	if (note) {
+		note.value = orderNote.get();
+		note.addEventListener('input', () => orderNote.set(note.value));
+	}
 
-  if (note) {
-    note.value = orderNote.get();
-    note.addEventListener('input', () => orderNote.set(note.value));
-  }
+	const province = document.querySelector<HTMLSelectElement>('[data-province]');
+	const result = document.querySelector<HTMLElement>('[data-estimate-result]');
 
-  const province = document.querySelector<HTMLSelectElement>('[data-province]');
-  const result = document.querySelector<HTMLElement>('[data-estimate-result]');
+	if (province && result) {
+		if (shippingProvince.get()) province.value = shippingProvince.get();
 
-  if (province && result) {
-    if (shippingProvince.get()) province.value = shippingProvince.get();
+		province.addEventListener('change', () => {
+			const zone = zoneById(province.selectedOptions[0]?.dataset.zone);
+			shippingZoneId.set(zone?.id ?? '');
+			shippingProvince.set(province.value);
+			result.textContent = zone
+				? `Delivering to ${zone.label} in ${zone.days} business days.`
+				: 'Choose a province to see the delivery estimate.';
+			refreshShipping();
+		});
+	}
 
-    province.addEventListener('change', () => {
-      const zone = zoneById(province.selectedOptions[0]?.dataset.zone);
-      shippingZoneId.set(zone?.id ?? '');
-      shippingProvince.set(province.value);
-      result.textContent = zone
-        ? `Delivering to ${zone.label} in ${zone.days} business days.`
-        : 'Choose a province to see the delivery estimate.';
-      refreshShipping();
-    });
-  }
+	// Checkout form rendering and logic
+	function renderCheckoutForm() {
+		if (!checkoutSection) return;
+		const items = cartItems.get();
+		if (!items.length) {
+			checkoutSection.innerHTML = '';
+			return;
+		}
+
+		const count = cartCount.get();
+		const subtotal = cartSubtotal(cartItems.get());
+		const hasProvince = Boolean(
+			document.querySelector<HTMLSelectElement>('[data-province]')?.value,
+		);
+		const currentZoneId = shippingZoneId.get();
+		const shippingFee =
+			count && hasProvince ? calculateShippingFee(currentZoneId, count) : 0;
+
+		checkoutSection.innerHTML = `
+		<form
+			name="order"
+			method="POST"
+			enctype="multipart/form-data"
+			action="${worker.submitOrderUrl || '/api/submit-order'}"
+			data-order-form
+			class="grid gap-5"
+		>
+			<input type="hidden" name="cart-items" value="" />
+			<div class="absolute h-px w-px overflow-hidden" aria-hidden="true">
+				<label>
+					Leave this field empty
+					<input
+						type="text"
+						name="website"
+						tabindex="-1"
+						autocomplete="off"
+					/>
+				</label>
+			</div>
+
+			<h2 class="meta text-ink border-t border-line pt-6">Checkout</h2>
+
+			<p class="meta text-muted">Contact</p>
+			<div class="grid gap-4 sm:grid-cols-2">
+				<label class="grid gap-1.5">
+					<span class="label">Name</span>
+					<input
+						type="text"
+						name="name"
+						autocomplete="name"
+						required
+						placeholder="Your name"
+						class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
+					/>
+				</label>
+				<label class="grid gap-1.5">
+					<span class="label">Email</span>
+					<input
+						type="email"
+						name="email"
+						autocomplete="email"
+						required
+						placeholder="you@example.com"
+						class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
+					/>
+				</label>
+				<label class="grid gap-1.5 sm:col-span-2">
+					<span class="label">Mobile number</span>
+					<input
+						type="tel"
+						name="phone"
+						autocomplete="tel"
+						required
+						pattern="^(09|[+]639)[0-9]{9}$"
+						title="Philippine mobile format (e.g. 09171234567 or +639171234567)"
+						placeholder="09XX XXX XXXX"
+						class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
+					/>
+				</label>
+			</div>
+
+			<p class="meta mt-2 text-muted">Delivery address</p>
+			<div class="grid gap-4 sm:grid-cols-2">
+				<label class="grid gap-1.5 sm:col-span-2">
+					<span class="label">Street / house no. / barangay</span>
+					<input
+						type="text"
+						name="street"
+						autocomplete="street-address"
+						required
+						placeholder="123 Kalye St., Barangay 1"
+						class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
+					/>
+				</label>
+				<label class="grid gap-1.5">
+					<span class="label">Province</span>
+					<select
+						name="province"
+						required
+						data-province
+						class="w-full min-w-0 border border-line-strong bg-transparent px-3 py-2.5 text-base focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
+					>
+						<option value="" disabled selected>Select province</option>
+						<optgroup label="NCR (Metro Manila)">
+							<option value="Manila" data-zone="ncr">Manila</option>
+							<option value="Quezon City" data-zone="ncr">Quezon City</option>
+							<option value="Makati" data-zone="ncr">Makati</option>
+							<option value="Pasig" data-zone="ncr">Pasig</option>
+							<option value="Taguig" data-zone="ncr">Taguig</option>
+							<option value="Caloocan" data-zone="ncr">Caloocan</option>
+							<option value="Parañaque" data-zone="ncr">Parañaque</option>
+							<option value="Las Piñas" data-zone="ncr">Las Piñas</option>
+							<option value="Valenzuela" data-zone="ncr">Valenzuela</option>
+							<option value="Muntinlupa" data-zone="ncr">Muntinlupa</option>
+							<option value="Marikina" data-zone="ncr">Marikina</option>
+							<option value="Pasay" data-zone="ncr">Pasay</option>
+							<option value="Malabon" data-zone="ncr">Malabon</option>
+							<option value="Navotas" data-zone="ncr">Navotas</option>
+							<option value="San Juan" data-zone="ncr">San Juan</option>
+							<option value="Mandaluyong" data-zone="ncr">Mandaluyong</option>
+							<option value="Pateros" data-zone="ncr">Pateros</option>
+						</optgroup>
+						<optgroup label="Luzon">
+							<option value="Cavite" data-zone="luzon">Cavite</option>
+							<option value="Laguna" data-zone="luzon">Laguna</option>
+							<option value="Batangas" data-zone="luzon">Batangas</option>
+							<option value="Rizal" data-zone="luzon">Rizal</option>
+							<option value="Quezon" data-zone="luzon">Quezon</option>
+							<option value="Bulacan" data-zone="luzon">Bulacan</option>
+							<option value="Pampanga" data-zone="luzon">Pampanga</option>
+							<option value="Tarlac" data-zone="luzon">Tarlac</option>
+							<option value="Nueva Ecija" data-zone="luzon">Nueva Ecija</option>
+							<option value="Zambales" data-zone="luzon">Zambales</option>
+							<option value="Bataan" data-zone="luzon">Bataan</option>
+							<option value="Pangasinan" data-zone="luzon">Pangasinan</option>
+							<option value="La Union" data-zone="luzon">La Union</option>
+							<option value="Ilocos Sur" data-zone="luzon">Ilocos Sur</option>
+							<option value="Ilocos Norte" data-zone="luzon">Ilocos Norte</option>
+							<option value="Benguet" data-zone="luzon">Benguet</option>
+							<option value="Isabela" data-zone="luzon">Isabela</option>
+							<option value="Cagayan" data-zone="luzon">Cagayan</option>
+							<option value="Nueva Vizcaya" data-zone="luzon">Nueva Vizcaya</option>
+							<option value="Quirino" data-zone="luzon">Quirino</option>
+							<option value="Aurora" data-zone="luzon">Aurora</option>
+							<option value="Batanes" data-zone="luzon">Batanes</option>
+							<option value="Camarines Norte" data-zone="luzon">Camarines Norte</option>
+							<option value="Camarines Sur" data-zone="luzon">Camarines Sur</option>
+							<option value="Albay" data-zone="luzon">Albay</option>
+							<option value="Sorsogon" data-zone="luzon">Sorsogon</option>
+							<option value="Catanduanes" data-zone="luzon">Catanduanes</option>
+							<option value="Masbate" data-zone="luzon">Masbate</option>
+						</optgroup>
+						<optgroup label="Visayas">
+							<option value="Cebu" data-zone="vismin">Cebu</option>
+							<option value="Iloilo" data-zone="vismin">Iloilo</option>
+							<option value="Negros Occidental" data-zone="vismin">Negros Occidental</option>
+							<option value="Negros Oriental" data-zone="vismin">Negros Oriental</option>
+							<option value="Leyte" data-zone="vismin">Leyte</option>
+							<option value="Bohol" data-zone="vismin">Bohol</option>
+							<option value="Samar" data-zone="vismin">Samar</option>
+							<option value="Eastern Samar" data-zone="vismin">Eastern Samar</option>
+							<option value="Northern Samar" data-zone="vismin">Northern Samar</option>
+							<option value="Western Samar" data-zone="vismin">Western Samar</option>
+							<option value="Capiz" data-zone="vismin">Capiz</option>
+							<option value="Aklan" data-zone="vismin">Aklan</option>
+							<option value="Antique" data-zone="vismin">Antique</option>
+							<option value="Guimaras" data-zone="vismin">Guimaras</option>
+							<option value="Biliran" data-zone="vismin">Biliran</option>
+							<option value="Siquijor" data-zone="vismin">Siquijor</option>
+						</optgroup>
+						<optgroup label="Mindanao">
+							<option value="Davao del Sur" data-zone="vismin">Davao del Sur</option>
+							<option value="Davao del Norte" data-zone="vismin">Davao del Norte</option>
+							<option value="Davao Oriental" data-zone="vismin">Davao Oriental</option>
+							<option value="Davao de Oro" data-zone="vismin">Davao de Oro</option>
+							<option value="Davao Occidental" data-zone="vismin">Davao Occidental</option>
+							<option value="South Cotabato" data-zone="vismin">South Cotabato</option>
+							<option value="Sultan Kudarat" data-zone="vismin">Sultan Kudarat</option>
+							<option value="Sarangani" data-zone="vismin">Sarangani</option>
+							<option value="North Cotabato" data-zone="vismin">North Cotabato</option>
+							<option value="Misamis Oriental" data-zone="vismin">Misamis Oriental</option>
+							<option value="Misamis Occidental" data-zone="vismin">Misamis Occidental</option>
+							<option value="Bukidnon" data-zone="vismin">Bukidnon</option>
+							<option value="Lanao del Norte" data-zone="vismin">Lanao del Norte</option>
+							<option value="Lanao del Sur" data-zone="vismin">Lanao del Sur</option>
+							<option value="Zamboanga del Norte" data-zone="vismin">Zamboanga del Norte</option>
+							<option value="Zamboanga del Sur" data-zone="vismin">Zamboanga del Sur</option>
+							<option value="Zamboanga Sibugay" data-zone="vismin">Zamboanga Sibugay</option>
+							<option value="Agusan del Norte" data-zone="vismin">Agusan del Norte</option>
+							<option value="Agusan del Sur" data-zone="vismin">Agusan del Sur</option>
+							<option value="Surigao del Norte" data-zone="vismin">Surigao del Norte</option>
+							<option value="Surigao del Sur" data-zone="vismin">Surigao del Sur</option>
+							<option value="Dinagat Islands" data-zone="vismin">Dinagat Islands</option>
+							<option value="Camiguin" data-zone="vismin">Camiguin</option>
+							<option value="Basilan" data-zone="vismin">Basilan</option>
+							<option value="Sulu" data-zone="vismin">Sulu</option>
+							<option value="Tawi-Tawi" data-zone="vismin">Tawi-Tawi</option>
+							<option value="Maguindanao del Norte" data-zone="vismin">Maguindanao del Norte</option>
+							<option value="Maguindanao del Sur" data-zone="vismin">Maguindanao del Sur</option>
+							<option value="Cotabato City" data-zone="vismin">Cotabato City</option>
+						</optgroup>
+						<optgroup label="Palawan">
+							<option value="Palawan" data-zone="palawan">Palawan</option>
+						</optgroup>
+					</select>
+				</label>
+				<div class="grid gap-4 sm:grid-cols-2">
+					<label class="grid gap-1.5">
+						<span class="label">City / municipality</span>
+						<input
+							type="text"
+							name="city"
+							autocomplete="address-level2"
+							required
+							class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
+						/>
+					</label>
+					<label class="grid gap-1.5">
+						<span class="label">Zip code</span>
+						<input
+							type="text"
+							name="zip"
+							autocomplete="postal-code"
+							inputmode="numeric"
+							required
+							class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
+						/>
+					</label>
+				</div>
+				<label class="grid gap-1.5 sm:col-span-2">
+					<span class="label">Order note</span>
+					<textarea
+						name="note"
+						rows="3"
+						placeholder="How can we help you?"
+						data-order-note
+						class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
+					></textarea>
+				</label>
+			</div>
+
+			<div class="pt-2">
+				<p class="meta text-muted">Payment method</p>
+				<fieldset
+					class="mt-2 grid gap-3 sm:grid-cols-2"
+					data-payment-selector
+				>
+					<legend class="sr-only">Choose a payment method</legend>
+					<label class="flex cursor-pointer items-center justify-between border border-line-strong bg-paper p-4 transition-colors has-[:checked]:border-ink has-[:checked]:bg-white">
+						<div class="flex items-center gap-3">
+							<input
+								type="radio"
+								name="payment-type"
+								value="cod"
+								checked
+								class="accent-registration"
+							/>
+							<div>
+								<p class="font-condensed text-xs font-bold uppercase tracking-wider text-ink">
+									Cash On Delivery (COD)
+								</p>
+								<p class="meta text-muted mt-0.5">
+									Pay courier upon delivery
+								</p>
+							</div>
+						</div>
+						<span class="font-condensed text-xs font-semibold text-muted">
+							COD
+						</span>
+					</label>
+
+					<label class="flex cursor-pointer items-center justify-between border border-line-strong bg-paper p-4 transition-colors has-[:checked]:border-ink has-[:checked]:bg-white">
+						<div class="flex items-center gap-3">
+							<input
+								type="radio"
+								name="payment-type"
+								value="gcash"
+								aria-controls="manual-transfer-panel"
+								class="accent-registration"
+							/>
+							<div>
+								<p class="font-condensed text-xs font-bold uppercase tracking-wider text-ink">
+									GCash / Maya transfer
+								</p>
+								<p class="meta text-muted mt-0.5">
+									Manual transfer · Optional receipt
+								</p>
+							</div>
+						</div>
+						<span class="font-condensed text-xs font-semibold text-registration">
+							MANUAL
+						</span>
+					</label>
+				</fieldset>
+
+				<div
+					id="manual-transfer-panel"
+					data-gcash-panel
+					class="mt-3 hidden space-y-4 border border-line bg-paper p-5 sm:p-6"
+				>
+					<div class="flex flex-col sm:flex-row items-center gap-6">
+						<div class="max-w-sm text-center sm:text-left">
+							<span class="label">Manual transfer</span>
+							<h2 class="mt-1 font-display text-xl uppercase tracking-wider text-ink">
+								QR payment unavailable
+							</h2>
+							<p class="mt-2 text-xs leading-relaxed text-muted">
+								No verified payment QR is available. If you choose GCash or
+								Maya, transfer manually to the account below.
+							</p>
+						</div>
+						<div class="space-y-1.5 text-center sm:text-left">
+							<span class="label">Merchant payment account</span>
+							<p class="font-display text-xl uppercase tracking-wider text-ink">
+								${contact.name}
+							</p>
+							<p class="font-condensed text-base font-bold tracking-widest text-ink">
+								${contact.mobile}
+							</p>
+							<p class="text-xs leading-relaxed text-muted">
+								Transfer the exact total shown on this order slip. Enter your
+								13-digit reference below; a receipt upload is optional.
+							</p>
+						</div>
+					</div>
+
+					<div class="grid gap-4 sm:grid-cols-2 pt-3 border-t border-line">
+						<label class="grid gap-1.5">
+							<span class="label">Reference No.*</span>
+							<input
+								type="text"
+								name="payment-ref"
+								data-payment-ref
+								pattern="[0-9]{13}"
+								title="13-digit transaction reference number"
+								placeholder="13-digit Reference No."
+								class="w-full min-w-0 border border-line-strong bg-transparent px-4 py-3 text-base transition-colors placeholder:text-muted focus:border-registration focus:outline-none focus:ring-1 focus:ring-registration sm:text-sm"
+							/>
+						</label>
+						<label class="grid gap-1.5">
+							<span class="label">Transfer Receipt Screenshot</span>
+							<input
+								type="file"
+								name="payment-slip"
+								data-payment-slip
+								accept="image/jpeg,image/png,image/webp,application/pdf"
+								aria-describedby="payment-slip-help"
+								class="w-full min-w-0 border border-line-strong bg-transparent px-3 py-2 text-xs transition-colors file:mr-3 file:border file:border-line file:bg-white file:px-2.5 file:py-1 file:font-condensed file:text-xs file:uppercase file:tracking-wider hover:file:bg-line/40 focus:border-registration focus:outline-none"
+							/>
+							<span id="payment-slip-help" class="meta text-muted">
+								Optional. JPG, PNG, WebP, or PDF · 4 MB maximum.
+							</span>
+						</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="mt-4 space-y-4 border-y border-dashed border-muted/50 py-6 text-sm leading-relaxed text-muted">
+				<p>${orderTerms.receipt}</p>
+				<p>${orderTerms.preparation}</p>
+				<div class="space-y-2">
+					<p>${orderTerms.deliveryIntro}</p>
+					<ul class="space-y-1">
+						${deliveryLines.map(line => `<li>${line}</li>`).join('')}
+					</ul>
+				</div>
+				<p
+					class="border-t border-dashed border-muted/50 pt-4"
+					data-terms-payment
+				>
+					${orderTerms.payment}
+				</p>
+			</div>
+
+			<div
+				data-checkout-error
+				class="hidden border-2 border-registration bg-paper px-4 py-3 text-center font-condensed text-xs font-semibold text-ink"
+				role="alert"
+				aria-live="assertive"
+				tabindex="-1"
+			>
+				<span
+					class="inline-block font-bold text-registration mr-1.5"
+					aria-hidden="true"
+				>
+					[!]
+				</span>{' '}
+				<span data-checkout-error-text>
+					Your request slip is empty. Please select a print before submitting.
+				</span>
+			</div>
+			<button
+				type="submit"
+				class="btn btn-primary w-full disabled:cursor-wait disabled:opacity-70"
+			>
+				Send Order Request
+			</button>
+		</form>
+		`;
+
+		// Initialize checkout form logic
+		initCheckoutForm();
+	}
+
+	function initCheckoutForm() {
+		const form = document.querySelector<HTMLFormElement>('[data-order-form]');
+		if (!form) return;
+
+		const itemsEl = document.querySelector<HTMLElement>(
+			'[data-checkout-items]',
+		);
+		const countEl = document.querySelector<HTMLElement>(
+			'[data-checkout-count]',
+		);
+		const subtotalEl = document.querySelector<HTMLElement>('[data-subtotal]');
+		const shippingFeeEl = document.querySelector<HTMLElement>(
+			'[data-shipping-fee-display]',
+		);
+		const grandTotalEl =
+			document.querySelector<HTMLElement>('[data-grand-total]');
+		const shippingBadge = document.querySelector<HTMLElement>(
+			'[data-shipping-badge]',
+		);
+		const note =
+			document.querySelector<HTMLTextAreaElement>('[data-order-note]');
+		const windowEl = document.querySelector<HTMLElement>(
+			'[data-delivery-window]',
+		);
+		const provinceSelect =
+			form.querySelector<HTMLSelectElement>('[data-province]');
+		const gcashPanel = form.querySelector<HTMLElement>('[data-gcash-panel]');
+		const paymentRefInput =
+			form.querySelector<HTMLInputElement>('[data-payment-ref]');
+		const paymentSlipInput = form.querySelector<HTMLInputElement>(
+			'[data-payment-slip]',
+		);
+		const paymentReassurance = document.querySelector<HTMLElement>(
+			'[data-payment-reassurance]',
+		);
+		const termsPayment = form.querySelector<HTMLElement>(
+			'[data-terms-payment]',
+		);
+		const errorMessage = form.querySelector<HTMLElement>(
+			'[data-checkout-error-text]',
+		);
+		let isSubmitting = false;
+
+		let currentZoneId = shippingZoneId.get();
+
+		function updateTotals() {
+			const count = cartCount.get();
+			const subtotal = cartSubtotal(cartItems.get());
+			const hasProvince = Boolean(provinceSelect?.value);
+			const shippingFee =
+				count && hasProvince ? calculateShippingFee(currentZoneId, count) : 0;
+			const grandTotal = subtotal + shippingFee;
+
+			if (subtotalEl) subtotalEl.textContent = `₱${subtotal.toLocaleString()}`;
+			if (shippingFeeEl) {
+				shippingFeeEl.textContent = !hasProvince
+					? 'Pending'
+					: count >= FREE_SHIPPING_THRESHOLD
+						? 'FREE'
+						: `₱${shippingFee}`;
+			}
+			if (grandTotalEl)
+				grandTotalEl.textContent = `₱${grandTotal.toLocaleString()}`;
+
+			if (shippingBadge) {
+				if (!hasProvince) {
+					shippingBadge.textContent = `${courier} dispatch · Select province for rate`;
+				} else if (count >= FREE_SHIPPING_THRESHOLD) {
+					shippingBadge.textContent = `${courier} dispatch · FREE DELIVERY (3+ prints)`;
+				} else {
+					shippingBadge.textContent = `${courier} dispatch · ₱${shippingFee} delivery`;
+				}
+			}
+		}
+
+		function refreshDelivery() {
+			if (!windowEl || !provinceSelect) return;
+			const zone = zoneById(provinceSelect.selectedOptions[0]?.dataset.zone);
+			currentZoneId = zone?.id ?? '';
+			if (!zone) {
+				windowEl.textContent = 'Select your province';
+				updateTotals();
+				return;
+			}
+			windowEl.textContent = `${zone.label} · ${zone.days} business days`;
+			updateTotals();
+		}
+
+		function updatePaymentState(method: string) {
+			const isGCash = method === 'gcash';
+			if (gcashPanel) gcashPanel.classList.toggle('hidden', !isGCash);
+			if (paymentRefInput) paymentRefInput.required = isGCash;
+
+			if (paymentReassurance) {
+				paymentReassurance.textContent = isGCash
+					? 'Transfer manually to the account shown above, then enter your 13-digit reference. Receipt upload is optional.'
+					: 'Pay the exact grand total directly to the courier upon delivery.';
+			}
+
+			if (termsPayment) {
+				termsPayment.textContent = isGCash
+					? '* The studio will verify your GCash / Maya transfer before courier pick-up; this order email is not payment confirmation.'
+					: '* Please prepare exact cash for the courier upon parcel delivery.';
+			}
+		}
+
+		form
+			?.querySelectorAll<HTMLInputElement>('input[name="payment-type"]')
+			.forEach(radio => {
+				radio.addEventListener('change', () => updatePaymentState(radio.value));
+			});
+		const selectedPayment = form?.querySelector<HTMLInputElement>(
+			'input[name="payment-type"]:checked',
+		);
+		if (selectedPayment) updatePaymentState(selectedPayment.value);
+
+		if (provinceSelect) {
+			if (shippingProvince.get()) provinceSelect.value = shippingProvince.get();
+			provinceSelect.addEventListener('change', () => {
+				const zone = provinceSelect.selectedOptions[0]?.dataset.zone ?? '';
+				shippingZoneId.set(zone);
+				shippingProvince.set(provinceSelect.value);
+				refreshDelivery();
+			});
+			refreshDelivery();
+		}
+
+		if (itemsEl && countEl) {
+			const render = () => {
+				const cart = cartItems.get();
+				itemsEl.innerHTML = cart.length
+					? cart
+							.map(i => {
+								const product = products.find(
+									candidate => candidate.slug === i.slug,
+								);
+								const variant = product?.variants.find(
+									candidate => candidate.sku === i.sku,
+								);
+								const title = product?.title ?? i.title;
+								const size = variant
+									? [variant.color, variant.size].filter(Boolean).join(' · ')
+									: i.variant;
+								return `
+	          <div class="flex items-start justify-between gap-4 border-b border-line py-3 last:border-0">
+	            <div class="min-w-0">
+	              <p class="font-condensed text-[0.8125rem] font-semibold uppercase tracking-[0.12em]">${escapeHTML(title)}</p>
+	              <p class="meta mt-1 text-muted">${escapeHTML(size)} · ₱${getCartItemPrice(i).toLocaleString()}</p>
+	            </div>
+	            <span class="text-sm font-semibold text-ink">×${i.qty}</span>
+	          </div>`;
+							})
+							.join('')
+					: `<div class="py-6 text-center">
+	             <span class="inline-block h-2 w-2 rotate-45 bg-registration mb-2"></span>
+	             <p class="font-condensed text-xs font-semibold uppercase tracking-wider text-ink">Your order slip is empty</p>
+	             <p class="meta text-xs text-muted mt-1">Staged prints will appear here.</p>
+	             <a href="/products" class="btn btn-primary mt-4 min-h-11 text-xs px-4 py-2">Select a print →</a>
+	           </div>`;
+				countEl.textContent = String(cartCount.get());
+				refreshDelivery();
+			};
+			cartItems.subscribe(render);
+			render();
+		}
+
+		if (note) {
+			note.value = orderNote.get();
+			note.addEventListener('input', () => orderNote.set(note.value));
+		}
+
+		const errBox = form?.querySelector<HTMLElement>('[data-checkout-error]');
+		const submitBtn = form?.querySelector<HTMLButtonElement>(
+			'button[type="submit"]',
+		);
+		const submitLabel = submitBtn?.textContent ?? '';
+		const cartField = form?.querySelector<HTMLInputElement>(
+			'input[name="cart-items"]',
+		);
+
+		function showCheckoutError(message: string) {
+			if (errorMessage) errorMessage.textContent = message;
+			errBox?.classList.remove('hidden');
+			errBox?.focus();
+		}
+
+		function getErrorMessage(
+			el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
+		): string {
+			if (el.validity.valueMissing) {
+				if (el.name === 'name') return 'Full name required';
+				if (el.name === 'email') return 'Email address required';
+				if (el.name === 'phone') return 'Contact number required';
+				if (el.name === 'street') return 'Street / barangay required';
+				if (el.name === 'province') return 'Select your province';
+				if (el.name === 'city') return 'City / municipality required';
+				if (el.name === 'zip') return 'Zip code required';
+				if (el.name === 'payment-ref')
+					return '13-digit reference number required';
+				return 'This field is required';
+			}
+			if (el.validity.typeMismatch && el.type === 'email') {
+				return 'Valid email required (e.g. you@example.com)';
+			}
+			if (el.validity.patternMismatch) {
+				if (el.name === 'phone') {
+					return 'Philippine format required (e.g. 09171234567 or +639171234567)';
+				}
+				if (el.name === 'payment-ref') {
+					return '13-digit numeric transaction reference required';
+				}
+				return 'Please match the required format';
+			}
+			if (el.name === 'payment-slip' && el.validity.customError)
+				return el.validationMessage;
+			return el.validationMessage || 'Invalid input';
+		}
+
+		function showError(
+			el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
+		) {
+			el.classList.add('!border-registration', '!bg-registration/5');
+			el.setAttribute('aria-invalid', 'true');
+			const parent = el.closest('label') || el.parentElement;
+			if (!parent) return;
+
+			let err = parent.querySelector<HTMLElement>('[data-error-msg]');
+			const msg = getErrorMessage(el);
+			const errorId = `${el.name || 'field'}-error`;
+
+			if (!err) {
+				err = document.createElement('p');
+				err.setAttribute('data-error-msg', '');
+				err.id = errorId;
+				err.className =
+					'field-error mt-1 flex items-center gap-1 font-condensed text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-registration';
+				parent.appendChild(err);
+			}
+			const icon = document.createElement('span');
+			icon.setAttribute('aria-hidden', 'true');
+			icon.textContent = '[!]';
+			err.replaceChildren(icon, document.createTextNode(` ${msg}`));
+			const describedBy =
+				el
+					.getAttribute('aria-describedby')
+					?.split(/\s+/)
+					.filter(id => id && id !== errorId) ?? [];
+			el.setAttribute('aria-describedby', [...describedBy, errorId].join(' '));
+		}
+
+		function clearError(
+			el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
+		) {
+			el.classList.remove('!border-registration', '!bg-registration/5');
+			el.removeAttribute('aria-invalid');
+			const parent = el.closest('label') || el.parentElement;
+			const err = parent?.querySelector('[data-error-msg]');
+			if (err) {
+				const errorId = err.id;
+				err.remove();
+				const describedBy =
+					el
+						.getAttribute('aria-describedby')
+						?.split(/\s+/)
+						.filter(id => id && id !== errorId) ?? [];
+				if (describedBy.length)
+					el.setAttribute('aria-describedby', describedBy.join(' '));
+				else el.removeAttribute('aria-describedby');
+			}
+		}
+
+		let firstInvalidEl:
+			(HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) | null =
+			null;
+
+		form
+			?.querySelectorAll<
+				HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+			>('input, select, textarea')
+			.forEach(el => {
+				el.addEventListener('invalid', e => {
+					e.preventDefault();
+					showError(el);
+					if (!firstInvalidEl) {
+						firstInvalidEl = el;
+					}
+				});
+				el.addEventListener('input', () => {
+					if (el.validity.valid) {
+						clearError(el);
+					}
+				});
+				el.addEventListener('change', () => {
+					if (el.validity.valid) {
+						clearError(el);
+					}
+				});
+			});
+
+		paymentSlipInput?.addEventListener('change', () => {
+			const file = paymentSlipInput.files?.[0];
+			let message = '';
+			if (file?.size && file.size > PAYMENT_SLIP_MAX_BYTES) {
+				message = 'Receipt files must be 4 MB or smaller.';
+			} else if (
+				file?.size &&
+				!['image/jpeg', 'image/png', 'image/webp', 'application/pdf'].includes(
+					file.type,
+				)
+			) {
+				message = 'Choose a JPG, PNG, WebP, or PDF receipt.';
+			}
+			paymentSlipInput.setCustomValidity(message);
+			if (paymentSlipInput.validity.valid) clearError(paymentSlipInput);
+		});
+
+		form?.addEventListener('submit', async e => {
+			e.preventDefault();
+			if (isSubmitting) return;
+			firstInvalidEl = null;
+			if (!cartItems.get().length) {
+				showCheckoutError(
+					'Your order slip is empty. Add a print before submitting.',
+				);
+				return;
+			}
+			if (errBox) errBox.classList.add('hidden');
+
+			if (!form.checkValidity()) {
+				setTimeout(() => {
+					firstInvalidEl?.focus();
+				}, 10);
+				return;
+			}
+
+			orderNote.set(note?.value ?? '');
+			refreshDelivery();
+			if (cartField) {
+				cartField.value = JSON.stringify(
+					cartItems.get().map(({ sku, qty }) => ({ sku, qty })),
+				);
+			}
+
+			if (submitBtn) {
+				submitBtn.disabled = true;
+				submitBtn.textContent = 'Sending order request…';
+				submitBtn.setAttribute('aria-busy', 'true');
+			}
+			isSubmitting = true;
+
+			try {
+				const response = await fetch(form.action, {
+					method: 'POST',
+					body: new FormData(form),
+					credentials: 'same-origin',
+					headers: { accept: 'application/json' },
+				});
+
+				if (response.ok && response.redirected) {
+					window.location.assign(response.url);
+					return;
+				}
+
+				const responseText = await response.text();
+				let message = `We could not confirm your order (error ${response.status}). Please try again; your details are still here.`;
+				try {
+					const payload: unknown = JSON.parse(responseText);
+					if (
+						typeof payload === 'object' &&
+						payload !== null &&
+						'message' in payload &&
+						typeof payload.message === 'string'
+					) {
+						message = payload.message;
+					}
+				} catch {
+					console.error(
+						'Order service returned an unreadable error response.',
+						response.status,
+					);
+				}
+				showCheckoutError(message);
+			} catch (error) {
+				console.error(
+					'Order request could not be sent.',
+					error instanceof Error ? error.name : 'Unknown error',
+				);
+				showCheckoutError(
+					'We could not reach the order service. Your details are still here; check your connection and try again.',
+				);
+			} finally {
+				if (submitBtn) {
+					submitBtn.disabled = false;
+					submitBtn.textContent = submitLabel;
+					submitBtn.removeAttribute('aria-busy');
+				}
+				isSubmitting = false;
+			}
+		});
+	}
+
+	// Handle success state from URL params
+	const urlParams = new URLSearchParams(window.location.search);
+	if (urlParams.get('success') === '1') {
+		clearCart();
+	}
 </script>

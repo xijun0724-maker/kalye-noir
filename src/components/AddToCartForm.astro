@@ -1,9 +1,10 @@
 ---
 import type { Product } from '../data/catalog';
 import { uniqueSizes } from '../data/catalog';
+import { getSizePrice } from '../data/catalog';
 
 interface Props {
-  product: Product;
+	product: Product;
 }
 
 const { product } = Astro.props;
@@ -12,201 +13,262 @@ const sizes = uniqueSizes(product);
 const first = product.variants[0];
 
 const pill =
-  'min-h-11 min-w-11 border border-line-strong px-3 py-2 text-xs transition-colors hover:border-ink data-[selected=true]:border-ink data-[selected=true]:bg-ink data-[selected=true]:text-paper';
+	'min-h-11 min-w-11 border border-line-strong px-3 py-2 text-xs transition-colors hover:border-ink data-[selected=true]:border-ink data-[selected=true]:bg-ink data-[selected=true]:text-paper';
+const initialPrice = getSizePrice(first.size);
 ---
 
-<div
-  data-atc
-  data-slug={product.slug}
-  data-default-size={first.size}
->
-  <div class="mb-5">
-    <div class="flex items-center justify-between mb-2">
-      <p class="label">Size</p>
-      <button
-        type="button"
-        data-size-guide-open
-        class="tap font-condensed text-[0.6875rem] uppercase tracking-[0.2em] text-muted underline underline-offset-4 transition-colors hover:text-registration"
-      >
-        Fit Guide (Inches / CM)
-      </button>
-    </div>
-    <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Available garment sizes">
-      {
-        sizes.map((size) => (
-          <button
-            type="button"
-            role="radio"
-            aria-checked={size === first.size ? 'true' : 'false'}
-            tabindex={size === first.size ? 0 : -1}
-            data-selected={size === first.size ? 'true' : 'false'}
-            data-value={size}
-            class={pill}
-            aria-label={`Size ${size}`}
-          >
-            {size}
-          </button>
-        ))
-      }
-    </div>
-  </div>
+<div data-atc data-slug={product.slug} data-default-size={first.size}>
+	<div class="mb-5">
+		<div class="flex items-center justify-between mb-2">
+			<p class="label">Size</p>
+			<button
+				type="button"
+				data-size-guide-open
+				class="tap font-condensed text-[0.6875rem] uppercase tracking-[0.2em] text-muted underline underline-offset-4 transition-colors hover:text-registration"
+			>
+				Fit Guide (Inches / CM)
+			</button>
+		</div>
+		<div
+			class="flex flex-wrap gap-2"
+			role="radiogroup"
+			aria-label="Available garment sizes"
+		>
+			{sizes.map(size => (
+				<button
+					type="button"
+					role="radio"
+					aria-checked={size === first.size ? 'true' : 'false'}
+					tabindex={size === first.size ? 0 : -1}
+					data-selected={size === first.size ? 'true' : 'false'}
+					data-value={size}
+					class={pill}
+					aria-label={`Size ${size}`}
+				>
+					{size}
+				</button>
+			))}
+		</div>
+	</div>
 
-  <div class="mb-5 flex items-center gap-4">
-    <p class="label">Qty</p>
-    <div class="flex items-stretch border border-line">
-      <button
-        type="button"
-        data-step="-1"
-        class="flex h-11 w-11 items-center justify-center text-lg leading-none transition-colors hover:bg-line/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-registration"
-        aria-label="Decrease quantity"
-      >
-        <span aria-hidden="true">−</span>
-      </button>
-      <span data-qty class="flex min-w-[3rem] items-center justify-center text-sm font-semibold">1</span>
-      <button
-        type="button"
-        data-step="1"
-        class="flex h-11 w-11 items-center justify-center text-lg leading-none transition-colors hover:bg-line/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-registration"
-        aria-label="Increase quantity"
-      >
-        <span aria-hidden="true">+</span>
-      </button>
-    </div>
-  </div>
+	<p
+		data-size-price
+		class="mb-5 font-display text-xl uppercase tracking-wider text-ink"
+	>
+		₱{initialPrice.toLocaleString()}
+	</p>
 
-  <button type="button" data-add class="btn btn-primary w-full">Add to cart</button>
+	<div class="mb-5 flex items-center gap-4">
+		<p class="label">Qty</p>
+		<div class="flex items-stretch border border-line">
+			<button
+				type="button"
+				data-step="-1"
+				class="flex h-11 w-11 items-center justify-center text-lg leading-none transition-colors hover:bg-line/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-registration"
+				aria-label="Decrease quantity"
+			>
+				<span aria-hidden="true">−</span>
+			</button>
+			<span
+				data-qty
+				class="flex min-w-[3rem] items-center justify-center text-sm font-semibold"
+			>
+				1
+			</span>
+			<button
+				type="button"
+				data-step="1"
+				class="flex h-11 w-11 items-center justify-center text-lg leading-none transition-colors hover:bg-line/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-registration"
+				aria-label="Increase quantity"
+			>
+				<span aria-hidden="true">+</span>
+			</button>
+		</div>
+	</div>
 
-  <dialog
-    data-size-dialog
-    aria-labelledby="size-dialog-title"
-    class="cart-dialog max-w-lg p-6 bg-paper border border-line text-ink shadow-2xl backdrop:bg-ink/60"
-  >
-    <div class="flex items-center justify-between border-b border-line pb-4">
-      <div>
-        <h2 id="size-dialog-title" class="font-display text-xl uppercase tracking-wider">Garment Measurements</h2>
-        <p class="meta text-xs text-muted mt-0.5">Heavyweight boxy cut · S–2XL</p>
-      </div>
-      <button type="button" data-size-dialog-close class="-m-2 flex h-11 w-11 shrink-0 items-center justify-center text-2xl leading-none hover:text-registration" aria-label="Close size guide">×</button>
-    </div>
-    <div class="mt-4 overflow-x-auto">
-      <table class="w-full text-left font-condensed text-xs uppercase tracking-wider">
-        <thead>
-          <tr class="border-b border-ink/40 text-muted">
-            <th class="py-2 pr-4">Size</th>
-            <th class="py-2 px-3">Chest Width</th>
-            <th class="py-2 px-3">Body Length</th>
-            <th class="py-2 pl-3">Fit Profile</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-line">
-          <tr><td class="py-2.5 pr-4 font-bold text-ink">S</td><td class="py-2.5 px-3">20" / 51cm</td><td class="py-2.5 px-3">28" / 71cm</td><td class="py-2.5 pl-3 text-muted">Relaxed</td></tr>
-          <tr><td class="py-2.5 pr-4 font-bold text-ink">M</td><td class="py-2.5 px-3">21" / 53cm</td><td class="py-2.5 px-3">29" / 74cm</td><td class="py-2.5 pl-3 text-muted">Relaxed</td></tr>
-          <tr><td class="py-2.5 pr-4 font-bold text-ink">L</td><td class="py-2.5 px-3">22" / 56cm</td><td class="py-2.5 px-3">30" / 76cm</td><td class="py-2.5 pl-3 text-muted">Oversized</td></tr>
-          <tr><td class="py-2.5 pr-4 font-bold text-ink">XL</td><td class="py-2.5 px-3">23" / 58cm</td><td class="py-2.5 px-3">31" / 79cm</td><td class="py-2.5 pl-3 text-muted">Oversized</td></tr>
-          <tr><td class="py-2.5 pr-4 font-bold text-ink">2XL</td><td class="py-2.5 px-3">24" / 61cm</td><td class="py-2.5 px-3">32" / 81cm</td><td class="py-2.5 pl-3 text-muted">Boxy Heavyweight</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="meta text-xs text-muted mt-4 border-t border-line pt-3">
-      Cold wash recommended. Shrinkage is pre-treated during screen printing.
-    </p>
-  </dialog>
+	<button type="button" data-add class="btn btn-primary w-full">
+		Add to cart
+	</button>
+
+	<dialog
+		data-size-dialog
+		aria-labelledby="size-dialog-title"
+		class="cart-dialog max-w-lg p-6 bg-paper border border-line text-ink shadow-2xl backdrop:bg-ink/60"
+	>
+		<div class="flex items-center justify-between border-b border-line pb-4">
+			<div>
+				<h2
+					id="size-dialog-title"
+					class="font-display text-xl uppercase tracking-wider"
+				>
+					Garment Measurements
+				</h2>
+				<p class="meta text-xs text-muted mt-0.5">
+					Heavyweight boxy cut · S–2XL
+				</p>
+			</div>
+			<button
+				type="button"
+				data-size-dialog-close
+				class="-m-2 flex h-11 w-11 shrink-0 items-center justify-center text-2xl leading-none hover:text-registration"
+				aria-label="Close size guide"
+			>
+				×
+			</button>
+		</div>
+		<div class="mt-4 overflow-x-auto">
+			<table class="w-full text-left font-condensed text-xs uppercase tracking-wider">
+				<thead>
+					<tr class="border-b border-ink/40 text-muted">
+						<th class="py-2 pr-4">Size</th>
+						<th class="py-2 px-3">Chest Width</th>
+						<th class="py-2 px-3">Body Length</th>
+						<th class="py-2 pl-3">Fit Profile</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-line">
+					<tr>
+						<td class="py-2.5 pr-4 font-bold text-ink">S</td>
+						<td class="py-2.5 px-3">20" / 51cm</td>
+						<td class="py-2.5 px-3">28" / 71cm</td>
+						<td class="py-2.5 pl-3 text-muted">Relaxed</td>
+					</tr>
+					<tr>
+						<td class="py-2.5 pr-4 font-bold text-ink">M</td>
+						<td class="py-2.5 px-3">21" / 53cm</td>
+						<td class="py-2.5 px-3">29" / 74cm</td>
+						<td class="py-2.5 pl-3 text-muted">Relaxed</td>
+					</tr>
+					<tr>
+						<td class="py-2.5 pr-4 font-bold text-ink">L</td>
+						<td class="py-2.5 px-3">22" / 56cm</td>
+						<td class="py-2.5 px-3">30" / 76cm</td>
+						<td class="py-2.5 pl-3 text-muted">Oversized</td>
+					</tr>
+					<tr>
+						<td class="py-2.5 pr-4 font-bold text-ink">XL</td>
+						<td class="py-2.5 px-3">23" / 58cm</td>
+						<td class="py-2.5 px-3">31" / 79cm</td>
+						<td class="py-2.5 pl-3 text-muted">Oversized</td>
+					</tr>
+					<tr>
+						<td class="py-2.5 pr-4 font-bold text-ink">2XL</td>
+						<td class="py-2.5 px-3">24" / 61cm</td>
+						<td class="py-2.5 px-3">32" / 81cm</td>
+						<td class="py-2.5 pl-3 text-muted">Boxy Heavyweight</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<p class="meta text-xs text-muted mt-4 border-t border-line pt-3">
+			Cold wash recommended. Shrinkage is pre-treated during screen printing.
+		</p>
+	</dialog>
 </div>
 
 <script>
-  import { findVariant, getProduct } from '../data/catalog';
-  import { addToCart } from '../stores/cartStore';
+	import { findVariant, getProduct, getSizePrice } from '../data/catalog';
+	import { addToCart } from '../stores/cartStore';
 
-  const root = document.querySelector<HTMLElement>('[data-atc]');
-  if (root) {
-    let size = root.dataset.defaultSize ?? '';
-    let qty = 1;
+	const root = document.querySelector<HTMLElement>('[data-atc]');
+	if (root) {
+		let size = root.dataset.defaultSize ?? '';
+		let qty = 1;
 
-    const addBtn = root.querySelector<HTMLButtonElement>('[data-add]')!;
-    const qtyEl = root.querySelector<HTMLElement>('[data-qty]')!;
-    const sizeModal = root.querySelector<HTMLDialogElement>('[data-size-dialog]');
-    const openGuide = root.querySelector<HTMLElement>('[data-size-guide-open]');
-    const closeGuide = root.querySelector<HTMLElement>('[data-size-dialog-close]');
+		const addBtn = root.querySelector<HTMLButtonElement>('[data-add]')!;
+		const qtyEl = root.querySelector<HTMLElement>('[data-qty]')!;
+		const priceEl = root.querySelector<HTMLElement>('[data-size-price]');
+		const sizeModal =
+			root.querySelector<HTMLDialogElement>('[data-size-dialog]');
+		const openGuide = root.querySelector<HTMLElement>('[data-size-guide-open]');
+		const closeGuide = root.querySelector<HTMLElement>(
+			'[data-size-dialog-close]',
+		);
 
-    openGuide?.addEventListener('click', () => sizeModal?.showModal());
-    closeGuide?.addEventListener('click', () => sizeModal?.close());
-    sizeModal?.addEventListener('click', (e) => {
-      if (e.target === sizeModal) sizeModal.close();
-    });
+		openGuide?.addEventListener('click', () => sizeModal?.showModal());
+		closeGuide?.addEventListener('click', () => sizeModal?.close());
+		sizeModal?.addEventListener('click', e => {
+			if (e.target === sizeModal) sizeModal.close();
+		});
 
-    root.querySelectorAll<HTMLElement>('[data-value]').forEach((btn) => {
-      const isSelected = btn.dataset.value === size;
-      btn.dataset.selected = String(isSelected);
-      btn.setAttribute('aria-checked', String(isSelected));
-    });
+		root.querySelectorAll<HTMLElement>('[data-value]').forEach(btn => {
+			const isSelected = btn.dataset.value === size;
+			btn.dataset.selected = String(isSelected);
+			btn.setAttribute('aria-checked', String(isSelected));
+		});
 
-    const sizeButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-value]'));
+		const sizeButtons = Array.from(
+			root.querySelectorAll<HTMLButtonElement>('[data-value]'),
+		);
 
-    function selectSize(opt: HTMLElement) {
-      sizeButtons.forEach((btn) => {
-        btn.dataset.selected = 'false';
-        btn.setAttribute('aria-checked', 'false');
-        btn.tabIndex = -1;
-      });
-      opt.dataset.selected = 'true';
-      opt.setAttribute('aria-checked', 'true');
-      opt.tabIndex = 0;
-      size = opt.dataset.value!;
-    }
+		function selectSize(opt: HTMLElement) {
+			sizeButtons.forEach(btn => {
+				btn.dataset.selected = 'false';
+				btn.setAttribute('aria-checked', 'false');
+				btn.tabIndex = -1;
+			});
+			opt.dataset.selected = 'true';
+			opt.setAttribute('aria-checked', 'true');
+			opt.tabIndex = 0;
+			size = opt.dataset.value!;
+			if (priceEl)
+				priceEl.textContent = `₱${getSizePrice(size).toLocaleString()}`;
+		}
 
-    sizeButtons.forEach((btn, idx) => {
-      btn.addEventListener('keydown', (e) => {
-        let nextIdx = -1;
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-          e.preventDefault();
-          nextIdx = (idx + 1) % sizeButtons.length;
-        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-          e.preventDefault();
-          nextIdx = (idx - 1 + sizeButtons.length) % sizeButtons.length;
-        }
-        if (nextIdx >= 0) {
-          const nextBtn = sizeButtons[nextIdx];
-          nextBtn.focus();
-          selectSize(nextBtn);
-        }
-      });
-    });
+		sizeButtons.forEach((btn, idx) => {
+			btn.addEventListener('keydown', e => {
+				let nextIdx = -1;
+				if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+					e.preventDefault();
+					nextIdx = (idx + 1) % sizeButtons.length;
+				} else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+					e.preventDefault();
+					nextIdx = (idx - 1 + sizeButtons.length) % sizeButtons.length;
+				}
+				if (nextIdx >= 0) {
+					const nextBtn = sizeButtons[nextIdx];
+					nextBtn.focus();
+					selectSize(nextBtn);
+				}
+			});
+		});
 
-    root.addEventListener('click', (e) => {
-      const t = e.target as HTMLElement;
-      const opt = t.closest<HTMLElement>('[data-value]');
-      if (opt) {
-        selectSize(opt);
-        return;
-      }
-      const step = t.closest<HTMLElement>('[data-step]');
-      if (step) {
-        qty = Math.max(1, qty + Number(step.dataset.step));
-        qtyEl.textContent = String(qty);
-      }
-    });
+		root.addEventListener('click', e => {
+			const t = e.target as HTMLElement;
+			const opt = t.closest<HTMLElement>('[data-value]');
+			if (opt) {
+				selectSize(opt);
+				return;
+			}
+			const step = t.closest<HTMLElement>('[data-step]');
+			if (step) {
+				qty = Math.max(1, qty + Number(step.dataset.step));
+				qtyEl.textContent = String(qty);
+			}
+		});
 
-    let addResetTimeout: ReturnType<typeof setTimeout> | null = null;
-    addBtn.addEventListener('click', () => {
-      const v = findVariant(root.dataset.slug!, size);
-      const p = getProduct(root.dataset.slug!);
-      if (!v || !p) return;
-      addToCart({
-        sku: v.sku,
-        slug: root.dataset.slug!,
-        title: p.title,
-        variant: [v.color, v.size].filter(Boolean).join(' · '),
-        qty,
-      });
+		let addResetTimeout: ReturnType<typeof setTimeout> | null = null;
+		addBtn.addEventListener('click', () => {
+			const v = findVariant(root.dataset.slug!, size);
+			const p = getProduct(root.dataset.slug!);
+			if (!v || !p) return;
+			addToCart({
+				sku: v.sku,
+				slug: root.dataset.slug!,
+				title: p.title,
+				variant: [v.color, v.size].filter(Boolean).join(' · '),
+				qty,
+				unitPrice: getSizePrice(v.size),
+			});
 
-      const originalText = 'Add to cart';
-      addBtn.textContent = 'Added ✓';
-      addBtn.classList.add('!bg-registration', '!border-registration');
-      if (addResetTimeout) clearTimeout(addResetTimeout);
-      addResetTimeout = setTimeout(() => {
-        addBtn.textContent = originalText;
-        addBtn.classList.remove('!bg-registration', '!border-registration');
-      }, 800);
-    });
-  }
+			const originalText = 'Add to cart';
+			addBtn.textContent = 'Added ✓';
+			addBtn.classList.add('!bg-registration', '!border-registration');
+			if (addResetTimeout) clearTimeout(addResetTimeout);
+			addResetTimeout = setTimeout(() => {
+				addBtn.textContent = originalText;
+				addBtn.classList.remove('!bg-registration', '!border-registration');
+			}, 800);
+		});
+	}
 </script>

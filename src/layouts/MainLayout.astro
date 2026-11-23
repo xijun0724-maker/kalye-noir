@@ -6,9 +6,9 @@ import Footer from '../components/Footer.astro';
 import CartDrawer from '../components/CartDrawer.astro';
 
 interface Props {
-  title?: string;
-  description?: string;
-  image?: string;
+	title?: string;
+	description?: string;
+	image?: string;
 }
 
 const { title, description, image } = Astro.props;
@@ -16,21 +16,21 @@ const { title, description, image } = Astro.props;
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <SEO title={title} description={description} image={image} />
-  </head>
-  <body class="flex min-h-screen flex-col">
-    <a
-      href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:border-2 focus:border-ink focus:bg-paper focus:px-4 focus:py-2 focus:font-condensed focus:text-xs focus:font-semibold focus:uppercase focus:tracking-[0.24em] focus:text-ink"
-    >
-      Skip to main content
-    </a>
-    <Header />
-    <main id="main" class="flex-1">
-      <slot />
-    </main>
-    <Footer />
-    <CartDrawer />
-  </body>
+	<head>
+		<SEO title={title} description={description} image={image} />
+	</head>
+	<body class="flex min-h-screen flex-col">
+		<a
+			href="#main"
+			class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:border-2 focus:border-ink focus:bg-paper focus:px-4 focus:py-2 focus:font-condensed focus:text-xs focus:font-semibold focus:uppercase focus:tracking-[0.24em] focus:text-ink"
+		>
+			Skip to main content
+		</a>
+		<Header />
+		<main id="main" class="flex-1">
+			<slot />
+		</main>
+		<Footer />
+		<CartDrawer />
+	</body>
 </html>

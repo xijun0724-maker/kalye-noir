@@ -1,0 +1,29 @@
+{
+	"name": "kalye-noir-shared",
+	"version": "1.0.0",
+	"type": "module",
+	"main": "./validation.ts",
+	"types": "./validation.ts",
+	"exports": {
+		".": {
+			"types": "./validation.ts",
+			"import": "./validation.ts",
+			"default": "./validation.ts"
+		},
+		"./validation": {
+			"types": "./validation.ts",
+			"import": "./validation.ts",
+			"default": "./validation.ts"
+		},
+		"./shipping": {
+			"types": "./shipping.ts",
+			"import": "./shipping.ts",
+			"default": "./shipping.ts"
+		},
+		"./catalog": {
+			"types": "./catalog.ts",
+			"import": "./catalog.ts",
+			"default": "./catalog.ts"
+		}
+	}
+}

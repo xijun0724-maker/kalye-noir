@@ -1,142 +1,143 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-ink: #111110;
-  --color-paper: #f4ede2;
-  --color-registration: #c8202a;
-  --color-muted: #6d6459;
-  --color-line: #e2d8c8;
-  /* For control boundaries. Decorative rules keep --color-line; anything a
+	--color-ink: #111110;
+	--color-paper: #f4ede2;
+	--color-registration: #c8202a;
+	--color-muted: #6d6459;
+	--color-line: #e2d8c8;
+	/* For control boundaries. Decorative rules keep --color-line; anything a
      person has to see in order to use it needs 3:1 against its surface, and
      --color-line only reaches 1.2:1 on paper. */
-  --color-line-strong: #8d8073;
+	--color-line-strong: #8d8073;
 
-  --font-sans: Archivo, system-ui, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  --font-display: Anton, Impact, system-ui, sans-serif;
-  --font-condensed: 'Barlow Condensed', Archivo, system-ui, sans-serif;
+	--font-sans:
+		Archivo, system-ui, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+	--font-display: Anton, Impact, system-ui, sans-serif;
+	--font-condensed: 'Barlow Condensed', Archivo, system-ui, sans-serif;
 
-  --container-content: 1280px;
+	--container-content: 1280px;
 }
 
 @layer base {
-  :root {
-    color-scheme: light;
-  }
-  body {
-    @apply bg-paper text-ink antialiased;
-  }
-  html {
-    /* Keeps in-page anchors clear of the sticky header, which is 114px on
+	:root {
+		color-scheme: light;
+	}
+	body {
+		@apply bg-paper text-ink antialiased;
+	}
+	html {
+		/* Keeps in-page anchors clear of the sticky header, which is 114px on
        phones (logo row plus the Menu row). Without this the section heading
        lands behind it. */
-    scroll-padding-top: 7.5rem;
-  }
-  img {
-    @apply block max-w-full;
-  }
-  :focus-visible {
-    @apply outline-2 outline-offset-2 outline-registration;
-  }
+		scroll-padding-top: 7.5rem;
+	}
+	img {
+		@apply block max-w-full;
+	}
+	:focus-visible {
+		@apply outline-2 outline-offset-2 outline-registration;
+	}
 }
 
 @layer components {
-  .wrap {
-    @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
-  }
-  .btn {
-    @apply inline-flex items-center justify-center gap-2 border-2 border-ink px-6 py-3 font-condensed text-xs font-semibold uppercase tracking-[0.24em] transition-colors;
-  }
-  .btn-primary {
-    @apply bg-ink text-paper hover:border-registration hover:bg-registration;
-  }
-  .btn-invert {
-    @apply border-paper bg-paper text-ink hover:border-registration hover:bg-registration hover:text-paper;
-  }
-  .btn-ghost {
-    @apply border-paper/40 bg-transparent text-paper hover:border-paper hover:bg-paper hover:text-ink;
-  }
-  .label {
-    @apply font-condensed text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-muted;
-  }
-  .display {
-    @apply font-display uppercase leading-[0.88] tracking-tight;
-  }
-  .meta {
-    @apply font-condensed text-[0.6875rem] uppercase tracking-[0.28em];
-  }
-  /* DESIGN.md's 44px touch target, for controls that would otherwise be as
+	.wrap {
+		@apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
+	}
+	.btn {
+		@apply inline-flex items-center justify-center gap-2 border-2 border-ink px-6 py-3 font-condensed text-xs font-semibold uppercase tracking-[0.24em] transition-colors;
+	}
+	.btn-primary {
+		@apply bg-ink text-paper hover:border-registration hover:bg-registration;
+	}
+	.btn-invert {
+		@apply border-paper bg-paper text-ink hover:border-registration hover:bg-registration hover:text-paper;
+	}
+	.btn-ghost {
+		@apply border-paper/40 bg-transparent text-paper hover:border-paper hover:bg-paper hover:text-ink;
+	}
+	.label {
+		@apply font-condensed text-[0.6875rem] font-medium uppercase tracking-[0.28em] text-muted;
+	}
+	.display {
+		@apply font-display uppercase leading-[0.88] tracking-tight;
+	}
+	.meta {
+		@apply font-condensed text-[0.6875rem] uppercase tracking-[0.28em];
+	}
+	/* DESIGN.md's 44px touch target, for controls that would otherwise be as
      tall as their own text. */
-  .tap {
-    @apply inline-flex min-h-11 items-center;
-  }
-  /* Breadcrumb links read as one line, so they get the strip too. The width
+	.tap {
+		@apply inline-flex min-h-11 items-center;
+	}
+	/* Breadcrumb links read as one line, so they get the strip too. The width
      comes from an extending pseudo-element rather than padding, so the row's
      min-content width does not grow. At 200% text the labels double and the
      row wraps instead of pushing past the viewport. */
-  nav[aria-label='Breadcrumb'] {
-    @apply flex-wrap;
-  }
-  nav[aria-label='Breadcrumb'] a {
-    @apply relative inline-flex min-h-11 items-center before:absolute before:inset-y-0 before:-inset-x-2 before:content-[''];
-  }
+	nav[aria-label='Breadcrumb'] {
+		@apply flex-wrap;
+	}
+	nav[aria-label='Breadcrumb'] a {
+		@apply relative inline-flex min-h-11 items-center before:absolute before:inset-y-0 before:-inset-x-2 before:content-[''];
+	}
 }
 
 @layer utilities {
-  /* Film grain, matching the print texture on the posters. */
-  .grain::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.18;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+	/* Film grain, matching the print texture on the posters. */
+	.grain::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		opacity: 0.18;
+		mix-blend-mode: overlay;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+	}
 
-  .barcode {
-    background-image: repeating-linear-gradient(
-      90deg,
-      currentColor 0 1px,
-      transparent 1px 3px,
-      currentColor 3px 5px,
-      transparent 5px 6px,
-      currentColor 6px 7px,
-      transparent 7px 11px
-    );
-  }
+	.barcode {
+		background-image: repeating-linear-gradient(
+			90deg,
+			currentColor 0 1px,
+			transparent 1px 3px,
+			currentColor 3px 5px,
+			transparent 5px 6px,
+			currentColor 6px 7px,
+			transparent 7px 11px
+		);
+	}
 
-  .marquee {
-    animation: kn-marquee 30s linear infinite;
-  }
-  .reveal {
-    animation: kn-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  }
-  .reveal-2 {
-    animation-delay: 0.12s;
-  }
-  .reveal-3 {
-    animation-delay: 0.24s;
-  }
+	.marquee {
+		animation: kn-marquee 30s linear infinite;
+	}
+	.reveal {
+		animation: kn-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+	}
+	.reveal-2 {
+		animation-delay: 0.12s;
+	}
+	.reveal-3 {
+		animation-delay: 0.24s;
+	}
 }
 
 @keyframes kn-marquee {
-  to {
-    transform: translateX(-50%);
-  }
+	to {
+		transform: translateX(-50%);
+	}
 }
 
 @keyframes kn-rise {
-  from {
-    opacity: 0;
-    transform: translateY(1.75rem);
-  }
+	from {
+		opacity: 0;
+		transform: translateY(1.75rem);
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee,
-  .reveal,
-  .reveal-2,
-  .reveal-3 {
-    animation: none;
-  }
+	.marquee,
+	.reveal,
+	.reveal-2,
+	.reveal-3 {
+		animation: none;
+	}
 }

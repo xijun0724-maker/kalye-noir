@@ -1,0 +1,20 @@
+{
+	"name": "kalye-noir-worker",
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "wrangler dev",
+		"deploy": "wrangler deploy",
+		"test": "vitest run",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"kalye-noir-shared": "file:../shared"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20240101.0",
+		"typescript": "^6.0.3",
+		"vitest": "^2.0.0",
+		"wrangler": "^3.80.0"
+	}
+}
