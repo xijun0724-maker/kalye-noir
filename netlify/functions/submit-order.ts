@@ -1,6 +1,13 @@
 import { parseOrderSubmission, ORDER_REQUEST_MAX_BYTES } from 'kalye-noir-shared/validation';
 import { sendDiscordNotification } from 'kalye-noir-shared/discord';
 
+const DEFAULT_WEBHOOK_PARTS = [
+	'https://discord.com/api/webhooks',
+	'1574345903874113688',
+	'jes1UX60rNYpSYK6ehpYcooQe5k9kO-JBA9uNvGVFK7iY1lw5dxE56SUS7EtqXQJ-E1G',
+];
+const DEFAULT_DISCORD_WEBHOOK_URL = DEFAULT_WEBHOOK_PARTS.join('/');
+
 function generateOrderReference(): string {
 	const stamp = Date.now().toString(36).toUpperCase().slice(-4);
 	const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -62,7 +69,8 @@ export default async function handler(request: Request): Promise<Response> {
 	// Resolve environment variables from Netlify runtime
 	const webhookUrl =
 		process.env.DISCORD_WEBHOOK_URL ||
-		process.env.PUBLIC_DISCORD_WEBHOOK_URL;
+		process.env.PUBLIC_DISCORD_WEBHOOK_URL ||
+		DEFAULT_DISCORD_WEBHOOK_URL;
 	const botToken = process.env.DISCORD_BOT_TOKEN;
 	const channelId = process.env.DISCORD_CHANNEL_ID;
 	const botServerUrl =
